@@ -1,0 +1,164 @@
+aid: voyant
+name: Voyant.io
+description: >-
+  Voyant.io is a brand-context platform that turns a company's positioning, messaging, personas,
+  products, pricing, and competitive intelligence into structured "context streams" that any AI tool
+  or agent can read at generation time, so AI-produced copy stays on-message instead of drifting or
+  hallucinating claims. The product is delivered as a large FastAPI-based REST API (783 operations
+  across 79 tags covering context streams, RAG search, messaging frameworks, target graph, telemetry,
+  social signal harvesting, competitive intelligence, and content generation), a hosted MCP server
+  exposing 15 tools to agent clients, and a set of published agent-governance files
+  (`/.well-known/llms.txt`, `/.well-known/context.txt`) that declare training permissions and
+  inference-control rules for the domain itself. Marketed to B2B GTM teams scaling from $5M to $100M
+  ARR. Pre-seed, founded by Andrew M. Brown; the API runs under the internal name "VoiceForge".
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-12'
+  method: derived
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-08-12'
+  method: derived
+image: https://www.voyant.io/img/logo/voyant-logo.png
+url: https://raw.githubusercontent.com/api-evangelist/voyant/refs/heads/main/apis.yml
+created: '2026-08-12'
+modified: '2026-08-12'
+specificationVersion: '0.21'
+x-type: company
+x-source: manual:kin
+tags:
+  - artificial-intelligence
+  - context-management
+  - brand-governance
+  - product-marketing
+  - gtm-operations
+  - marketing-automation
+  - content-generation
+  - competitive-intelligence
+  - semantic-search
+  - rag
+  - mcp
+  - agent-native
+  - signals
+  - telemetry
+apis:
+  - name: VoyantIO API
+    description: >-
+      REST API for the Voyant brand-context platform, published as OpenAPI 3.1.0 with 783 operations
+      over 79 tags. Covers context streams and context modulation, RAG ingestion and semantic search,
+      the messaging framework (positioning, personas, products, use cases, industries, testimonials),
+      target graph and CRM context, telemetry and attribution, social signal harvesting (GitHub,
+      Reddit, HackerNews, LinkedIn, YouTube, G2, Discord, government sources), competitive
+      intelligence and battlecards, GEO/AEO intelligence, content and video generation, and
+      generation of agent-facing artifacts (llms.txt, context.txt, trust.txt, ontology.jsonld) for
+      the customer's own domain. Bearer-token authenticated.
+    humanURL: https://voice-forge-production.up.railway.app/docs
+    baseURL: https://voice-forge-production.up.railway.app
+    tags:
+      - artificial-intelligence
+      - context-management
+      - brand-governance
+      - product-marketing
+      - gtm-operations
+      - content-generation
+      - competitive-intelligence
+      - semantic-search
+      - rag
+      - signals
+      - telemetry
+    properties:
+      - type: OpenAPI
+        url: openapi/voyant-openapi-original.json
+      - type: Documentation
+        url: https://voice-forge-production.up.railway.app/docs
+      - type: APIReference
+        url: https://voice-forge-production.up.railway.app/redoc
+      - type: Authentication
+        url: authentication/voyant-authentication.yml
+      - type: ErrorCatalog
+        url: errors/voyant-problem-types.yml
+      - type: Conventions
+        url: conventions/voyant-conventions.yml
+      - type: DataModel
+        url: data-model/voyant-data-model.yml
+      - type: AgenticAccess
+        url: agentic-access/voyant-agentic-access.yml
+  - name: Voyant MCP Server
+    description: >-
+      Hosted Model Context Protocol server (`voyant-mcp` 1.1.0) exposing 15 tools that let an agent
+      client pull the organization's brand context, persona/funnel-modulated context, positioning,
+      messaging, personas, products, use cases, industries, testimonials, competitive intelligence,
+      market signals, and RAG search results, plus a content-generation tool. Tool list and input
+      schemas are readable anonymously at `/mcp/tools`; calling a tool requires a `vio_*` API key or
+      a Clerk token. SSE and JSON-RPC message transports.
+    humanURL: https://voice-forge-production.up.railway.app/mcp/tools
+    baseURL: https://voice-forge-production.up.railway.app/mcp
+    tags:
+      - mcp
+      - agent-native
+      - context-management
+      - artificial-intelligence
+    properties:
+      - type: MCPServer
+        url: mcp/voyant-mcp.yml
+      - type: ToolCrosswalk
+        url: mcp/voyant-tool-crosswalk.yml
+common:
+  - type: Website
+    url: https://www.voyant.io/
+  - type: DeveloperPortal
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Pricing
+    url: https://www.voyant.io/pricing
+  - type: Support
+    url: mailto:andrew@voyant.io
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: MCPServer
+    url: mcp/voyant-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/voyant-tool-crosswalk.yml
+  - type: WellKnown
+    url: well-known/voyant-well-known.yml
+  - type: LLMsTxt
+    url: llms/voyant-llms.txt
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/voyant-lifecycle.yml
+  - type: Conformance
+    url: conformance/voyant-conformance.yml
+  - type: DomainSecurity
+    url: security/voyant-domain-security.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
+  - FN: APIs.json
+    email: info@apis.io

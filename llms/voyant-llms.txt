@@ -1,0 +1,41 @@
+version: 1.0
+owner: voyant.io
+contact: policy@voyant.io
+last-updated: 2025-12-10
+
+# Training policy for content hosted on voyant.io
+training:
+  allow: limited
+  description: >
+    Content may be used for model evaluation, retrieval, summarization, and
+    non-commercial research. Content MAY NOT be used for unrestricted model
+    training or for creating derivatives that replicate Voyant.io's proprietary
+    product capabilities or GTM automation features.
+
+# Allowed uses for AI systems
+usage:
+  allowed:
+    - summarization
+    - indexing and retrieval
+    - concept and entity extraction
+    - evaluation of product marketing frameworks
+  disallowed:
+    - training commercial generative models without explicit permission
+    - reconstructing internal proprietary strategy or roadmap
+    - generating competing GTM automation systems
+    - storing or inferring user-specific data
+
+provenance:
+  require-attribution: true
+
+security:
+  PII: not present
+  authentication-required-content: do-not-train
+
+notes: >
+  This policy may evolve as industry standards for llms.txt mature. Adjacent
+  policy files (context.txt, trust.json) provide interpretive and provenance
+  guidance.
+
+# Discovery hints
+context-source: /voyantio-investor-context.json

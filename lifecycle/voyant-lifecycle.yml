@@ -1,0 +1,50 @@
+generated: '2026-08-12'
+method: searched
+source: >-
+  https://www.voyant.io/ (SPA route table), https://voice-forge-production.up.railway.app/openapi.json,
+  https://voice-forge-production.up.railway.app/health
+versioning:
+  scheme: none
+  current: '1.0.0'
+  docs: null
+  note: >-
+    `info.version` is 1.0.0 and paths carry no version segment. No version header, no date pinning.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecated_operations: []
+  note: 'No operation in the 783-operation contract is marked `deprecated: true`.'
+sla:
+  url: null
+  uptime_target: null
+status_page:
+  url: null
+  note: >-
+    No status page found. `GET /health` returns {"status":"ok","version":"2026-04-15-fix-gh-org"}
+    and `GET /mcp/health` returns a richer payload (active_sessions, demo_mode, tools_available) —
+    live health endpoints, but not a public status history a customer can subscribe to. Deliberately
+    NOT wired as a `StatusPage` pointer.
+build_signal:
+  health_version: '2026-04-15-fix-gh-org'
+  note: >-
+    The /health `version` string is a dated build tag naming a bugfix branch, not a semantic release.
+    It is the only shipped-change signal the platform exposes.
+changelog:
+  url: null
+  note: No changelog, release notes or roadmap published on voyant.io or the API host.
+hosting:
+  platform: Railway
+  region_hint: jfk1 (from x-railway-edge)
+  service_name: voice-forge-production
+  note: >-
+    The production API is served from a Railway-generated hostname
+    (voice-forge-production.up.railway.app) rather than a first-party domain such as
+    api.voyant.io. The company name (Voyant) and the service name (VoiceForge) differ, and both
+    appear in the live contract — `info.title` is "VoyantIO API" while `GET /` answers "VoiceForge
+    API is running with automated RAG".
+maturity:
+  stage: pre-seed
+  evidence: https://www.voyant.io/voyantio-investor-context.json
+  note: >-
+    The company publishes its own funding stage in a machine-readable investor-context document
+    linked from the landing page `<head>` as an alternate representation.

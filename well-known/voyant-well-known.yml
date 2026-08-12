@@ -1,0 +1,108 @@
+generated: '2026-08-12'
+method: searched
+note: >-
+  www.voyant.io is a client-rendered single-page app that answers HTTP 200 with the same HTML shell
+  for every unknown path, so status codes alone are worthless on this host. Every row below was
+  verified with a control-path diff against
+  https://www.voyant.io/zzz-control-nonsense-xyz789 (md5 f11578e0840204fac3c2caf62485b014). Only the
+  two rows marked `soft_404: false` are real documents; they are served as text/plain and are
+  byte-different from the control. The API host answers 405 on every /.well-known/ path (a catch-all
+  route that rejects GET), so it serves no discovery documents either.
+hosts:
+  - host: https://www.voyant.io
+    documents:
+      - path: /.well-known/llms.txt
+        status: 200
+        content_type: text/plain; charset=utf-8
+        bytes: 1250
+        soft_404: false
+        file: voyant-llms.txt
+        note: >-
+          Not the link-list llms.txt format — a training/usage policy manifest (allow: limited),
+          declaring permitted uses (summarization, indexing, entity extraction) and prohibited uses
+          (commercial model training, reconstructing internal strategy, building competing GTM
+          automation). Self-dated last-updated 2025-12-10.
+      - path: /.well-known/context.txt
+        status: 200
+        content_type: text/plain; charset=utf-8
+        bytes: 11957
+        soft_404: false
+        file: voyant-context.txt
+        note: >-
+          "Inference Control Manifest" v1.1 — the richest agent-governance document on this domain.
+          Declares product identity, integrations, allowed/prohibited interpretive transformations,
+          six persona-modulation profiles, AI-assistant constraints, and risk flags. Self-dated
+          last-updated 2026-02-06.
+      - path: /.well-known/security.txt
+        status: 200
+        soft_404: true
+        note: HTML shell, byte-identical to the control path. Not published.
+      - path: /.well-known/agent-card.json
+        status: 200
+        soft_404: true
+        note: HTML shell. No A2A agent card — nothing written to a2a/.
+      - path: /.well-known/agent.json
+        status: 200
+        soft_404: true
+        note: HTML shell (legacy A2A path). Not published.
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        soft_404: true
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        soft_404: true
+      - path: /.well-known/openid-configuration
+        status: 200
+        soft_404: true
+      - path: /.well-known/api-catalog
+        status: 200
+        soft_404: true
+      - path: /.well-known/agents.txt
+        status: 200
+        soft_404: true
+        note: >-
+          Referenced twice by the published context.txt ("consult agents.txt for action-level
+          permissions") but never actually served — at /.well-known/agents.txt or at /agents.txt.
+      - path: /.well-known/trust.json
+        status: 200
+        soft_404: true
+        note: >-
+          Referenced by context.txt under `preference.rely-on` but not served, at
+          /.well-known/trust.json or /trust.json.
+      - path: /llms.txt
+        status: 200
+        soft_404: true
+        note: >-
+          The root llms.txt is a soft 404; the real one is only at /.well-known/llms.txt. An agent
+          following the llms.txt convention as written would find nothing.
+      - path: /apis.json
+        status: 200
+        soft_404: true
+  - host: https://voice-forge-production.up.railway.app
+    documents:
+      - path: /.well-known/security.txt
+        status: 405
+      - path: /.well-known/agent-card.json
+        status: 405
+      - path: /.well-known/agent.json
+        status: 405
+      - path: /.well-known/oauth-authorization-server
+        status: 405
+      - path: /.well-known/oauth-protected-resource
+        status: 405
+      - path: /.well-known/openid-configuration
+        status: 405
+      - path: /.well-known/api-catalog
+        status: 405
+    note: >-
+      A 405 on every path means a catch-all route matched and refused the method — the API host has
+      no /.well-known/ discovery surface at all.
+gaps:
+  - No security.txt (RFC 9116) on either host.
+  - No A2A agent card at either the canonical or legacy path.
+  - >-
+    context.txt promises agents.txt and trust.json; neither is served. Two of the four files in this
+    provider's own declared agent-governance stack are missing.
+  - >-
+    The sitemap lists /.well-known/llms.txt and /.well-known/context.txt, but not the OpenAPI at
+    /openapi.json — the machine-readable contract is the one real artifact the sitemap omits.

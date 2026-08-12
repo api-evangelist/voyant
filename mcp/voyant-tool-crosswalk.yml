@@ -1,0 +1,183 @@
+generated: '2026-08-12'
+method: derived
+source: mcp/voyant-mcp.yml + openapi/voyant-openapi-original.json
+note: >-
+  Every operationId below was verified verbatim against openapi/voyant-openapi-original.json. Voyant
+  is an unusually clean crosswalk case: both surfaces are readable anonymously (GET /mcp/tools
+  returns full inputSchemas; GET /openapi.json returns the whole 783-operation contract), so no
+  mapping here rests on a guess about a gated schema. The MCP server is a deliberately narrow
+  read-mostly projection of a very large REST surface — 15 tools over 783 operations.
+surfaces:
+  openapi:
+    file: openapi/voyant-openapi-original.json
+    version: 3.1.0
+    operations: 783
+    gated: false
+  mcp:
+    file: mcp/voyant-mcp.yml
+    server: voyant-mcp 1.1.0
+    tools: 15
+    tools_list_gated: false
+    tool_invocation_gated: true
+  graphql: null
+crosswalk:
+  - tool: voyant_get_context
+    category: context
+    rest: [get_complete_marketing_context_api_messaging_framework_marketing_context_get]
+    binding: rest
+    confidence: high
+    note: >-
+      GET /api/messaging-framework/marketing-context. get_full_context_api_messaging_framework_full_context_get
+      (/full-context) is a closely related second candidate; the tool description ("personas,
+      products, messaging, positioning, and context streams") matches the marketing-context rollup.
+  - tool: voyant_get_modulated_context
+    category: context
+    rest: [get_modulator_context_api_context_modulators__modulator_id__context_get]
+    binding: rest
+    confidence: medium
+    note: >-
+      The REST modulator endpoint is keyed on a stored `modulator_id`; the MCP tool takes
+      `persona_id` + `funnel_stage` + `streams` + `token_limit` directly. The tool is a
+      composite that resolves or synthesizes a modulator server-side, so the input contracts
+      differ — this is a shaping layer, not a 1:1 proxy.
+  - tool: voyant_search
+    category: rag
+    rest: [hybrid_search_api_rag_search_post]
+    binding: rest
+    confidence: high
+    note: POST /api/rag/search. Tool `strategy` maps to the strategies listed by get_available_strategies_api_rag_strategies_get.
+  - tool: voyant_list_streams
+    category: context
+    rest:
+      - list_canonical_streams_api_context_modulators_canonical_streams_get
+      - get_available_streams_api_context_streams_streaming_available_streams_get
+    binding: rest
+    confidence: medium
+    note: >-
+      Two REST endpoints answer "what streams exist" — the canonical-stream registry under
+      context-modulators and the streaming-integration list under context-streams. The tool's
+      description ("context streams for the organization") fits the canonical registry more closely.
+  - tool: voyant_get_personas
+    category: messaging-framework
+    rest: [get_personas_api_messaging_framework_personas_get]
+    binding: rest
+    confidence: high
+  - tool: voyant_get_products
+    category: messaging-framework
+    rest: [get_products_api_messaging_framework_products_get]
+    binding: rest
+    confidence: high
+  - tool: voyant_get_positioning
+    category: messaging-framework
+    rest: [get_positioning_api_messaging_framework_positioning_get]
+    binding: rest
+    confidence: high
+  - tool: voyant_get_messaging
+    category: messaging-framework
+    rest: [get_messaging_api_messaging_framework_messaging_get]
+    binding: rest
+    confidence: high
+  - tool: voyant_get_use_cases
+    category: messaging-framework
+    rest: [get_use_cases_api_messaging_framework_use_cases_get]
+    binding: rest
+    confidence: high
+  - tool: voyant_get_industries
+    category: messaging-framework
+    rest: [get_industries_api_messaging_framework_industries_get]
+    binding: rest
+    confidence: high
+  - tool: voyant_get_testimonials
+    category: messaging-framework
+    rest:
+      - get_testimonials_api_messaging_framework_testimonials_get
+      - get_featured_testimonials_api_messaging_framework_testimonials_featured_get
+    binding: rest
+    confidence: high
+    note: The tool's `featured_only` boolean selects between the two REST endpoints.
+  - tool: voyant_generate_content
+    category: generation
+    rest:
+      - generate_with_gypsum_and_rag_non_stream_api_rag_generate_with_gypsum_post
+      - generate_with_hybrid_rag_api_rag_generate_post
+    binding: rest
+    confidence: medium
+    note: >-
+      The tool's `use_rag_context` / `use_messaging_context` flags correspond to the split between
+      /api/rag/generate (RAG only) and /api/rag/generate-with-gypsum (RAG + messaging framework).
+      "Gypsum" is the internal name for the messaging-framework service and also appears in
+      gypsum_health_api_messaging_framework_health_get.
+  - tool: voyant_get_competitive_intel
+    category: competitive-intelligence
+    rest:
+      - list_competitors_api_competitors_get
+      - get_competitor_api_competitors__competitor_id__get
+      - get_competitor_context_api_competitors_context_stream_get
+    binding: rest
+    confidence: medium
+    note: >-
+      The tool's optional `competitor_id` fans out: absent it behaves like the list/context-stream
+      endpoints, present it behaves like the single-competitor fetch. Voyant exposes 48 further
+      Competitor Intelligence operations no tool reaches.
+  - tool: voyant_get_signals
+    category: signals
+    rest: [list_signals_api_signals_list_get]
+    binding: rest
+    confidence: high
+    note: Tool inputs source/days/limit align with the endpoint's query parameters.
+  - tool: voyant_get_rag_stats
+    category: rag
+    rest: [get_rag_statistics_api_rag_stats__org_id__get]
+    binding: rest
+    confidence: high
+    note: >-
+      The REST endpoint requires an `org_id` path parameter; the MCP tool takes no input and
+      resolves the org from the API key — the one place the MCP surface is strictly easier to call
+      than REST.
+mcp_only: []
+rest_only:
+  - capability: GEO/AEO + GEO Intelligence
+    operations: 60
+    note: Generative/answer-engine-optimization analysis. No agent-facing tool.
+  - capability: Competitor Intelligence (beyond list/get/context)
+    operations: 45
+    note: >-
+      Scanning, deep-scan, battlecards, G2 theme analysis, LinkedIn/YouTube/jobs monitoring,
+      landscape analysis, company-mention resolution.
+  - capability: Signal harvesting and source management
+    operations: 92
+    note: >-
+      Discord, Reddit, HackerNews, YouTube, GitHub org, government (SAM.gov, FERC) discovery plus
+      source CRUD and presets. The MCP tool only reads harvested signals; nothing triggers a harvest.
+  - capability: Target graph, CRM context, HubSpot / Lusha / Leadfeeder enrichment
+    operations: 45
+  - capability: Telemetry, attribution intelligence, content analytics, usage dashboards
+    operations: 55
+  - capability: Content generation beyond copy — PDFs, pitch decks, video scripts, video generation
+    operations: 36
+  - capability: Onboarding wizard, bootstrap, org settings, admin and admin-migration
+    operations: 40
+  - capability: Publishing integrations — Webflow, Notion, Google auth/GSC, AirOps
+    operations: 33
+  - capability: Governance and brand standards
+    operations: 10
+    note: >-
+      Includes validate_content_api_governance_validate_post — a content-safety check that returns
+      is_safe / risk_score / violations. Notably absent from the MCP surface even though it is the
+      operation an autonomous agent most needs before publishing.
+  - capability: Well-known artifact generation for the customer's own domain
+    operations: 5
+    note: >-
+      get_llms_txt / get_context_txt / get_trust_txt / get_ontology_jsonld / generate-both — the
+      product feature that emits the same class of file Voyant serves on its own domain.
+  - capability: API key management
+    operations: 4
+    note: create/list/get/revoke the `vio_*` keys the MCP server authenticates with.
+coverage:
+  tools_named: 15
+  tools_bound: 15
+  tools_unbound: 0
+  mcp_only: 0
+  rest_operations_total: 783
+  rest_operations_with_a_tool: 19
+  rest_coverage_pct: 2.4

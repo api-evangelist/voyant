@@ -1,0 +1,40 @@
+generated: '2026-08-12'
+method: generated
+source: openapi/voyant-openapi-original.json + mcp/voyant-mcp.yml
+note: >-
+  Every operationId cited in these skills was verified verbatim against
+  openapi/voyant-openapi-original.json. Voyant publishes no skills of its own; these are generated
+  from the contract.
+skills:
+  - file: voyant-pull-brand-context.md
+    name: Pull Voyant brand context before generating copy
+    api: openapi/voyant-openapi-original.json
+    operations:
+      - get_complete_marketing_context_api_messaging_framework_marketing_context_get
+      - get_positioning_api_messaging_framework_positioning_get
+      - get_messaging_api_messaging_framework_messaging_get
+      - get_personas_api_messaging_framework_personas_get
+      - get_products_api_messaging_framework_products_get
+  - file: voyant-generate-governed-content.md
+    name: Generate content through Voyant and validate it before publishing
+    api: openapi/voyant-openapi-original.json
+    operations:
+      - hybrid_search_api_rag_search_post
+      - generate_with_gypsum_and_rag_non_stream_api_rag_generate_with_gypsum_post
+      - generate_with_hybrid_rag_api_rag_generate_post
+      - get_modulator_context_api_context_modulators__modulator_id__context_get
+      - validate_content_api_governance_validate_post
+      - get_active_policy_api_governance_policy_active_get
+  - file: voyant-track-competitors-and-signals.md
+    name: Track competitors and market signals with Voyant
+    api: openapi/voyant-openapi-original.json
+    operations:
+      - list_competitors_api_competitors_get
+      - add_competitor_api_competitors_post
+      - trigger_scan_api_competitors__competitor_id__scan_post
+      - get_scan_progress_api_competitors__competitor_id__scan_progress_get
+      - get_battlecard_api_competitors__competitor_id__battlecard_get
+      - get_competitor_context_api_competitors_context_stream_get
+      - discover_signals_api_signals_discover_post
+      - list_signals_api_signals_list_get
+      - get_signal_trends_api_signals_trends_get

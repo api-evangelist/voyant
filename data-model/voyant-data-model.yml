@@ -1,0 +1,146 @@
+generated: '2026-08-12'
+method: derived
+source: openapi/voyant-openapi-original.json
+note: >-
+  Derived from the 266 component schemas and from the path/id-parameter graph. Voyant's OpenAPI is
+  FastAPI-generated, so schemas are per-endpoint request/response DTOs rather than a normalized
+  entity model — there is no `Persona` resource schema, only `PersonaCreate` / `PersonaResponse`
+  shapes. The entities below are therefore inferred from the id parameters that appear across paths
+  and from path roots, not read off a declared model.
+tenancy:
+  root: organization
+  identifier: org_id
+  note: >-
+    `org_id` appears in 10 schemas and 11 path parameters and is the top-level scoping key for
+    everything else. Bearer tokens resolve to an org — most MCP tools take no org argument at all
+    and infer it from the key.
+entities:
+  - name: Organization
+    id: org_id
+    domain: tenancy
+    paths: ['/api/admin/orgs/{org_id}', '/api/org-settings', '/api/rag/stats/{org_id}']
+    relationships:
+      - {has_many: ContextStream, via: org_id}
+      - {has_many: Persona, via: org_id}
+      - {has_many: Competitor, via: org_id}
+  - name: Persona
+    id: persona_id
+    domain: messaging-framework
+    paths: ['/api/messaging-framework/personas', '/api/onboarding/personas', '/api/voice-training/personas/{persona_id}']
+    relationships:
+      - {belongs_to: Organization, via: org_id}
+      - {referenced_by: ContextModulator, via: persona_id}
+      - {referenced_by: ContentGeneration, via: persona_id}
+  - name: Product
+    id: product_id
+    domain: messaging-framework
+    paths: ['/api/messaging-framework/products', '/api/messaging-framework/products/{product_id}']
+    relationships: [{belongs_to: Organization, via: org_id}]
+  - name: UseCase
+    id: use_case_id
+    domain: messaging-framework
+    paths: ['/api/messaging-framework/use-cases/{use_case_id}']
+  - name: Testimonial
+    id: testimonial_id
+    domain: messaging-framework
+    paths: ['/api/messaging-framework/testimonials/{testimonial_id}']
+  - name: Industry
+    id: industry_id
+    domain: messaging-framework
+    paths: ['/api/messaging-framework/industries/{industry_id}']
+  - name: ContextStream
+    id: context_stream_id
+    domain: context
+    paths: ['/api/context-streams/', '/api/context-streams/sources']
+    relationships:
+      - {has_many: Signal, via: source_id}
+      - {belongs_to: Organization, via: org_id}
+  - name: ContextModulator
+    id: modulator_id
+    domain: context
+    paths: ['/api/context-modulators/{modulator_id}', '/api/context-modulators/{modulator_id}/context']
+    relationships:
+      - {references: Persona, via: persona_id}
+      - {references: ContextStream, via: streams}
+    note: The join entity that turns raw context into persona/funnel-shaped context.
+  - name: Signal
+    id: signal_id
+    domain: signals
+    paths: ['/api/signals/list', '/api/context-streams/{signal_id}/engage']
+    relationships: [{belongs_to: SignalSource, via: source_id}]
+  - name: SignalSource
+    id: source_id
+    domain: signals
+    paths: ['/api/signals/sources/{source_id}', '/api/signals/discord/sources/{source_id}']
+    note: >-
+      Sources span GitHub, Reddit, HackerNews, LinkedIn, YouTube, Discord, G2 and US government
+      feeds (SAM.gov, FERC).
+  - name: Competitor
+    id: competitor_id
+    domain: competitive-intelligence
+    paths: ['/api/competitors/{competitor_id}']
+    relationships:
+      - {has_one: Battlecard, via: competitor_id}
+      - {has_many: StrategyAnalysis, via: competitor_id}
+      - {has_many: SignalSource, via: competitor_id}
+      - {has_one: G2Product, via: competitor_id}
+    note: The densest entity in the API — 43 paths hang off /api/competitors.
+  - name: Battlecard
+    id: battlecard_id
+    domain: competitive-intelligence
+    paths: ['/api/competitors/{competitor_id}/battlecard', '/api/battlecards']
+  - name: Crawl
+    id: crawl_id
+    domain: crawler
+    paths: ['/api/crawl/{crawl_id}', '/api/crawl/{crawl_id}/llms-txt']
+    relationships: [{has_many: Chunk, via: chunk_id}]
+    note: Feeds the RAG index and the customer-facing llms.txt generator.
+  - name: Chunk
+    id: chunk_id
+    domain: rag
+    note: Embedded content unit returned by /api/rag/search.
+  - name: Content
+    id: content_id
+    domain: content
+    relationships: [{has_many: ContentVersion, via: content_id}]
+  - name: ContentVersion
+    id: version_id
+    domain: content
+    paths: ['/api/content-versions']
+  - name: Voice
+    id: voice_id
+    domain: content-voices
+    relationships: [{has_many: TrainingSession, via: training_session_id}]
+  - name: VideoScript
+    id: script_id
+    domain: video
+    relationships: [{has_one: Video, via: video_id}]
+  - name: Visitor
+    id: visitor_id
+    domain: telemetry
+    note: >-
+      Telemetry tracks site visitors with IP geolocation and company enrichment (Lusha,
+      Leadfeeder) — the one part of the model that touches identified third parties rather than the
+      customer's own content.
+  - name: Agent
+    id: agent_id
+    domain: command-center
+    paths: ['/api/command-center/agents/{agent_id}/run', '/pause', '/resume']
+    note: Voyant's own orchestrated agents, distinct from the MCP clients that consume the API.
+  - name: ApiKey
+    id: key_id
+    domain: auth
+    paths: ['/api/api-keys/{key_id}']
+    note: The `vio_*` keys the MCP server authenticates.
+observations:
+  - >-
+    Three overlapping definitions of "context" coexist — context-streams (harvested signal),
+    context-graph / context-intelligence (derived relationships), and context-modulators (shaping
+    rules). The API does not declare how they compose; the crosswalk shows MCP collapses all three
+    into two tools.
+  - >-
+    Personas exist twice, under /api/messaging-framework/personas and /api/onboarding/personas,
+    with separate CRUD. Whether these are the same rows is not documented.
+  - >-
+    No schema declares a `$ref` to another entity's canonical shape, so relationships here are
+    inferred from id naming rather than asserted by the contract.

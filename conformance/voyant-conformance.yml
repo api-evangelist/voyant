@@ -1,0 +1,67 @@
+generated: '2026-08-12'
+method: derived
+source: openapi/voyant-openapi-original.json, well-known/, mcp/voyant-mcp.yml
+standards:
+  - id: openapi-3.1
+    conforms: true
+    evidence: >-
+      openapi/voyant-openapi-original.json declares `openapi: 3.1.0` and parses; 783 operations,
+      266 schemas.
+  - id: mcp
+    conforms: true
+    evidence: >-
+      Hosted server `voyant-mcp` 1.1.0 with /mcp/tools, /mcp/sse and /mcp/messages; tools carry
+      JSON Schema inputSchemas. JSON-RPC transport is session-scoped.
+  - id: llms-txt
+    conforms: partial
+    evidence: >-
+      /.well-known/llms.txt is served as text/plain, but it is a training-policy manifest rather
+      than the llms.txt link-list format, and the conventional root path /llms.txt is a soft 404.
+  - id: http-bearer
+    conforms: true
+    evidence: components.securitySchemes.HTTPBearer (type http, scheme bearer), applied to 672 operations.
+  - id: oauth2
+    conforms: false
+    evidence: No oauth2 or openIdConnect security scheme in the contract; no OAuth discovery documents served.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors use FastAPI's `{"detail": ...}` envelope, not application/problem+json.
+  - id: rfc9116-security-txt
+    conforms: false
+    evidence: /.well-known/security.txt is a soft 404 on the web host and 405 on the API host.
+  - id: a2a-agent-card
+    conforms: false
+    evidence: >-
+      No agent card at /.well-known/agent-card.json or the legacy /.well-known/agent.json on either
+      host. Nothing written to a2a/.
+  - id: rfc8594-sunset
+    conforms: false
+    evidence: No Sunset/Deprecation header support and no deprecation policy.
+  - id: asyncapi
+    conforms: false
+    evidence: >-
+      No AsyncAPI document and no documented webhook catalog, though streaming surfaces exist
+      (/mcp/sse, /api/rag/generate-stream, /api/context-streams/streaming/*). Not penalized as an
+      event surface — nothing is advertised as one.
+compliance:
+  published: false
+  certifications: []
+  note: >-
+    No trust center, no compliance page, no named certification anywhere on voyant.io. The only
+    compliance-shaped claim on the entire surface is inside the product's own generated output —
+    `GET /api/well-known/trust.txt` emits `soc2_status: compliant` for the demo org, which is a
+    template value the platform writes for a customer, not an assertion about Voyant. Deliberately
+    NOT wired as a `Compliance` or `TrustCenter` pointer.
+agent_governance:
+  published: true
+  documents:
+    - /.well-known/llms.txt
+    - /.well-known/context.txt
+  declared_but_missing:
+    - agents.txt
+    - trust.json
+  note: >-
+    Voyant publishes more agent-governance surface than almost any provider its size, and is one of
+    the few in the catalog to serve an inference-control manifest at all. Two of the four files its
+    own context.txt tells agents to consult are not served.

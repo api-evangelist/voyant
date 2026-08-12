@@ -1,0 +1,87 @@
+generated: '2026-08-12'
+method: searched
+source: https://voice-forge-production.up.railway.app/mcp/tools
+status: published
+server:
+  name: voyant-mcp
+  version: 1.1.0
+  transport: [http, sse]
+  url: https://voice-forge-production.up.railway.app/mcp
+  endpoints:
+    tools: https://voice-forge-production.up.railway.app/mcp/tools
+    messages: https://voice-forge-production.up.railway.app/mcp/messages
+    sse: https://voice-forge-production.up.railway.app/mcp/sse
+    health: https://voice-forge-production.up.railway.app/mcp/health
+  health:
+    status: healthy
+    demo_mode: false
+    tools_available: 15
+    auth_methods: ['api_key (vio_*)', clerk_token]
+authentication:
+  required_to_call: true
+  methods:
+    - api_key (prefix `vio_`)
+    - clerk_token
+  introspection_gated: false
+  note: >-
+    The tool list AND the full inputSchema for every tool are readable anonymously at GET
+    /mcp/tools — unusual and genuinely useful, since most hosted MCP servers in the catalog gate
+    introspection behind auth. The JSON-RPC transport is session-scoped: POST /mcp/messages with
+    {"jsonrpc":"2.0","method":"tools/list"} returns {"error":"Invalid session"} without a session
+    established over /mcp/sse, so tool *invocation* is authenticated even though discovery is not.
+tools:
+  - name: voyant_get_context
+    description: >-
+      Get full marketing context for content generation. Returns personas, products, messaging,
+      positioning, and context streams.
+    inputs: []
+  - name: voyant_get_modulated_context
+    description: >-
+      Get persona/funnel-modulated context. Shape the context based on a specific persona and/or
+      funnel stage.
+    inputs: [persona_id, funnel_stage, streams, token_limit]
+  - name: voyant_search
+    description: Semantic search across the knowledge base using RAG. Returns relevant content chunks.
+    inputs: [query, strategy, top_k, domain, content_type]
+  - name: voyant_list_streams
+    description: List all available context streams for the organization.
+    inputs: []
+  - name: voyant_get_personas
+    description: Get all target personas defined in the messaging framework.
+    inputs: []
+  - name: voyant_get_products
+    description: Get all products defined in the messaging framework.
+    inputs: []
+  - name: voyant_get_positioning
+    description: Get brand positioning framework (value proposition, differentiators, etc.).
+    inputs: []
+  - name: voyant_get_messaging
+    description: Get messaging framework (elevator pitch, headlines, tone, etc.).
+    inputs: []
+  - name: voyant_get_use_cases
+    description: Get use cases defined in the messaging framework.
+    inputs: []
+  - name: voyant_get_industries
+    description: Get target industries defined in the messaging framework.
+    inputs: []
+  - name: voyant_get_testimonials
+    description: Get customer testimonials.
+    inputs: [featured_only]
+  - name: voyant_generate_content
+    description: Generate content using RAG context and messaging framework. Returns AI-generated copy.
+    inputs: [query, platform, tone, persona_id, use_rag_context, use_messaging_context]
+  - name: voyant_get_competitive_intel
+    description: Get competitive intelligence data.
+    inputs: [competitor_id]
+  - name: voyant_get_signals
+    description: Get market signals from various sources (GitHub, Reddit, HackerNews, etc.).
+    inputs: [source, days, limit]
+  - name: voyant_get_rag_stats
+    description: Get RAG system statistics and readiness status.
+    inputs: []
+raw: voyant-mcp-tools.json
+x-evidence:
+  fetched: '2026-08-12'
+  url: https://voice-forge-production.up.railway.app/mcp/tools
+  http_status: 200
+  content_type: application/json

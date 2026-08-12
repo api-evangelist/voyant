@@ -1,0 +1,76 @@
+generated: '2026-08-12'
+method: derived
+source: openapi/voyant-openapi-original.json + live header probes of https://voice-forge-production.up.railway.app
+authentication:
+  style: http-bearer
+  scheme_name: HTTPBearer
+  token_forms:
+    - 'API key with prefix `vio_` (per mcp/voyant-mcp.yml health payload)'
+    - Clerk session token
+  applied_to: 672 of 783 operations
+  unsecured_operations: 111
+  note: >-
+    A single `HTTPBearer` scheme with no `bearerFormat`, no scopes, and no OAuth flows. 111
+    operations declare no security at all — including /health, /mcp/*, and the /api/well-known/*
+    generators, which are genuinely public, but the set has not been audited operation by operation.
+pagination:
+  style: limit-offset
+  parameters:
+    limit: {in: query, operations: 78}
+    offset: {in: query, operations: 20}
+  cursor: false
+  envelope: none
+  note: >-
+    Only 20 of the 78 operations that accept `limit` also accept `offset`, so most list endpoints
+    are cap-only with no way to page past the first window. No total-count field, no next-page
+    token, no Link header. An agent cannot reliably enumerate a full collection.
+idempotency:
+  supported: false
+  note: >-
+    No `Idempotency-Key` header or parameter appears anywhere in the 783-operation contract, and no
+    idempotency semantics are documented. Deliberately NOT wired as an `Idempotency` pointer in
+    apis.yml — the artifact records absence.
+versioning:
+  scheme: none
+  spec_version: 1.0.0
+  note: >-
+    Paths are unversioned (`/api/...`, not `/api/v1/...`). No version header, no date-based
+    pinning, no deprecation signal. `info.version` is a static "1.0.0". A breaking change has no
+    contract-level escape hatch for existing callers.
+request_tracing:
+  header: x-railway-request-id
+  first_party: false
+  note: >-
+    Correlation ids come from the Railway edge (`x-railway-request-id`, plus `x-hikari-trace` and
+    `x-railway-edge`), not from the application. They are not documented and not echoed in error
+    bodies, so a caller cannot quote one back in a support request with any confidence it is stable.
+rate_limiting:
+  headers: none_observed
+  documented: false
+  note: >-
+    No RateLimit / X-RateLimit / Retry-After headers on any probed response. The published
+    context.txt states the AI assistant is "rate-limited" with "daily usage caps enforced", but no
+    limit is documented and none is signalled in-band.
+error_envelope:
+  shape: '{"detail": string | [{loc, msg, type}]}'
+  see: errors/voyant-problem-types.yml
+content_type:
+  request: application/json
+  response: application/json
+  streaming:
+    - text/event-stream on /mcp/sse
+    - '/api/rag/generate-stream and /api/context-streams/streaming/* expose streaming variants'
+expansion_and_sparse_fields:
+  supported: false
+metadata:
+  supported: false
+conventions_summary:
+  strengths:
+    - Every one of the 783 operations has a unique operationId and a summary.
+    - Consistent JSON envelope and consistent bearer auth across the whole surface.
+    - Both discovery surfaces (OpenAPI and MCP tools/list) are anonymously readable.
+  weaknesses:
+    - No idempotency, no versioning, no rate-limit signalling, no first-party request id.
+    - Pagination is incomplete on most collection endpoints.
+    - No examples anywhere in the spec (zero `example`/`examples` keys across 1.3 MB of contract).
+    - 47 operations carry no tag.

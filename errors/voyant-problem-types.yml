@@ -1,0 +1,71 @@
+generated: '2026-08-12'
+method: derived
+source: openapi/voyant-openapi-original.json + live probes of https://voice-forge-production.up.railway.app
+format: fastapi-detail
+envelope:
+  shape: '{"detail": <string | array of ValidationError>}'
+  media_type: application/json
+  rfc9457: false
+  note: >-
+    Voyant does not use RFC 9457 problem+json. The envelope is FastAPI's default single `detail`
+    key, which is a string for HTTP exceptions and an array of {loc, msg, type} objects for
+    validation failures. There is no error code, no type URI, and no correlation id — an agent has
+    only the free-text `detail` string to branch on.
+documented_in_spec:
+  - status: 422
+    title: Validation Error
+    schema: HTTPValidationError
+    schema_detail: '{detail: [{loc: [string|integer], msg: string, type: string}]}'
+    operations: 555
+    source_operation: openapi/voyant-openapi-original.json#hybrid_search_api_rag_search_post
+    note: The only error status documented anywhere in the 783-operation contract.
+undocumented_but_observed:
+  - status: 401
+    title: Authentication required
+    body: '{"detail": "Authentication required"}'
+    trigger: Bearer token absent
+    evidence:
+      probed: '2026-08-12'
+      request: GET /api/messaging-framework/personas (no Authorization header)
+  - status: 401
+    title: Invalid token
+    body: '{"detail": "Invalid token. Please refresh the page or log in again."}'
+    trigger: Bearer token present but not valid
+    evidence:
+      probed: '2026-08-12'
+      request: 'GET /api/messaging-framework/personas (Authorization: Bearer bogus)'
+    note: >-
+      The message is written for a browser session ("refresh the page or log in again"), not for an
+      API or agent client holding a `vio_*` key.
+  - status: 405
+    title: Method Not Allowed
+    body: '{"detail": "Method Not Allowed"}'
+    trigger: Any unrouted path
+    evidence:
+      probed: '2026-08-12'
+      request: GET /api/does-not-exist-xyz
+    note: >-
+      Unknown paths return 405, not 404. This is why every /.well-known/ probe against the API host
+      answered 405 rather than 404 — see well-known/voyant-well-known.yml.
+  - status: 500
+    title: Unhandled server error leaking an internal attribute name
+    body: "{\"detail\": \"'Request' object has no attribute 'has_org_access'\"}"
+    trigger: POST /api/rag/search with an empty JSON body and no Authorization header
+    evidence:
+      probed: '2026-08-12'
+      request: 'POST /api/rag/search  Content-Type: application/json  {}'
+    note: >-
+      An unauthenticated request reaches application code and raises before the auth check,
+      returning a Python AttributeError message as the error body. Expected behaviour is 401
+      (missing credentials) or 422 (invalid body). Recorded as observed, not as a claim about
+      severity.
+gaps:
+  - >-
+    Zero operations document a 401 or 403, though 672 of 783 carry a `security` requirement — the
+    single largest contract-quality gap on this API.
+  - No 404, 429, or 5xx documented on any operation.
+  - >-
+    No machine-readable error codes and no correlation/request id header, so an agent cannot
+    distinguish "wrong scope" from "expired key" from "org not provisioned" except by string
+    matching on English prose.
+  - No published error-code reference outside the spec.
