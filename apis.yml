@@ -37,7 +37,7 @@ accessModel:
 image: https://www.voyant.io/img/logo/voyant-logo.png
 url: https://raw.githubusercontent.com/api-evangelist/voyant/refs/heads/main/apis.yml
 created: '2026-08-12'
-modified: '2026-08-12'
+modified: '2026-08-13'
 specificationVersion: '0.21'
 x-type: company
 x-source: manual:kin
@@ -118,6 +118,52 @@ apis:
         url: mcp/voyant-mcp.yml
       - type: ToolCrosswalk
         url: mcp/voyant-tool-crosswalk.yml
+  - name: Gypsum Context API
+    description: >-
+      Second OpenAPI published by Voyant.io, discovered 2026-08-13 at
+      https://www.voyant.io/openapi-gypsum.json (HTTP 200, application/json, 36,964 bytes). A
+      clean 26-operation, 7-tag cut of the brand-context surface — messaging, positioning,
+      personas, products, use cases, industries and testimonials context reads, plus ICP CRUD,
+      campaign management and a brand-aware AI chat endpoint. Ownership is proven by the spec's
+      own contents: info.contact.name "VoyantIO", info.contact.url https://voyant.io, and a
+      first-party servers[] host. IMPORTANT — the declared production host `gypsum.voyant.io`
+      does NOT resolve (NXDOMAIN from both 8.8.8.8 and 1.1.1.1, while the apex voyant.io resolves
+      to 76.76.21.21), so this contract is real and first-party but currently has no callable
+      address. The spec declares no securitySchemes at all; auth is described in prose only, as a
+      `user_id` query parameter carrying the Clerk organization ID.
+    humanURL: https://www.voyant.io/openapi-gypsum.json
+    baseURL: https://gypsum.voyant.io
+    tags:
+      - artificial-intelligence
+      - context-management
+      - brand-governance
+      - product-marketing
+      - content-generation
+    properties:
+      - type: OpenAPI
+        url: openapi/voyant-gypsum-openapi.json
+      - type: Overlay
+        url: overlays/voyant-gypsum-openapi-overlay.yaml
+    x-evidence:
+      verified: '2026-08-13'
+      spec_url: https://www.voyant.io/openapi-gypsum.json
+      spec_status: 200
+      spec_bytes: 36964
+      parses_as: OpenAPI 3.1.0
+      operations: 26
+      paths: 21
+      ownership: >-
+        info.contact.name "VoyantIO" + info.contact.url https://voyant.io + servers[0]
+        https://gypsum.voyant.io (voyant.io subdomain). Not a sibling-brand spec.
+      host_resolves: false
+      host_dns_status: NXDOMAIN
+      host_resolvers_checked:
+        - 8.8.8.8
+        - 1.1.1.1
+      host_http: unreachable (curl exit 6 — could not resolve host)
+      linked_from: >-
+        Nothing. Reachable only because /openapi-gypsum.json is a declared route in the marketing
+        SPA router table inside https://www.voyant.io/assets/index-yINxrnQo.js.
 common:
   - type: Website
     url: https://www.voyant.io/
@@ -157,8 +203,27 @@ common:
     url: skills/_index.yml
   - type: AgenticAccess
     url: agentic-access/voyant-agentic-access.yml
+  - type: Plans
+    url: plans/voyant-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/voyant-rate-limits.yml
+  - type: AsyncAPI
+    url: asyncapi/voyant-streaming-asyncapi.yml
+  - type: Packages
+    url: packages/voyant-packages.yml
+  - type: Overlay
+    url: overlays/voyant-openapi-original-overlay.yaml
+  - type: Login
+    url: https://www.voyant.io/dashboard
+  - type: SourceCode
+    url: https://github.com/andrew-brown-noosphere/agent-samples
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
   - FN: APIs.json
     email: info@apis.io
+x-enrichment:
+  date: '2026-08-13'
+  status: enriched
+  artifacts_added: 7
+  pass: local-v1
