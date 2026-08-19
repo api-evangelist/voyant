@@ -1,0 +1,123 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://voice-forge-production.up.railway.app/openapi.json (info.description "### Rate Limits"),
+  https://www.voyant.io/pricing (per-tier monthly API-call quotas),
+  live unauthenticated header probes of https://voice-forge-production.up.railway.app
+limit_count: 2
+summary: >-
+  Voyant publishes rate limits in exactly one place — a "### Rate Limits" section inside the
+  OpenAPI `info.description` — and nowhere else. The numbers are real and specific, but they are
+  prose inside a spec field, not headers, not a docs page, and not machine-readable. Separately,
+  each pricing tier carries a monthly API-call allowance. Nothing about either is signalled at
+  runtime: no RateLimit-*, no X-RateLimit-*, no Retry-After was observed on any probed response,
+  so a client has no way to know how close it is to either ceiling until it is refused.
+limits:
+  - id: telemetry-ingestion
+    scope: per-ip
+    surface: telemetry ingestion endpoints
+    limit: 100
+    window: 1m
+    unit: requests
+    burst: null
+    source: openapi info.description
+    source_quote: 'Telemetry ingestion: 100 req/min per IP'
+    note: >-
+      Applies to the unauthenticated ingestion surface — POST /api/telemetry/track,
+      POST /api/telemetry/end-session, POST /api/deo/ingest, POST /api/deo/v1/telemetry/events,
+      POST /api/deo/v1/traces, POST /api/deo/mcp-telemetry — all of which declare no security in
+      the contract. Per-IP is the only control on that surface.
+  - id: api-endpoints
+    scope: per-account
+    scope_detail: per organization
+    surface: all other API endpoints
+    limit: 1000
+    window: 1m
+    unit: requests
+    burst: null
+    source: openapi info.description
+    source_quote: 'API endpoints: 1000 req/min per org'
+    note: >-
+      Stated per org, not per key, so multiple API keys inside one organization share the ceiling.
+      No per-endpoint carve-outs are published for the expensive operations (RAG generation,
+      competitor scans, GEO/AEO scans), which are the ones most likely to need one.
+quota_limits:
+  unit: API call
+  window: 1mo
+  definition: >-
+    "Each request to our Context API counts as one call. MCP queries, REST requests, and webhook
+    deliveries are all included. Dashboard usage doesn't count against your limit."
+  source: https://www.voyant.io/pricing
+  by_plan:
+    - plan: Starter
+      api_calls_per_month: 5000
+    - plan: Growth
+      api_calls_per_month: 25000
+    - plan: Scale
+      api_calls_per_month: 100000
+    - plan: Enterprise
+      api_calls_per_month: null
+      note: 'Published as "SLA-backed" with no number.'
+  note: >-
+    MCP tool calls are metered on the same counter as REST requests. At the Starter allowance of
+    5,000 calls/month an agent doing per-turn context pulls exhausts the plan quickly, and the
+    per-minute ceiling (1,000/min per org) is 12x the entire monthly Starter allowance — the
+    binding constraint is the monthly quota, not the rate.
+response_headers:
+  observed: none
+  probed:
+    - RateLimit-Limit
+    - RateLimit-Remaining
+    - RateLimit-Reset
+    - X-RateLimit-Limit
+    - X-RateLimit-Remaining
+    - X-RateLimit-Reset
+    - Retry-After
+  note: >-
+    No rate-limit header of any family was present on any probed response from
+    voice-forge-production.up.railway.app. The only correlation headers are Railway edge headers
+    (x-railway-request-id, x-railway-edge), which carry no quota information.
+exhaustion:
+  status_code: undocumented
+  body: undocumented
+  retry_after: false
+  note: >-
+    Neither the 429 status nor any exhaustion response is declared in the 783-operation contract —
+    no operation lists a 429 response. See errors/voyant-problem-types.yml. An agent cannot
+    distinguish "rate limited" from any other failure except by parsing the free-text `detail`
+    string.
+  exception:
+    spec: openapi/voyant-gypsum-openapi.json
+    operation: chat (POST /api/chat)
+    status: 429
+    description: Rate limited
+    schema: Error
+    note: >-
+      The Gypsum Context API — Voyant's second published contract — declares a 429 on its AI
+      chat operation. It is the ONLY declared 429 across both contracts (0 of 783 operations on
+      the main API, 1 of 26 on Gypsum). No limit, no window and no Retry-After accompany it, and
+      the host that would serve it does not resolve.
+documented:
+  in_openapi_description: true
+  in_docs_page: false
+  in_headers: false
+  in_spec_responses: false
+gaps:
+  - The limits live in OpenAPI `info.description` prose — no `x-ratelimit` extension, no 429 response object.
+  - No runtime signalling; a client learns its position only by being refused.
+  - No documented behaviour at monthly quota exhaustion (hard stop vs overage vs throttle).
+  - >-
+    The published context.txt claims the AI assistant is "rate-limited" with "daily usage caps
+    enforced", but no daily cap is published anywhere and none is signalled.
+x-evidence:
+  fetched: '2026-08-13'
+  urls:
+    - url: https://voice-forge-production.up.railway.app/openapi.json
+      status: 200
+      note: info.description carries the "### Rate Limits" section quoted above.
+    - url: https://voice-forge-production.up.railway.app/
+      status: 200
+      note: No rate-limit headers on the response.
+    - url: https://www.voyant.io/assets/index-yINxrnQo.js
+      status: 200
+      note: Per-tier monthly API-call quotas and the "what counts as an API call" FAQ answer.

@@ -41,9 +41,27 @@ standards:
   - id: asyncapi
     conforms: false
     evidence: >-
-      No AsyncAPI document and no documented webhook catalog, though streaming surfaces exist
-      (/mcp/sse, /api/rag/generate-stream, /api/context-streams/streaming/*). Not penalized as an
-      event surface — nothing is advertised as one.
+      Voyant publishes no AsyncAPI. REVISED 2026-08-13: an event surface IS advertised, contrary
+      to the prior round's read — GET /api/context-streams/streaming/architecture answers 200
+      anonymously with a Kafka-compatible topology naming real topics
+      (`voyant.knowledge.{org_id}` out, `{org}.signals.*` and `{org}.events.*` in) and real broker
+      compatibility (Redpanda, Confluent, MSK, Azure Event Hubs). asyncapi/voyant-streaming-asyncapi.yml
+      is our DERIVED 3.0.0 description of that published topology; the provider still ships none,
+      publishes no message schema and hosts no broker.
+  - id: kafka-protocol
+    conforms: partial
+    evidence: >-
+      Provider declares Kafka-compatible publish/subscribe against a CUSTOMER-supplied broker
+      (Redpanda, Confluent, MSK, Azure Event Hubs). Voyant operates no broker and publishes no
+      bootstrap host, schema registry URL or record schema, so conformance cannot be verified
+      end to end. Control plane is REST (/api/context-streams/streaming/publish|subscribe).
+  - id: mcp-streamable-http
+    conforms: false
+    evidence: >-
+      voyant-mcp 1.1.0 implements the LEGACY MCP HTTP+SSE transport only. GET /mcp/sse answers
+      200 text/event-stream and POST /mcp/messages answers 400 {"error":"Invalid session"} without
+      one, but POST /mcp — the Streamable HTTP entry point — answers 405 Method Not Allowed. A
+      client that speaks only the current transport cannot reach this server.
 compliance:
   published: false
   certifications: []

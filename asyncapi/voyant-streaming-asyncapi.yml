@@ -1,0 +1,212 @@
+asyncapi: 3.0.0
+info:
+  title: VoyantIO Streaming Knowledge Base
+  version: '1.0.0'
+  description: |
+    Event surface for the VoyantIO brand-context platform, derived from the provider's own
+    published streaming architecture document at
+    `GET /api/context-streams/streaming/architecture` (anonymous, HTTP 200, application/json)
+    and the streaming operations declared in the 783-operation OpenAPI.
+
+    Voyant publishes NO AsyncAPI of its own. This document is DERIVED. Every channel address,
+    every broker-compatibility claim and every direction below is copied verbatim from the
+    provider's published architecture payload; nothing about payload shape is asserted, because
+    the provider publishes no schema for these topics and the Schema Registry it references is
+    not reachable anonymously.
+
+    Two paths are declared by the provider:
+
+    * **OUT — Publish Knowledge.** VoyantIO serialises curated GTM knowledge (messaging,
+      personas, competitive intelligence) to Avro/JSON with a Schema Registry and publishes to
+      `voyant.knowledge.{org_id}`. Agents consume via MCP or the Kafka protocol.
+    * **IN — Ingest Signals.** A VoyantIO consumer subscribes to customer signal topics
+      (`{org}.signals.*`, `{org}.events.*`), transforms signals into context chunks, enriches
+      existing knowledge streams and triggers knowledge refresh on signal events.
+
+    The control plane for both paths is REST: `POST /api/context-streams/streaming/publish`
+    and `POST /api/context-streams/streaming/subscribe` on the main API, both bearer-authenticated.
+    A separate server-sent-events surface (`GET /api/stream/subscribe`, `GET /mcp/sse`) delivers
+    the same knowledge to HTTP clients without a Kafka broker.
+  contact:
+    name: VoyantIO
+    url: https://www.voyant.io/
+  externalDocs:
+    description: Provider-published streaming architecture (source of every channel below)
+    url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/architecture
+defaultContentType: application/json
+servers:
+  kafka:
+    host: '{broker}'
+    protocol: kafka
+    description: >-
+      Customer-supplied Kafka-compatible broker. Voyant declares compatibility with Redpanda,
+      Confluent, MSK and Azure Event Hubs and does NOT host a broker itself — the customer brings
+      the cluster and Voyant produces to / consumes from it. No bootstrap host is published.
+    variables:
+      broker:
+        description: Bootstrap server of the customer's own Kafka-compatible cluster.
+        default: localhost:9092
+  sse:
+    host: voice-forge-production.up.railway.app
+    protocol: https
+    description: >-
+      Server-sent-events transport for HTTP clients with no broker. Bearer-authenticated
+      (`vio_*` API key or Clerk token).
+channels:
+  knowledgeOut:
+    address: voyant.knowledge.{org_id}
+    title: Curated knowledge (OUT)
+    description: >-
+      VoyantIO publishes curated GTM knowledge — messaging, personas, competitive intelligence —
+      to this topic. Serialised to Avro or JSON against a Schema Registry. Durable: topic offsets
+      are described by the provider as knowledge version history, and new agents replay from the
+      beginning to catch up on full knowledge state.
+    parameters:
+      org_id:
+        description: Clerk organization id that owns the knowledge stream.
+    messages:
+      knowledgeRecord:
+        $ref: '#/components/messages/knowledgeRecord'
+  signalsIn:
+    address: '{org}.signals.*'
+    title: Customer signal topics (IN)
+    description: >-
+      Customer-owned signal topics a VoyantIO consumer subscribes to. Incoming signals are
+      transformed into context chunks, used to enrich existing knowledge streams, and trigger a
+      knowledge refresh.
+    parameters:
+      org:
+        description: Customer-chosen topic prefix.
+    messages:
+      signalRecord:
+        $ref: '#/components/messages/signalRecord'
+  eventsIn:
+    address: '{org}.events.*'
+    title: Customer event topics (IN)
+    description: Customer-owned event topics consumed on the same ingest path as signal topics.
+    parameters:
+      org:
+        description: Customer-chosen topic prefix.
+    messages:
+      signalRecord:
+        $ref: '#/components/messages/signalRecord'
+  contextSignalStream:
+    address: /api/stream/subscribe
+    title: Context signal stream (SSE)
+    description: >-
+      Server-sent-events stream of context signals for HTTP clients.
+      OpenAPI operationId `stream_context_signals_api_stream_subscribe_get`.
+    servers:
+      - $ref: '#/servers/sse'
+    messages:
+      sseEvent:
+        $ref: '#/components/messages/sseEvent'
+  mcpSse:
+    address: /mcp/sse
+    title: MCP session stream (SSE)
+    description: >-
+      Server-sent-events transport that establishes the MCP session. The JSON-RPC transport at
+      /mcp/messages is session-scoped and returns {"error":"Invalid session"} without a session
+      established here. See mcp/voyant-mcp.yml.
+    servers:
+      - $ref: '#/servers/sse'
+    messages:
+      sseEvent:
+        $ref: '#/components/messages/sseEvent'
+operations:
+  publishKnowledge:
+    action: send
+    channel:
+      $ref: '#/channels/knowledgeOut'
+    title: Publish knowledge to stream
+    description: >-
+      Control-plane trigger: POST /api/context-streams/streaming/publish
+      (operationId publish_knowledge_to_stream_api_context_streams_streaming_publish_post).
+  subscribeSignals:
+    action: receive
+    channel:
+      $ref: '#/channels/signalsIn'
+    title: Subscribe to signal topics
+    description: >-
+      Control-plane trigger: POST /api/context-streams/streaming/subscribe
+      (operationId subscribe_to_signal_topics_api_context_streams_streaming_subscribe_post).
+  subscribeEvents:
+    action: receive
+    channel:
+      $ref: '#/channels/eventsIn'
+    title: Subscribe to event topics
+  streamContextSignals:
+    action: receive
+    channel:
+      $ref: '#/channels/contextSignalStream'
+    title: Stream context signals over SSE
+components:
+  messages:
+    knowledgeRecord:
+      name: knowledgeRecord
+      title: Curated knowledge record
+      summary: A unit of curated GTM knowledge published by VoyantIO.
+      contentType: application/json
+      payload:
+        type: object
+        description: >-
+          NOT SPECIFIED BY THE PROVIDER. Voyant states records are "serialized to Avro/JSON with
+          Schema Registry" but publishes no schema, no registry URL and no example record. Left
+          deliberately open rather than invented.
+    signalRecord:
+      name: signalRecord
+      title: Inbound signal record
+      summary: A customer-produced signal or event consumed by VoyantIO.
+      contentType: application/json
+      payload:
+        type: object
+        description: >-
+          NOT SPECIFIED BY THE PROVIDER. The customer owns these topics; Voyant documents only
+          that records are transformed into context chunks.
+    sseEvent:
+      name: sseEvent
+      title: Server-sent event
+      contentType: text/event-stream
+      payload:
+        type: object
+        description: >-
+          NOT SPECIFIED BY THE PROVIDER. The OpenAPI declares these operations as returning
+          `{}` with no media type or schema.
+x-provenance:
+  generated: '2026-08-13'
+  method: derived
+  source: >-
+    https://voice-forge-production.up.railway.app/api/context-streams/streaming/architecture
+    (HTTP 200, application/json, anonymous) +
+    openapi/voyant-openapi-original.json streaming operations
+  provider_publishes_asyncapi: false
+  fabrication_guard: >-
+    Channel addresses, broker compatibility list, direction (in/out) and serialization claims are
+    copied verbatim from the provider's architecture payload. Message payload schemas are left
+    explicitly unspecified because the provider publishes none — no field, type or example in this
+    document was invented.
+x-evidence:
+  fetched: '2026-08-13'
+  urls:
+    - url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/architecture
+      status: 200
+      content_type: application/json
+      bytes: 2030
+    - url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/available-streams
+      status: 401
+      note: '{"detail":"Authentication required"} — the live stream inventory is gated.'
+    - url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/config
+      status: 401
+    - url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/status
+      status: 401
+x-gaps:
+  - No AsyncAPI, no schema registry URL, and no example record is published for any topic.
+  - >-
+    The pricing FAQ states "webhook deliveries" count against the API-call quota, but no webhook
+    catalog, no subscription endpoint and no event-type list is published anywhere — the only
+    webhook evidence on the entire surface is that one billing sentence. No Webhooks pointer was
+    emitted.
+  - >-
+    Voyant hosts no broker. The Kafka path requires the customer to bring a Redpanda/Confluent/
+    MSK/Event Hubs cluster, so the "event surface" is only reachable by customers who already run
+    streaming infrastructure.

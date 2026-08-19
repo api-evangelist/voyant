@@ -1,0 +1,140 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay — VoyantIO API
+  version: 1.0.0
+  description: >-
+    Applies the enrichment findings for the VoyantIO API back onto the provider's own
+    783-operation OpenAPI without mutating it. Every value below is sourced from an artifact in
+    this repo or from a probe recorded in one; nothing is invented. Apply with an Overlay 1.0.0
+    processor against openapi/voyant-openapi-original.json.
+extends: ../openapi/voyant-openapi-original.json
+x-provenance:
+  generated: '2026-08-13'
+  method: generated
+  source: >-
+    rate-limits/voyant-rate-limits.yml, errors/voyant-problem-types.yml,
+    conventions/voyant-conventions.yml, lifecycle/voyant-lifecycle.yml,
+    asyncapi/voyant-streaming-asyncapi.yml, well-known/voyant-well-known.yml,
+    mcp/voyant-mcp.yml
+actions:
+  - target: $.info
+    description: >-
+      Promote the rate limits out of info.description prose into a machine-readable extension.
+      The numbers are the provider's own, quoted verbatim from the "### Rate Limits" section.
+    update:
+      x-rate-limits:
+        - scope: per-ip
+          surface: telemetry ingestion
+          limit: 100
+          window: 1m
+          source: info.description
+        - scope: per-organization
+          surface: all other endpoints
+          limit: 1000
+          window: 1m
+          source: info.description
+      x-rate-limit-headers: none
+      x-rate-limit-exhaustion-status: undocumented
+      x-quota:
+        unit: api-call
+        window: 1mo
+        by_plan:
+          Starter: 5000
+          Growth: 25000
+          Scale: 100000
+          Enterprise: null
+        counts_mcp_calls: true
+        source: https://www.voyant.io/pricing
+  - target: $.info
+    description: Record the true contact + license posture and the agent-governance documents the domain serves.
+    update:
+      contact:
+        name: Voyant.io
+        email: andrew@voyant.io
+        url: https://www.voyant.io/
+      x-agent-governance:
+        llms_txt: https://www.voyant.io/.well-known/llms.txt
+        context_txt: https://www.voyant.io/.well-known/context.txt
+        note: >-
+          Both served as real text/plain documents (verified against a control path on this SPA
+          host). llms.txt is a training-policy manifest, not the link-list format.
+      x-error-envelope:
+        format: fastapi-detail
+        shape: '{"detail": string | [{loc, msg, type}]}'
+        rfc9457: false
+      x-pagination:
+        style: limit-offset
+        limit_param: limit
+        offset_param: offset
+        cursor: false
+        total_count: false
+        note: 78 operations accept `limit`; only 20 of those also accept `offset`.
+      x-idempotency:
+        supported: false
+      x-versioning:
+        scheme: none
+        note: Unversioned paths, no version header, no Sunset/Deprecation support.
+  - target: $.servers
+    description: Annotate the production server with what it actually is.
+    update:
+      - url: https://voice-forge-production.up.railway.app
+        description: Production
+        x-hosting:
+          platform: Railway
+          region_hint: jfk1
+          first_party_domain: false
+          note: >-
+            Served from a Railway-generated hostname rather than a first-party domain such as
+            api.voyant.io. The service name (voice-forge / VoiceForge) differs from the company
+            name; GET / answers "VoiceForge API is running with automated RAG" version 0.2.0
+            while info.title is "VoyantIO API".
+  - target: $
+    description: Declare the event surface the provider documents but does not describe in this contract.
+    update:
+      x-async-api: ../asyncapi/voyant-streaming-asyncapi.yml
+      x-event-surface:
+        kafka_compatible: true
+        brokers: [Redpanda, Confluent, MSK, Azure Event Hubs]
+        hosted_by_provider: false
+        topics_out: ['voyant.knowledge.{org_id}']
+        topics_in: ['{org}.signals.*', '{org}.events.*']
+        source: /api/context-streams/streaming/architecture
+      x-mcp:
+        server: voyant-mcp
+        version: 1.1.0
+        transport: http+sse
+        endpoint: https://voice-forge-production.up.railway.app/mcp/sse
+        tools: 15
+        anonymous_tool_introspection: https://voice-forge-production.up.railway.app/mcp/tools
+      x-sibling-api:
+        title: Gypsum Context API
+        spec: ../openapi/voyant-gypsum-openapi.json
+        status: host-unreachable
+  - target: $.paths['/api/telemetry/track'].post
+    description: >-
+      Flag the unauthenticated telemetry ingestion surface and bind it to its published per-IP
+      ceiling. This operation declares no security in the contract.
+    update:
+      x-public: true
+      x-rate-limit:
+        scope: per-ip
+        limit: 100
+        window: 1m
+  - target: $.paths['/api/deo/v1/telemetry/events'].post
+    description: Same treatment for the DEO telemetry ingestion endpoint.
+    update:
+      x-public: true
+      x-rate-limit:
+        scope: per-ip
+        limit: 100
+        window: 1m
+  - target: $.paths['/api/context-streams/streaming/publish'].post
+    description: Bind the streaming control-plane operation to the derived AsyncAPI channel it drives.
+    update:
+      x-asyncapi-channel: knowledgeOut
+      x-asyncapi-address: 'voyant.knowledge.{org_id}'
+  - target: $.paths['/api/context-streams/streaming/subscribe'].post
+    description: Bind the ingest control-plane operation to its derived AsyncAPI channels.
+    update:
+      x-asyncapi-channel: signalsIn
+      x-asyncapi-address: '{org}.signals.*'

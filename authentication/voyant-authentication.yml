@@ -1,12 +1,107 @@
-generated: '2026-08-12'
-method: derived
-source: openapi/voyant-openapi-original.json
+generated: '2026-08-13'
+method: searched
+source: >-
+  openapi/voyant-openapi-original.json (components.securitySchemes + per-operation security),
+  openapi/voyant-gypsum-openapi.json (info.description auth section),
+  https://voice-forge-production.up.railway.app/mcp/health (published auth_methods),
+  https://github.com/andrew-brown-noosphere/agent-samples (.env template naming the key prefix)
+docs: null
+docs_note: >-
+  Voyant publishes no authentication page. There is no developer portal beyond the FastAPI
+  /docs and /redoc renderings of the spec, and neither carries an auth guide. Everything below
+  was assembled from the contracts themselves plus live endpoint payloads.
 summary:
   types:
-  - http
+    - http
+    - apiKey
+  oauth2: false
+  openIdConnect: false
+  mutualTLS: false
+  identity_provider: Clerk
+  note: >-
+    Three different authentication models across three surfaces, none of them documented in one
+    place: bearer token on the main REST API, `vio_*` API key or Clerk token on the MCP server,
+    and a `user_id` QUERY PARAMETER on the Gypsum contract.
 schemes:
-- name: HTTPBearer
-  type: http
-  scheme: bearer
-  sources:
-  - openapi/voyant-openapi-original.json
+  - name: HTTPBearer
+    type: http
+    scheme: bearer
+    bearer_format: null
+    surface: VoyantIO API (783 operations)
+    applied_to_operations: 672
+    unsecured_operations: 111
+    sources:
+      - openapi/voyant-openapi-original.json
+    token_forms:
+      - form: api-key
+        prefix: vio_
+        evidence: >-
+          GET /mcp/health publishes auth_methods ["api_key (vio_*)","clerk_token"]; the
+          agent-samples .env template uses API_KEY=vio_xxxxxxxxxxxxxxxxxx.
+        issued_where: 'Settings > API Keys (per the agent-samples README)'
+      - form: clerk-session-token
+        evidence: >-
+          info.description: "Most endpoints require a Bearer token from Clerk authentication."
+          The marketing SPA bundles the Clerk browser SDK.
+    note: >-
+      A single `http bearer` scheme with no `bearerFormat`, no scopes and no OAuth flows, carrying
+      two structurally different credentials (a long-lived opaque API key and a short-lived Clerk
+      session token) through the same header. A client cannot tell from the contract which one an
+      operation expects, and the contract offers no way to express least privilege.
+  - name: user_id query parameter
+    type: apiKey
+    in: query
+    parameter: user_id
+    surface: Gypsum Context API (26 operations)
+    security_schemes_declared: 0
+    sources:
+      - openapi/voyant-gypsum-openapi.json
+    evidence: >-
+      info.description: "Most endpoints require `user_id` query parameter (Clerk organization ID).
+      Demo access is available for testing." The contract declares NO components.securitySchemes
+      and NO security requirement on any operation — the scheme exists only in prose.
+    note: >-
+      A tenant identifier in the query string is the weakest pattern on this provider's surface:
+      it lands in server logs, proxy logs, Referer headers and browser history. It is also not an
+      authenticator — an organization ID is an identifier, and nothing in the published contract
+      shows a secret being presented alongside it. Cannot be verified live: gypsum.voyant.io is
+      NXDOMAIN.
+unauthenticated_surface:
+  operation_count: 111
+  note: >-
+    111 of 783 operations on the main API declare no security. The genuinely-public subset is the
+    telemetry ingestion path (POST /api/telemetry/track, /api/telemetry/end-session,
+    /api/deo/ingest, /api/deo/v1/telemetry/events, /api/deo/v1/traces, /api/deo/mcp-telemetry),
+    which is intentional and rate-limited per IP at 100 req/min, plus /health, /mcp/* and the
+    /api/well-known/* generators. The remainder has not been audited operation by operation and
+    is the highest-value security review this provider could run on itself.
+  probed:
+    - url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/architecture
+      status: 200
+      note: Anonymous read of the streaming topology — public by design.
+    - url: https://voice-forge-production.up.railway.app/api/context-streams/streaming/available-streams
+      status: 401
+      note: '{"detail":"Authentication required"} — gating works where it is applied.'
+    - url: https://voice-forge-production.up.railway.app/mcp/tools
+      status: 200
+      note: Full tool list with inputSchemas, anonymous. Discovery open, invocation closed.
+scopes:
+  supported: false
+  note: >-
+    No OAuth flows, no scopes, no permissions model anywhere in either contract. A token is
+    all-or-nothing across 783 operations, including the four operations classified
+    safety-critical in agentic-access/voyant-agentic-access.yml. Nothing was written to scopes/.
+oauth_discovery:
+  authorization_server_metadata: false
+  protected_resource_metadata: false
+  note: >-
+    /.well-known/oauth-authorization-server and /.well-known/oauth-protected-resource are soft
+    404s (HTML shell) on www.voyant.io and 405 on the API host. An MCP client that expects the
+    2026 OAuth handshake finds nothing to negotiate against — the server takes a static key
+    instead.
+gaps:
+  - No published authentication documentation of any kind.
+  - No bearerFormat, so key format is discoverable only from a health payload and a sample repo.
+  - No scopes; no least-privilege story for a 783-operation surface.
+  - Three auth models across three surfaces, each documented in a different artifact's prose.
+  - Gypsum's auth model puts a tenant identifier in the query string.

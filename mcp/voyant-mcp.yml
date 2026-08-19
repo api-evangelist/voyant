@@ -5,7 +5,9 @@ status: published
 server:
   name: voyant-mcp
   version: 1.1.0
-  transport: [http, sse]
+  transport:
+  - http
+  - sse
   url: https://voice-forge-production.up.railway.app/mcp
   endpoints:
     tools: https://voice-forge-production.up.railway.app/mcp/tools
@@ -16,72 +18,120 @@ server:
     status: healthy
     demo_mode: false
     tools_available: 15
-    auth_methods: ['api_key (vio_*)', clerk_token]
+    auth_methods:
+    - api_key (vio_*)
+    - clerk_token
 authentication:
   required_to_call: true
   methods:
-    - api_key (prefix `vio_`)
-    - clerk_token
+  - api_key (prefix `vio_`)
+  - clerk_token
   introspection_gated: false
-  note: >-
-    The tool list AND the full inputSchema for every tool are readable anonymously at GET
-    /mcp/tools — unusual and genuinely useful, since most hosted MCP servers in the catalog gate
-    introspection behind auth. The JSON-RPC transport is session-scoped: POST /mcp/messages with
-    {"jsonrpc":"2.0","method":"tools/list"} returns {"error":"Invalid session"} without a session
-    established over /mcp/sse, so tool *invocation* is authenticated even though discovery is not.
+  note: 'The tool list AND the full inputSchema for every tool are readable anonymously at GET /mcp/tools
+    — unusual and genuinely useful, since most hosted MCP servers in the catalog gate introspection behind
+    auth. The JSON-RPC transport is session-scoped: POST /mcp/messages with {"jsonrpc":"2.0","method":"tools/list"}
+    returns {"error":"Invalid session"} without a session established over /mcp/sse, so tool *invocation*
+    is authenticated even though discovery is not.'
 tools:
-  - name: voyant_get_context
-    description: >-
-      Get full marketing context for content generation. Returns personas, products, messaging,
-      positioning, and context streams.
-    inputs: []
-  - name: voyant_get_modulated_context
-    description: >-
-      Get persona/funnel-modulated context. Shape the context based on a specific persona and/or
-      funnel stage.
-    inputs: [persona_id, funnel_stage, streams, token_limit]
-  - name: voyant_search
-    description: Semantic search across the knowledge base using RAG. Returns relevant content chunks.
-    inputs: [query, strategy, top_k, domain, content_type]
-  - name: voyant_list_streams
-    description: List all available context streams for the organization.
-    inputs: []
-  - name: voyant_get_personas
-    description: Get all target personas defined in the messaging framework.
-    inputs: []
-  - name: voyant_get_products
-    description: Get all products defined in the messaging framework.
-    inputs: []
-  - name: voyant_get_positioning
-    description: Get brand positioning framework (value proposition, differentiators, etc.).
-    inputs: []
-  - name: voyant_get_messaging
-    description: Get messaging framework (elevator pitch, headlines, tone, etc.).
-    inputs: []
-  - name: voyant_get_use_cases
-    description: Get use cases defined in the messaging framework.
-    inputs: []
-  - name: voyant_get_industries
-    description: Get target industries defined in the messaging framework.
-    inputs: []
-  - name: voyant_get_testimonials
-    description: Get customer testimonials.
-    inputs: [featured_only]
-  - name: voyant_generate_content
-    description: Generate content using RAG context and messaging framework. Returns AI-generated copy.
-    inputs: [query, platform, tone, persona_id, use_rag_context, use_messaging_context]
-  - name: voyant_get_competitive_intel
-    description: Get competitive intelligence data.
-    inputs: [competitor_id]
-  - name: voyant_get_signals
-    description: Get market signals from various sources (GitHub, Reddit, HackerNews, etc.).
-    inputs: [source, days, limit]
-  - name: voyant_get_rag_stats
-    description: Get RAG system statistics and readiness status.
-    inputs: []
+- name: voyant_get_context
+  description: Get full marketing context for content generation. Returns personas, products, messaging,
+    positioning, and context streams.
+  inputs: []
+- name: voyant_get_modulated_context
+  description: Get persona/funnel-modulated context. Shape the context based on a specific persona and/or
+    funnel stage.
+  inputs:
+  - persona_id
+  - funnel_stage
+  - streams
+  - token_limit
+- name: voyant_search
+  description: Semantic search across the knowledge base using RAG. Returns relevant content chunks.
+  inputs:
+  - query
+  - strategy
+  - top_k
+  - domain
+  - content_type
+- name: voyant_list_streams
+  description: List all available context streams for the organization.
+  inputs: []
+- name: voyant_get_personas
+  description: Get all target personas defined in the messaging framework.
+  inputs: []
+- name: voyant_get_products
+  description: Get all products defined in the messaging framework.
+  inputs: []
+- name: voyant_get_positioning
+  description: Get brand positioning framework (value proposition, differentiators, etc.).
+  inputs: []
+- name: voyant_get_messaging
+  description: Get messaging framework (elevator pitch, headlines, tone, etc.).
+  inputs: []
+- name: voyant_get_use_cases
+  description: Get use cases defined in the messaging framework.
+  inputs: []
+- name: voyant_get_industries
+  description: Get target industries defined in the messaging framework.
+  inputs: []
+- name: voyant_get_testimonials
+  description: Get customer testimonials.
+  inputs:
+  - featured_only
+- name: voyant_generate_content
+  description: Generate content using RAG context and messaging framework. Returns AI-generated copy.
+  inputs:
+  - query
+  - platform
+  - tone
+  - persona_id
+  - use_rag_context
+  - use_messaging_context
+- name: voyant_get_competitive_intel
+  description: Get competitive intelligence data.
+  inputs:
+  - competitor_id
+- name: voyant_get_signals
+  description: Get market signals from various sources (GitHub, Reddit, HackerNews, etc.).
+  inputs:
+  - source
+  - days
+  - limit
+- name: voyant_get_rag_stats
+  description: Get RAG system statistics and readiness status.
+  inputs: []
 raw: voyant-mcp-tools.json
 x-evidence:
   fetched: '2026-08-12'
   url: https://voice-forge-production.up.railway.app/mcp/tools
   http_status: 200
   content_type: application/json
+deployment:
+  mode: remote
+  endpoint: https://voice-forge-production.up.railway.app/mcp/sse
+  transport: http+sse
+  install: null
+  package: null
+  auth: api-key
+  verified: probed
+  checked: '2026-08-13'
+  note: >-
+    CORRECTED 2026-08-13. The 2026-08-12 catalog MCP census recorded `mode: none, probe: dead`
+    because it POSTed JSON-RPC to https://voice-forge-production.up.railway.app/mcp and got
+    `405 {"detail":"Method Not Allowed"}`. That is a transport mismatch, not a dead server:
+    voyant-mcp speaks the LEGACY MCP HTTP+SSE transport, not Streamable HTTP, so there is no
+    single POST-able /mcp endpoint by design. Re-probed today:
+      GET  /mcp/sse      -> 200 text/event-stream  (session transport, live)
+      GET  /mcp/health   -> 200 {"status":"healthy","tools_available":15,"active_sessions":0}
+      GET  /mcp/tools    -> 200, 5,677 bytes, 15 tools WITH inputSchemas, anonymous
+      POST /mcp/messages -> 400 {"error":"Invalid session"} (correct: needs a session from /mcp/sse)
+      POST /mcp          -> 405 (no Streamable HTTP transport)
+    An agent client configured for the legacy SSE transport reaches this server today; one
+    configured only for Streamable HTTP cannot. That is the real finding, and it is a provider-side
+    gap worth reporting: the modern transport is not implemented.
+  previous:
+    mode: none
+    probe: dead
+    checked: '2026-08-12'
+    source: catalog MCP census
+    superseded_by: live re-probe 2026-08-13

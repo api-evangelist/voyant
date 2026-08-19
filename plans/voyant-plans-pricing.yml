@@ -1,0 +1,179 @@
+generated: '2026-08-13'
+method: searched
+source: https://www.voyant.io/pricing
+note: >-
+  www.voyant.io is a client-rendered React SPA — GET /pricing returns the same 4,546-byte HTML
+  shell as every other path, so a naive fetch reads as "no pricing published". The tiers below
+  were read verbatim out of the rendered application bundle
+  https://www.voyant.io/assets/index-yINxrnQo.js (3.45 MB), which carries the /pricing route
+  component and its plan array. Every price, quota and feature string here is copied from that
+  bundle; nothing is inferred.
+currency: USD
+billing_period: monthly
+plan_count: 4
+free_trial:
+  offered: true
+  length_days: 14
+  credit_card_required: false
+  applies_to: all plans
+  source_quote: 'Yes, all plans include a 14-day free trial. No credit card required to start.'
+annual_billing:
+  offered: true
+  discount: 20%
+  self_serve: false
+  note: 'Published as "annual billing saves 20%. Contact us for annual pricing on any plan." — the
+    annual price itself is not listed, so a buyer cannot self-serve an annual term.'
+plan_changes:
+  self_serve: true
+  note: 'Upgrade or downgrade anytime; changes take effect on the next billing cycle.'
+metering:
+  unit: API call
+  definition: >-
+    "Each request to our Context API counts as one call. MCP queries, REST requests, and webhook
+    deliveries are all included. Dashboard usage doesn't count against your limit."
+  note: >-
+    Notable for an agent buyer: MCP tool calls are metered on the SAME counter as REST requests,
+    so an agent workload draws down the identical quota a human integration does. This is one of
+    the few providers in the catalog that states that explicitly.
+  overage: undocumented
+  overage_note: >-
+    No overage rate, no hard-stop behaviour, and no 429 semantics are published for exceeding the
+    monthly API-call allowance. See rate-limits/voyant-rate-limits.yml.
+plans:
+  - name: Starter
+    price: 399
+    price_display: '$399'
+    currency: USD
+    period: month
+    description: For teams getting started with AI context
+    cta: Start Free Trial
+    quota:
+      api_calls_per_month: 5000
+      seats: 1
+      context_streams: 4
+      competitors: 2
+      signal_sources: 2
+    limits:
+      integrations: API access only
+      geo_aeo: not included
+      support: Email support
+    includes:
+      - Messaging framework
+      - Buyer personas
+      - Website crawling
+      - Basic battlecards
+  - name: Growth
+    price: 899
+    price_display: '$899'
+    currency: USD
+    period: month
+    description: For scaling marketing teams
+    cta: Start Free Trial
+    highlighted: true
+    highlight_label: Most Popular
+    quota:
+      api_calls_per_month: 25000
+      seats: 3
+      context_streams: 6
+      competitors: 5
+      signal_sources: 4
+    limits:
+      integrations: 1 CRM + 1 CMS
+      geo_aeo: Basic GEO (5 queries/day)
+      support: Priority support
+    includes:
+      - Everything in Starter
+      - Reddit, HN, GitHub, YouTube
+      - HubSpot or Webflow sync
+      - Competitive alerts
+      - Weekly signal digests
+      - Basic AI visibility tracking
+  - name: Scale
+    price: 1999
+    price_display: '$1,999'
+    currency: USD
+    period: month
+    description: For teams that need the full stack
+    cta: Start Free Trial
+    quota:
+      api_calls_per_month: 100000
+      seats: 10
+      context_streams: all
+      competitors: 15
+      signal_sources: 6
+    limits:
+      integrations: 2 CRM + 2 CMS + 1 enrichment
+      geo_aeo: Full GEO/AEO suite
+      support: Slack support + CSM
+    includes:
+      - Everything in Growth
+      - Twitter/X monitoring
+      - Lusha contact enrichment
+      - Full AI visibility (GEO/AEO)
+      - Competitor AI visibility
+      - SSO / SAML
+      - Custom onboarding
+  - name: Enterprise
+    price: null
+    price_display: Custom
+    currency: USD
+    period: null
+    description: For organizations with custom needs
+    cta: Contact Sales
+    contact_url: https://www.voyant.io/demo
+    quota:
+      api_calls_per_month: null
+      seats: unlimited
+      context_streams: custom
+      competitors: unlimited
+      signal_sources: all + custom sources
+    limits:
+      integrations: All integrations
+      geo_aeo: Unlimited GEO + custom queries
+      support: Dedicated success team
+      api: SLA-backed
+    includes:
+      - Everything in Scale
+      - Custom signal sources
+      - LinkedIn enrichment
+      - ZoomInfo integration
+      - Custom GEO queries
+      - White-label reports
+      - Custom SLA
+      - Security review
+scaling_levers:
+  competitors: 2 -> 5 -> 15 -> Unlimited
+  signal_sources: 2 -> 4 -> 6 -> Custom
+  integrations: API -> 2 -> 5 -> All
+  seats: 1 -> 3 -> 10 -> Unlimited
+signal_source_availability:
+  - source: Reddit
+    tier: Starter+
+  - source: Hacker News
+    tier: Starter+
+  - source: GitHub
+    tier: Starter+
+  - source: YouTube
+    tier: Growth+
+  - source: G2 Reviews
+    tier: Growth+
+  - source: Twitter/X
+    tier: Scale+
+gaps:
+  - >-
+    Every CTA on the pricing page routes to /demo — including the three "Start Free Trial" buttons
+    on the self-serve tiers. There is no checkout, no sign-up form and no card capture anywhere on
+    the site, so a published $399/month price cannot actually be bought without talking to sales.
+  - No published overage rate or behaviour at quota exhaustion.
+  - No annual price published, only the 20% discount claim.
+  - No SLA document; "SLA-backed" and "Custom SLA" appear only as Enterprise bullet text.
+x-evidence:
+  fetched: '2026-08-13'
+  urls:
+    - url: https://www.voyant.io/pricing
+      status: 200
+      note: SPA shell, identical bytes to every other route; plan data is not in the HTML.
+    - url: https://www.voyant.io/assets/index-yINxrnQo.js
+      status: 200
+      bytes: 3452859
+      note: Application bundle carrying the /pricing route and the verbatim plan array.

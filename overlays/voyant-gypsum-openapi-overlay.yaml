@@ -1,0 +1,95 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay — Gypsum Context API
+  version: 1.0.0
+  description: >-
+    Enrichment overlay for the Gypsum Context API, the second OpenAPI Voyant.io publishes
+    (https://www.voyant.io/openapi-gypsum.json). Its single job is to record, on the contract
+    itself, that the production host the spec declares does not exist — every other action is
+    provenance. Apply against openapi/voyant-gypsum-openapi.json without mutating it.
+extends: ../openapi/voyant-gypsum-openapi.json
+x-provenance:
+  generated: '2026-08-13'
+  method: generated
+  source: >-
+    https://www.voyant.io/openapi-gypsum.json (verbatim spec) + DNS resolution of
+    gypsum.voyant.io against 8.8.8.8 and 1.1.1.1
+actions:
+  - target: $.info
+    description: >-
+      Record the discovery path and the ownership proof. This spec is NOT linked from any
+      navigation — it is reachable only because /openapi-gypsum.json is a declared route inside
+      the marketing SPA's router table. Ownership is established by the spec's own contents, not
+      by where it was fetched: info.contact.name is "VoyantIO", info.contact.url is
+      https://voyant.io, and servers[0] is a voyant.io subdomain.
+    update:
+      x-discovery:
+        url: https://www.voyant.io/openapi-gypsum.json
+        status: 200
+        content_type: application/json; charset=utf-8
+        bytes: 36964
+        linked_from: none
+        found_via: SPA router table in https://www.voyant.io/assets/index-yINxrnQo.js
+      x-ownership:
+        verified: true
+        evidence:
+          - info.contact.name = "VoyantIO"
+          - info.contact.url = https://voyant.io
+          - servers[0].url = https://gypsum.voyant.io (first-party subdomain)
+          - info.description references "VoyantIO integrations" and Clerk organization IDs,
+            matching the main API's Clerk-based auth
+  - target: $.servers
+    description: >-
+      THE FINDING. The declared production host does not resolve. gypsum.voyant.io returns
+      NXDOMAIN from both 8.8.8.8 and 1.1.1.1, and a direct HTTPS request fails to connect
+      (curl exit 6, could not resolve host). The apex voyant.io resolves fine (76.76.21.21), so
+      this is a missing subdomain, not a DNS outage. The second server entry is localhost:3001.
+      Result — this contract is real, first-party and complete, but it has no callable address.
+    update:
+      - url: https://gypsum.voyant.io
+        description: Production
+        x-reachability:
+          resolves: false
+          dns_status: NXDOMAIN
+          resolvers_checked: ['8.8.8.8', '1.1.1.1']
+          checked: '2026-08-13'
+          http: unreachable (curl exit 6, could not resolve host)
+      - url: http://localhost:3001
+        description: Local development
+        x-reachability:
+          resolves: n/a
+          note: Loopback placeholder, not a public address.
+  - target: $.info
+    description: Cross-link the sibling contract and record the shared auth model.
+    update:
+      x-sibling-api:
+        title: VoyantIO API
+        spec: ../openapi/voyant-openapi-original.json
+        base_url: https://voice-forge-production.up.railway.app
+        note: >-
+          Twenty of Gypsum's 26 operations are context reads (messaging, personas, positioning,
+          products, use cases, industries, testimonials, ICP) that also exist as tags on the main
+          783-operation API, so the two contracts overlap substantially. Gypsum is the smaller,
+          cleaner cut of the same brand-context surface.
+      x-authentication:
+        style: query-parameter
+        parameter: user_id
+        value: Clerk organization ID
+        security_schemes_declared: 0
+        note: >-
+          The contract declares NO components.securitySchemes at all. Authentication is described
+          only in info.description prose — "Most endpoints require `user_id` query parameter
+          (Clerk organization ID)" — which puts a tenant identifier in the query string, where it
+          lands in logs, referrers and browser history. Weaker than the main API's bearer scheme.
+  - target: $.paths['/api/chat'].post
+    description: >-
+      Note the only declared 429 anywhere in either Voyant contract. The main 783-operation API
+      declares zero.
+    update:
+      x-rate-limit:
+        declared: true
+        status: 429
+        limit: undocumented
+        window: undocumented
+        retry_after: false
+        note: The response is declared but no limit, window or Retry-After header is published.

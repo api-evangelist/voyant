@@ -1,0 +1,97 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  registry.npmjs.org search + direct lookups, pypi.org, github.com/andrew-brown-noosphere,
+  https://www.voyant.io/assets/index-yINxrnQo.js (application bundle grepped for install
+  instructions), https://voice-forge-production.up.railway.app/openapi.json
+package_count: 0
+official_sdk_count: 0
+summary: >-
+  Voyant.io publishes NO client SDK in any package registry. The 783-operation REST API, the
+  26-operation Gypsum Context API and the 15-tool MCP server are all raw-HTTP only. No
+  `Idempotency`-style convenience layer, no generated client, no CLI, no install instruction of
+  any kind appears in the docs, the OpenAPI, or the marketing application bundle. No `SDKs`
+  pointer was wired into apis.yml — there is nothing to point at.
+registries_checked:
+  - registry: npm
+    endpoint: https://registry.npmjs.org/-/v1/search?text=voyant.io
+    status: 200
+    result: 0 results
+  - registry: npm
+    endpoint: https://registry.npmjs.org/voyant
+    status: 200
+    result: >-
+      Occupied by an unrelated project — `voyant` 3.7.0 is the Voyant Tools text-analysis library
+      by Stéfan Sinclair (sgsinclair/voyantjs, BSD-3-Clause, digital-humanities corpus analysis).
+      NOT Voyant.io. Recorded so a later round does not mistake it for a first-party SDK.
+  - registry: npm
+    endpoint: https://registry.npmjs.org/-/v1/search?text=voyant%20mcp
+    status: 200
+    result: >-
+      Top hit `@voyant-travel/tools` 0.10.0 belongs to voyant-travel (github.com/voyant-travel),
+      an unrelated travel-agent framework. NOT Voyant.io. Name collision only.
+  - registry: npm
+    endpoint: https://registry.npmjs.org/@voyant/sdk
+    status: 404
+  - registry: npm
+    endpoint: https://registry.npmjs.org/voyant-mcp
+    status: 404
+    note: >-
+      The MCP server is named `voyant-mcp` 1.1.0 in its own /mcp/health payload, but no package of
+      that name exists on npm — the server is remote-only, never distributed. See
+      mcp/voyant-mcp.yml `deployment.mode: remote`.
+  - registry: pypi
+    endpoint: https://pypi.org/pypi/voyant/json
+    status: 404
+  - registry: docs/bundle
+    endpoint: https://www.voyant.io/assets/index-yINxrnQo.js
+    status: 200
+    result: >-
+      No `npm install`, `pip install`, `npx`, `gem install` or any other install instruction
+      anywhere in the 3.45 MB application bundle. The only third-party SDK present is Clerk's
+      browser auth SDK, which is Voyant's own dependency, not something they distribute.
+packages: []
+related_code:
+  - name: agent-samples
+    kind: code-samples
+    official: false
+    registry: git
+    url: https://github.com/andrew-brown-noosphere/agent-samples
+    language: python
+    version: null
+    published: '2026-05-09'
+    published_note: >-
+      No tags, no releases, no registry entry — `published` is the last push date from the GitHub
+      API, not a release date. `version` is null because the repository is unversioned.
+    description: >-
+      "Sample AI agents built on GTM context platforms" — four runnable Python agents (Content
+      Strategist, Persona Critic, GEO/AEO Monitor, Signals Monitor) that call the Voyant MCP
+      server over SSE. The README's .env template asks for `MCP_SERVER_URL=.../mcp/sse` and
+      `API_KEY=vio_xxxx`, and `vio_` is Voyant's own API-key prefix, so this is unambiguously
+      Voyant client code.
+    official_note: >-
+      Marked official:false deliberately. It lives on the founder's PERSONAL GitHub account
+      (andrew-brown-noosphere), not a voyant org — there is no `voyant` or `voyantio` GitHub
+      organization — and the README's own clone command points at a third namespace,
+      `github.com/tractionco/agent-samples`, which does not match the repo it is served from.
+      Real Voyant client code, but not published under the company's name.
+    install: 'git clone + pip install -r requirements.txt'
+gaps:
+  - No first-party SDK in any language, in any registry.
+  - No GitHub organization for the company; the only client code is on a personal account.
+  - >-
+    A 783-operation API with no generated client is a meaningful DX gap: every consumer
+    hand-rolls bearer auth, limit/offset paging and `{"detail": ...}` error parsing.
+x-evidence:
+  fetched: '2026-08-13'
+  urls:
+    - url: https://registry.npmjs.org/-/v1/search?text=voyant.io
+      status: 200
+    - url: https://registry.npmjs.org/voyant-mcp
+      status: 404
+    - url: https://registry.npmjs.org/@voyant/sdk
+      status: 404
+    - url: https://pypi.org/pypi/voyant/json
+      status: 404
+    - url: https://api.github.com/repos/andrew-brown-noosphere/agent-samples
+      status: 200

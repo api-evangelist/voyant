@@ -1,0 +1,1140 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gypsum Context API",
+    "description": "## Brand Context Management API\n\nGypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.\n\n### Core Capabilities\n\n- **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning\n- **ICP Management** - Ideal Customer Profile CRUD operations\n- **Campaign Management** - Marketing campaign tracking\n- **AI Chat** - Brand-aware conversational AI\n\n### Authentication\n\nMost endpoints require `user_id` query parameter (Clerk organization ID).\nDemo access is available for testing.\n\n### Base URL\n\nProduction: `https://gypsum.voyant.io`\nLocal: `http://localhost:3001`",
+    "version": "1.0.0",
+    "contact": {
+      "name": "VoyantIO",
+      "url": "https://voyant.io"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://gypsum.voyant.io",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:3001",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "health",
+      "description": "Service health and status"
+    },
+    {
+      "name": "chat",
+      "description": "Brand-aware AI chat"
+    },
+    {
+      "name": "context",
+      "description": "Brand context retrieval (messaging, personas, positioning, etc.)"
+    },
+    {
+      "name": "icp",
+      "description": "Ideal Customer Profile management"
+    },
+    {
+      "name": "campaigns",
+      "description": "Marketing campaign management"
+    },
+    {
+      "name": "resources",
+      "description": "Marketing resource management"
+    },
+    {
+      "name": "sync",
+      "description": "Organization data synchronization"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Health Check",
+        "description": "Check if the Gypsum API server is running.",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "OK" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gypsum/connection-status": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Connection Status",
+        "description": "Check Gypsum API connection status (used by VoiceForge integrations).",
+        "operationId": "connectionStatus",
+        "responses": {
+          "200": {
+            "description": "Connection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "connected": { "type": "boolean", "example": true },
+                    "status": { "type": "string", "example": "OK" },
+                    "timestamp": { "type": "string", "format": "date-time" },
+                    "service": { "type": "string", "example": "gypsum-api" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "tags": ["chat"],
+        "summary": "AI Chat",
+        "description": "Send a message to the brand-aware AI assistant. The assistant has access to Voyant.io context and can answer questions about the platform.",
+        "operationId": "chat",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/messaging/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Messaging Context",
+        "description": "Retrieve the brand messaging context including elevator pitch, headline, supporting points, and tone.",
+        "operationId": "getMessagingContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messaging context",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessagingContext" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/personas/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get All Personas",
+        "description": "Retrieve all buyer personas for the organization.",
+        "operationId": "getPersonasContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of personas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "personas": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Persona" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/personas/{id}/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Persona by ID",
+        "description": "Retrieve a specific persona by ID.",
+        "operationId": "getPersonaById",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Persona ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persona details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Persona" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/positioning/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Positioning Context",
+        "description": "Retrieve the positioning framework including target market, differentiation, and value proposition.",
+        "operationId": "getPositioningContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Positioning context",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PositioningContext" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/products/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Products",
+        "description": "Retrieve all products for the organization.",
+        "operationId": "getProductsContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Product" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/use-cases/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Use Cases",
+        "description": "Retrieve all use cases for the organization.",
+        "operationId": "getUseCasesContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of use cases",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "use_cases": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/UseCase" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/industries/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Industries",
+        "description": "Retrieve all target industries for the organization.",
+        "operationId": "getIndustriesContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of industries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "industries": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Industry" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/testimonials/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Testimonials",
+        "description": "Retrieve customer testimonials and social proof.",
+        "operationId": "getTestimonialsContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of testimonials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "testimonials": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Testimonial" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/marketing/context": {
+      "get": {
+        "tags": ["context"],
+        "summary": "Get Full Marketing Context",
+        "description": "Retrieve the complete marketing context including messaging, positioning, personas, products, use cases, and more.",
+        "operationId": "getMarketingContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Complete marketing context",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MarketingContext" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/icp/context": {
+      "get": {
+        "tags": ["icp"],
+        "summary": "Get ICP Context",
+        "description": "Retrieve the Ideal Customer Profile with referenced personas and industries.",
+        "operationId": "getICPContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "ICP with references",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ICPContext" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/icps": {
+      "get": {
+        "tags": ["icp"],
+        "summary": "List All ICPs",
+        "description": "Retrieve all Ideal Customer Profiles for the organization.",
+        "operationId": "listICPs",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ICPs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "icps": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ICP" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["icp"],
+        "summary": "Create ICP",
+        "description": "Create a new Ideal Customer Profile.",
+        "operationId": "createICP",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ICPCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ICP created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ICP" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/icps/{id}": {
+      "put": {
+        "tags": ["icp"],
+        "summary": "Update ICP",
+        "description": "Update an existing Ideal Customer Profile.",
+        "operationId": "updateICP",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ICPUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ICP updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ICP" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["icp"],
+        "summary": "Delete ICP",
+        "description": "Delete an Ideal Customer Profile.",
+        "operationId": "deleteICP",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ICP deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns": {
+      "get": {
+        "tags": ["campaigns"],
+        "summary": "List Campaigns",
+        "description": "Retrieve all marketing campaigns.",
+        "operationId": "listCampaigns",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of campaigns",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaigns": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Campaign" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["campaigns"],
+        "summary": "Create Campaign",
+        "description": "Create a new marketing campaign.",
+        "operationId": "createCampaign",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampaignCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campaign created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Campaign" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{id}": {
+      "get": {
+        "tags": ["campaigns"],
+        "summary": "Get Campaign",
+        "description": "Retrieve a specific campaign by ID.",
+        "operationId": "getCampaign",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Campaign" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["campaigns"],
+        "summary": "Update Campaign",
+        "description": "Update an existing campaign.",
+        "operationId": "updateCampaign",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampaignCreate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaign updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Campaign" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{id}/generation-context": {
+      "get": {
+        "tags": ["campaigns"],
+        "summary": "Get Campaign Generation Context",
+        "description": "Retrieve the full context needed for AI content generation for a campaign.",
+        "operationId": "getCampaignGenerationContext",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign generation context",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CampaignGenerationContext" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resources": {
+      "get": {
+        "tags": ["resources"],
+        "summary": "List Resources",
+        "description": "Retrieve all marketing resources.",
+        "operationId": "listResources",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resources": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Resource" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["resources"],
+        "summary": "Create Resource",
+        "description": "Create a new marketing resource.",
+        "operationId": "createResource",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResourceCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Resource created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Resource" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sync/organization": {
+      "post": {
+        "tags": ["sync"],
+        "summary": "Sync Organization",
+        "description": "Trigger a sync of organization data from Clerk.",
+        "operationId": "syncOrganization",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["organization_id"],
+                "properties": {
+                  "organization_id": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sync initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sync/organization/{orgId}/status": {
+      "get": {
+        "tags": ["sync"],
+        "summary": "Get Sync Status",
+        "description": "Check the sync status for an organization.",
+        "operationId": "getSyncStatus",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organization_id": { "type": "string" },
+                    "status": { "type": "string", "enum": ["synced", "pending", "error"] },
+                    "last_synced": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "userId": {
+        "name": "user_id",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "description": "Clerk organization ID (e.g., org_abc123)"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "ChatRequest": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User message"
+          },
+          "conversationHistory": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["user", "assistant"] },
+                "content": { "type": "string" }
+              }
+            }
+          },
+          "persona": {
+            "type": "string",
+            "description": "Visitor persona for tailored responses"
+          },
+          "organization_id": { "type": "string" }
+        }
+      },
+      "ChatResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "response": { "type": "string" },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "input_tokens": { "type": "integer" },
+              "output_tokens": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "MessagingContext": {
+        "type": "object",
+        "properties": {
+          "elevator_pitch": { "type": "string" },
+          "headline_message": { "type": "string" },
+          "supporting_points": { "type": "string" },
+          "tone_voice": { "type": "string" },
+          "key_differentiators": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "value_proposition": { "type": "string" }
+        }
+      },
+      "Persona": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "title": { "type": "string" },
+          "role": { "type": "string" },
+          "job_titles": { "type": "array", "items": { "type": "string" } },
+          "seniority_level": { "type": "string" },
+          "pain_points": { "type": "array", "items": { "type": "string" } },
+          "goals": { "type": "array", "items": { "type": "string" } },
+          "communication_style": { "type": "string" },
+          "tech_stack": { "type": "array", "items": { "type": "string" } },
+          "company_size": { "type": "string" },
+          "industry": { "type": "string" },
+          "budget_authority": { "type": "string" },
+          "challenges": { "type": "array", "items": { "type": "string" } },
+          "success_metrics": { "type": "array", "items": { "type": "string" } },
+          "buying_criteria": { "type": "array", "items": { "type": "string" } },
+          "content_preferences": { "type": "array", "items": { "type": "string" } },
+          "decision_making_process": { "type": "string" },
+          "demographics": { "type": "object" }
+        }
+      },
+      "PositioningContext": {
+        "type": "object",
+        "properties": {
+          "company_name": { "type": "string" },
+          "target_market": { "type": "string" },
+          "category": { "type": "string" },
+          "differentiation": { "type": "string" },
+          "competitive_alternatives": { "type": "array", "items": { "type": "string" } },
+          "unique_capabilities": { "type": "array", "items": { "type": "string" } },
+          "proof_points": { "type": "array", "items": { "type": "string" } },
+          "value_proposition": { "type": "string" },
+          "key_benefit": { "type": "string" },
+          "compelling_reason": { "type": "string" }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "tagline": { "type": "string" },
+          "category": { "type": "string" },
+          "features": { "type": "array", "items": { "type": "string" } },
+          "pricing_info": { "type": "object" },
+          "target_audience": { "type": "array", "items": { "type": "string" } },
+          "integration_capabilities": { "type": "array", "items": { "type": "string" } },
+          "documentation_url": { "type": "string" },
+          "demo_url": { "type": "string" },
+          "status": { "type": "string" }
+        }
+      },
+      "UseCase": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "problem_statement": { "type": "string" },
+          "solution_overview": { "type": "string" },
+          "key_benefits": { "type": "array", "items": { "type": "string" } },
+          "target_personas": { "type": "array", "items": { "type": "string" } },
+          "applicable_industries": { "type": "array", "items": { "type": "string" } },
+          "technical_requirements": { "type": "array", "items": { "type": "string" } },
+          "implementation_complexity": { "type": "string" },
+          "roi_metrics": { "type": "array", "items": { "type": "string" } },
+          "related_products": { "type": "array", "items": { "type": "string" } },
+          "customer_examples": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "Industry": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "key_challenges": { "type": "array", "items": { "type": "string" } },
+          "technology_trends": { "type": "array", "items": { "type": "string" } },
+          "regulatory_considerations": { "type": "array", "items": { "type": "string" } },
+          "market_size": { "type": "string" },
+          "growth_rate": { "type": "string" }
+        }
+      },
+      "Testimonial": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "quote": { "type": "string" },
+          "author_name": { "type": "string" },
+          "author_title": { "type": "string" },
+          "company": { "type": "string" },
+          "use_case": { "type": "string" },
+          "rating": { "type": "integer" }
+        }
+      },
+      "MarketingContext": {
+        "type": "object",
+        "properties": {
+          "messaging": { "$ref": "#/components/schemas/MessagingContext" },
+          "positioning": { "$ref": "#/components/schemas/PositioningContext" },
+          "personas": { "type": "array", "items": { "$ref": "#/components/schemas/Persona" } },
+          "products": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } },
+          "use_cases": { "type": "array", "items": { "$ref": "#/components/schemas/UseCase" } },
+          "industries": { "type": "array", "items": { "$ref": "#/components/schemas/Industry" } },
+          "testimonials": { "type": "array", "items": { "$ref": "#/components/schemas/Testimonial" } }
+        }
+      },
+      "ICP": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "discovery_query": { "type": "object" },
+          "discovery_service": { "type": "string" },
+          "persona_references": {
+            "type": "object",
+            "properties": {
+              "primary_personas": { "type": "array", "items": { "type": "string" } },
+              "secondary_personas": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "industry_references": {
+            "type": "object",
+            "properties": {
+              "target_industries": { "type": "array", "items": { "type": "string" } },
+              "excluded_industries": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ICPContext": {
+        "allOf": [
+          { "$ref": "#/components/schemas/ICP" },
+          {
+            "type": "object",
+            "properties": {
+              "referenced_personas": { "type": "array", "items": { "$ref": "#/components/schemas/Persona" } },
+              "referenced_industries": { "type": "array", "items": { "$ref": "#/components/schemas/Industry" } }
+            }
+          }
+        ]
+      },
+      "ICPCreate": {
+        "type": "object",
+        "required": ["name", "discovery_query"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "discovery_query": { "type": "object" },
+          "discovery_service": { "type": "string", "default": "clearbit" },
+          "persona_references": { "type": "object" },
+          "industry_references": { "type": "object" }
+        }
+      },
+      "ICPUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "discovery_query": { "type": "object" },
+          "discovery_service": { "type": "string" },
+          "persona_references": { "type": "object" },
+          "industry_references": { "type": "object" }
+        }
+      },
+      "Campaign": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["draft", "active", "paused", "completed"] },
+          "start_date": { "type": "string", "format": "date" },
+          "end_date": { "type": "string", "format": "date" },
+          "target_personas": { "type": "array", "items": { "type": "string" } },
+          "channels": { "type": "array", "items": { "type": "string" } },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CampaignCreate": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string" },
+          "start_date": { "type": "string", "format": "date" },
+          "end_date": { "type": "string", "format": "date" },
+          "target_personas": { "type": "array", "items": { "type": "string" } },
+          "channels": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "CampaignGenerationContext": {
+        "type": "object",
+        "properties": {
+          "campaign": { "$ref": "#/components/schemas/Campaign" },
+          "messaging": { "$ref": "#/components/schemas/MessagingContext" },
+          "positioning": { "$ref": "#/components/schemas/PositioningContext" },
+          "personas": { "type": "array", "items": { "$ref": "#/components/schemas/Persona" } },
+          "products": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } }
+        }
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "url": { "type": "string" },
+          "description": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ResourceCreate": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "url": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}
