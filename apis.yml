@@ -38,7 +38,7 @@ image: https://www.voyant.io/img/logo/voyant-logo.png
 url: https://raw.githubusercontent.com/api-evangelist/voyant/refs/heads/main/apis.yml
 created: '2026-08-12'
 modified: '2026-08-13'
-specificationVersion: '0.21'
+specificationVersion: '0.23'
 x-type: company
 x-source: manual:kin
 tags:
