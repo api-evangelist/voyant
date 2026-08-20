@@ -42,6 +42,21 @@ specificationVersion: '0.23'
 x-type: company
 x-source: manual:kin
 tags:
+  - Artificial Intelligence
+  - Context Management
+  - Brand Governance
+  - Product Marketing
+  - gtm-operations
+  - Marketing Automation
+  - Content Generation
+  - Competitive Intelligence
+  - Semantic Search
+  - RAG
+  - MCP
+  - agent-native
+  - Signals
+  - Telemetry
+tags_raw:
   - artificial-intelligence
   - context-management
   - brand-governance
@@ -70,6 +85,18 @@ apis:
     humanURL: https://voice-forge-production.up.railway.app/docs
     baseURL: https://voice-forge-production.up.railway.app
     tags:
+      - Artificial Intelligence
+      - Context Management
+      - Brand Governance
+      - Product Marketing
+      - gtm-operations
+      - Content Generation
+      - Competitive Intelligence
+      - Semantic Search
+      - RAG
+      - Signals
+      - Telemetry
+    tags_raw:
       - artificial-intelligence
       - context-management
       - brand-governance
@@ -109,6 +136,11 @@ apis:
     humanURL: https://voice-forge-production.up.railway.app/mcp/tools
     baseURL: https://voice-forge-production.up.railway.app/mcp
     tags:
+      - MCP
+      - agent-native
+      - Context Management
+      - Artificial Intelligence
+    tags_raw:
       - mcp
       - agent-native
       - context-management
@@ -134,6 +166,12 @@ apis:
     humanURL: https://www.voyant.io/openapi-gypsum.json
     baseURL: https://gypsum.voyant.io
     tags:
+      - Artificial Intelligence
+      - Context Management
+      - Brand Governance
+      - Product Marketing
+      - Content Generation
+    tags_raw:
       - artificial-intelligence
       - context-management
       - brand-governance
