@@ -72,137 +72,2413 @@ tags_raw:
   - signals
   - telemetry
 apis:
-  - name: VoyantIO API
-    description: >-
-      REST API for the Voyant brand-context platform, published as OpenAPI 3.1.0 with 783 operations
-      over 79 tags. Covers context streams and context modulation, RAG ingestion and semantic search,
-      the messaging framework (positioning, personas, products, use cases, industries, testimonials),
-      target graph and CRM context, telemetry and attribution, social signal harvesting (GitHub,
-      Reddit, HackerNews, LinkedIn, YouTube, G2, Discord, government sources), competitive
-      intelligence and battlecards, GEO/AEO intelligence, content and video generation, and
-      generation of agent-facing artifacts (llms.txt, context.txt, trust.txt, ontology.jsonld) for
-      the customer's own domain. Bearer-token authenticated.
-    humanURL: https://voice-forge-production.up.railway.app/docs
-    baseURL: https://voice-forge-production.up.railway.app
-    tags:
-      - Artificial Intelligence
-      - Context Management
-      - Brand Governance
-      - Product Marketing
-      - gtm-operations
-      - Content Generation
-      - Competitive Intelligence
-      - Semantic Search
-      - RAG
-      - Signals
-      - Telemetry
-    tags_raw:
-      - artificial-intelligence
-      - context-management
-      - brand-governance
-      - product-marketing
-      - gtm-operations
-      - content-generation
-      - competitive-intelligence
-      - semantic-search
-      - rag
-      - signals
-      - telemetry
-    properties:
-      - type: OpenAPI
-        url: openapi/voyant-openapi-original.json
-      - type: Documentation
-        url: https://voice-forge-production.up.railway.app/docs
-      - type: APIReference
-        url: https://voice-forge-production.up.railway.app/redoc
-      - type: Authentication
-        url: authentication/voyant-authentication.yml
-      - type: ErrorCatalog
-        url: errors/voyant-problem-types.yml
-      - type: Conventions
-        url: conventions/voyant-conventions.yml
-      - type: DataModel
-        url: data-model/voyant-data-model.yml
-      - type: AgenticAccess
-        url: agentic-access/voyant-agentic-access.yml
-  - name: Voyant MCP Server
-    description: >-
-      Hosted Model Context Protocol server (`voyant-mcp` 1.1.0) exposing 15 tools that let an agent
-      client pull the organization's brand context, persona/funnel-modulated context, positioning,
-      messaging, personas, products, use cases, industries, testimonials, competitive intelligence,
-      market signals, and RAG search results, plus a content-generation tool. Tool list and input
-      schemas are readable anonymously at `/mcp/tools`; calling a tool requires a `vio_*` API key or
-      a Clerk token. SSE and JSON-RPC message transports.
-    humanURL: https://voice-forge-production.up.railway.app/mcp/tools
-    baseURL: https://voice-forge-production.up.railway.app/mcp
-    tags:
-      - MCP
-      - agent-native
-      - Context Management
-      - Artificial Intelligence
-    tags_raw:
-      - mcp
-      - agent-native
-      - context-management
-      - artificial-intelligence
-    properties:
-      - type: MCPServer
-        url: mcp/voyant-mcp.yml
-      - type: ToolCrosswalk
-        url: mcp/voyant-tool-crosswalk.yml
-  - name: Gypsum Context API
-    description: >-
-      Second OpenAPI published by Voyant.io, discovered 2026-08-13 at
-      https://www.voyant.io/openapi-gypsum.json (HTTP 200, application/json, 36,964 bytes). A
-      clean 26-operation, 7-tag cut of the brand-context surface — messaging, positioning,
-      personas, products, use cases, industries and testimonials context reads, plus ICP CRUD,
-      campaign management and a brand-aware AI chat endpoint. Ownership is proven by the spec's
-      own contents: info.contact.name "VoyantIO", info.contact.url https://voyant.io, and a
-      first-party servers[] host. IMPORTANT — the declared production host `gypsum.voyant.io`
-      does NOT resolve (NXDOMAIN from both 8.8.8.8 and 1.1.1.1, while the apex voyant.io resolves
-      to 76.76.21.21), so this contract is real and first-party but currently has no callable
-      address. The spec declares no securitySchemes at all; auth is described in prose only, as a
-      `user_id` query parameter carrying the Clerk organization ID.
-    humanURL: https://www.voyant.io/openapi-gypsum.json
-    baseURL: https://gypsum.voyant.io
-    tags:
-      - Artificial Intelligence
-      - Context Management
-      - Brand Governance
-      - Product Marketing
-      - Content Generation
-    tags_raw:
-      - artificial-intelligence
-      - context-management
-      - brand-governance
-      - product-marketing
-      - content-generation
-    properties:
-      - type: OpenAPI
-        url: openapi/voyant-gypsum-openapi.json
-      - type: Overlay
-        url: overlays/voyant-gypsum-openapi-overlay.yaml
-    x-evidence:
-      verified: '2026-08-13'
-      spec_url: https://www.voyant.io/openapi-gypsum.json
-      spec_status: 200
-      spec_bytes: 36964
-      parses_as: OpenAPI 3.1.0
-      operations: 26
-      paths: 21
-      ownership: >-
-        info.contact.name "VoyantIO" + info.contact.url https://voyant.io + servers[0]
-        https://gypsum.voyant.io (voyant.io subdomain). Not a sibling-brand spec.
-      host_resolves: false
-      host_dns_status: NXDOMAIN
-      host_resolvers_checked:
-        - 8.8.8.8
-        - 1.1.1.1
-      host_http: unreachable (curl exit 6 — could not resolve host)
-      linked_from: >-
-        Nothing. Reachable only because /openapi-gypsum.json is a declared route in the marketing
-        SPA router table inside https://www.voyant.io/assets/index-yINxrnQo.js.
+- name: Voyant MCP Server
+  description: >-
+    Hosted Model Context Protocol server (`voyant-mcp` 1.1.0) exposing 15 tools that let an agent client
+    pull the organization's brand context, persona/funnel-modulated context, positioning, messaging, personas,
+    products, use cases, industries, testimonials, competitive intelligence, market signals, and RAG search
+    results, plus a content-generation tool. Tool list and input schemas are readable anonymously at `/mcp/tools`;
+    calling a tool requires a `vio_*` API key or a Clerk token. SSE and JSON-RPC message transports.
+  humanURL: https://voice-forge-production.up.railway.app/mcp/tools
+  baseURL: https://voice-forge-production.up.railway.app/mcp
+  tags:
+  - MCP
+  - agent-native
+  - Context Management
+  - Artificial Intelligence
+  tags_raw:
+  - mcp
+  - agent-native
+  - context-management
+  - artificial-intelligence
+  properties:
+  - type: MCPServer
+    url: mcp/voyant-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/voyant-tool-crosswalk.yml
+- aid: voyant:voyant-admin-api
+  name: Voyant.io Admin API
+  description: Super admin endpoints for platform management.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - admin
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-admin-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-admin-migration-api
+  name: Voyant.io Admin Migration API
+  description: Data migration and import tools.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - admin-migration
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-admin-migration-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-ai-assistant-api
+  name: Voyant.io AI Assistant API
+  description: >-
+    Conversational AI with full brand context. Chat interface for content generation and Q&A.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - ai-assistant
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-ai-assistant-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-airops-api
+  name: Voyant.io Airops API
+  description: AirOps integration for workflow automation.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - airops
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-airops-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-analytics-api
+  name: Voyant.io Analytics API
+  description: Platform analytics and usage metrics.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-analytics-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-api-keys-api
+  name: Voyant.io API Keys API
+  description: API key management for programmatic access and AI agents.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - api-keys
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-api-keys-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-attribution-api
+  name: Voyant.io Attribution API
+  description: The Attribution API from Voyant.io — 5 operation(s) for attribution.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Attribution
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-attribution-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-attribution-intelligence-api
+  name: Voyant.io Attribution Intelligence API
+  description: Connect signals to pipeline. Track which content and channels drive deals.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - attribution-intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-attribution-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-auth-api
+  name: Voyant.io Auth API
+  description: The Auth API from Voyant.io — 2 operation(s) for auth.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-auth-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-battlecards-api
+  name: Voyant.io Battlecards API
+  description: AI-generated competitive battlecards with objection handling and differentiators.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - battlecards
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-battlecards-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-bootstrap-api
+  name: Voyant.io Bootstrap API
+  description: Initialize a new organization with default context streams.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - bootstrap
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-bootstrap-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-brand-standards-api
+  name: Voyant.io Brand Standards API
+  description: >-
+    Terminology rules, voice guidelines, and compliance checks. Ensure consistent brand language.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - brand-standards
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-brand-standards-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-campaigns-api
+  name: Voyant.io Campaigns API
+  description: Marketing campaign management
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - campaigns
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-campaigns-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-capture-session-api
+  name: Voyant.io Capture Session API
+  description: The Capture Session API from Voyant.io — 1 operation(s) for capture session.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Capture Session
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-capture-session-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-chat-api
+  name: Voyant.io Chat API
+  description: Brand-aware AI chat
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - chat
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-chat-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-cmo-intelligence-api
+  name: Voyant.io Cmo Intelligence API
+  description: 'Executive-level metrics: AI readiness score, signal pulse, pipeline attribution.'
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - cmo-intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-cmo-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-cncf-landscape-api
+  name: Voyant.io Cncf Landscape API
+  description: CNCF Landscape data for cloud-native ecosystem context.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - cncf-landscape
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-cncf-landscape-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-command-center-api
+  name: Voyant.io Command Center API
+  description: Real-time dashboard with live visitor feed and signal alerts.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Command Center
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-command-center-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-companies-api
+  name: Voyant.io Companies API
+  description: The Companies API from Voyant.io — 7 operation(s) for companies.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Companies
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-companies-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-competitive-intelligence-api
+  name: Voyant.io Competitive Intelligence API
+  description: Automated competitor monitoring. Track positioning, messaging, and market moves.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - competitive-intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-competitive-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-competitor-intelligence-api
+  name: Voyant.io Competitor Intelligence API
+  description: Deep competitor analysis including feature comparisons and win/loss patterns.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Competitor Intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-competitor-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-content-analytics-api
+  name: Voyant.io Content Analytics API
+  description: >-
+    Content performance tracking. Monitor engagement, reach, and effectiveness across platforms.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - content-analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-content-analytics-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-content-export-api
+  name: Voyant.io Content Export API
+  description: Export content in various formats (Markdown, JSON, PDF) for use in other tools.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - content-export
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-content-export-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-content-search-api
+  name: Voyant.io Content Search API
+  description: Semantic search across all crawled and uploaded content.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - content-search
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-content-search-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-content-versions-api
+  name: Voyant.io Content Versions API
+  description: Content versioning and history. Track changes and roll back to previous versions.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - content-versions
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-content-versions-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-content-voices-api
+  name: Voyant.io Content Voices API
+  description: >-
+    Extracted writing style characteristics. Analyze and replicate your brand's unique voice.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - content-voices
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-content-voices-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-context-api
+  name: Voyant.io Context API
+  description: Brand context retrieval (messaging, personas, positioning, etc.)
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - context
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-context-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-context-graph-api
+  name: Voyant.io Context Graph API
+  description: >-
+    Ontology and provenance tracking. Explore relationships between entities in your context graph.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - context-graph
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-context-graph-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-context-intelligence-api
+  name: Voyant.io Context Intelligence API
+  description: >-
+    Context streams and brand knowledge management. Create, update, and query your organization's unified
+    knowledge base.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - context-intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-context-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-context-modulators-api
+  name: Voyant.io Context Modulators API
+  description: >-
+    Shape context output by persona, funnel stage, or use case. Dynamically adjust messaging for different
+    audiences.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - context-modulators
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-context-modulators-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-context-streams-api
+  name: Voyant.io Context Streams API
+  description: >-
+    Individual context stream management. Each stream represents a category of brand knowledge.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - context-streams
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-context-streams-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-context-streams-streaming-api
+  name: Voyant.io Context Streams Streaming API
+  description: >-
+    Real-time context streaming via Kafka-compatible brokers (Redpanda). Publish and subscribe to context
+    updates.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - context-streams-streaming
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-context-streams-streaming-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-crawler-api
+  name: Voyant.io Crawler API
+  description: Website crawling and content extraction. Ingest web pages, blogs, and documentation.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - crawler
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-crawler-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-crm-api
+  name: Voyant.io CRM API
+  description: CRM integrations for syncing contacts, companies, and deal data.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - crm
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-crm-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-crm-context-stream-api
+  name: Voyant.io CRM Context Stream API
+  description: CRM data as a context stream. Query deal history, contact info, and account context.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - CRM Context Stream
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-crm-context-stream-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-dashboard-api
+  name: Voyant.io Dashboard API
+  description: The Dashboard API from Voyant.io — 13 operation(s) for dashboard.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Dashboard
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-dashboard-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-deo-signals-api
+  name: Voyant.io DEO Signals API
+  description: >-
+    Developer Experience Optimization - track AI agent interactions, RAG queries, and tool integrations
+    with your content.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - DEO Signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-deo-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-discovery-api
+  name: Voyant.io Discovery API
+  description: One-time discovery runs and results.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-discovery-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-domains-api
+  name: Voyant.io Domains API
+  description: Domain management for crawling and monitoring.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - domains
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-domains-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-enhanced-rag-api
+  name: Voyant.io Enhanced RAG API
+  description: Advanced RAG with multi-source retrieval, re-ranking, and context fusion.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Enhanced RAG
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-enhanced-rag-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-export-api
+  name: Voyant.io Export API
+  description: General export functionality.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - export
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-export-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-g2-api
+  name: Voyant.io G2 API
+  description: >-
+    G2 Crowd review monitoring: ratings, review sentiment, competitive comparisons, and category positioning.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - G2
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-g2-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-geo-aeo-api
+  name: Voyant.io GEO/AEO API
+  description: >-
+    Generative Engine Optimization - monitor your visibility in AI search engines (ChatGPT, Claude, Perplexity).
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - GEO/AEO
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-geo-aeo-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-geo-intelligence-api
+  name: Voyant.io GEO Intelligence API
+  description: Advanced GEO analytics with Google Search Console integration.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - GEO Intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-geo-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-get-session-api
+  name: Voyant.io Get Session API
+  description: The Get Session API from Voyant.io — 1 operation(s) for get session.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Get Session
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-get-session-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-github-org-intelligence-api
+  name: Voyant.io Github Org Intelligence API
+  description: >-
+    GitHub organization analysis: stars, forks, contributors, repository health, issue sentiment, and
+    developer activity.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - github-org-intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-github-org-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-google-auth-api
+  name: Voyant.io Google Auth API
+  description: Google OAuth for Drive and Analytics integrations.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - google-auth
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-google-auth-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-google-search-console-api
+  name: Voyant.io Google Search Console API
+  description: GSC integration for search performance data.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Google Search Console
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-google-search-console-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-governance-api
+  name: Voyant.io Governance API
+  description: Content governance rules and approval workflows.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - governance
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-governance-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-government-signals-api
+  name: Voyant.io Government Signals API
+  description: >-
+    Government contract signals from SAM.gov, FERC filings, and federal opportunity tracking.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - government-signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-government-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-hackernews-signals-api
+  name: Voyant.io Hackernews Signals API
+  description: >-
+    HackerNews front page monitoring, Show HN tracking, comment sentiment, and discussion threads.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - hackernews-signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-hackernews-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-health-api
+  name: Voyant.io Health API
+  description: Service health and status
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - health
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-health-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-hubspot-api
+  name: Voyant.io Hubspot API
+  description: 'HubSpot CRM integration: contacts, companies, deals, and engagement.'
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - hubspot
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-hubspot-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-hubspot-auth-api
+  name: Voyant.io Hubspot Auth API
+  description: HubSpot OAuth authentication flow.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - hubspot-auth
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-hubspot-auth-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-icp-api
+  name: Voyant.io Icp API
+  description: Ideal Customer Profile management
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - icp
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-icp-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-intelligent-prompt-generation-api
+  name: Voyant.io Intelligent Prompt Generation API
+  description: Generate optimized prompts for various AI models.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Intelligent Prompt Generation
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-intelligent-prompt-generation-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-leadership-audit-api
+  name: Voyant.io Leadership Audit API
+  description: Analyze leadership team presence and thought leadership visibility.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Leadership Audit
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-leadership-audit-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-linkedin-playwright-api
+  name: Voyant.io Linkedin Playwright API
+  description: LinkedIn data extraction via browser automation.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - linkedin-playwright
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-linkedin-playwright-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-linkedin-signals-api
+  name: Voyant.io Linkedin Signals API
+  description: The Linkedin Signals API from Voyant.io — 12 operation(s) for linkedin signals.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Linkedin Signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-linkedin-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-llm-exports-api
+  name: Voyant.io Llm Exports API
+  description: Export context in LLM-friendly formats.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - llm-exports
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-llm-exports-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-lusha-intelligence-api
+  name: Voyant.io Lusha Intelligence API
+  description: Lusha contact enrichment for lead data.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - lusha-intelligence
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-lusha-intelligence-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-mcp-api
+  name: Voyant.io MCP API
+  description: >-
+    Model Context Protocol server. Expose your context to AI agents (Claude Code, Cursor, etc).
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - MCP
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-mcp-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-messaging-framework-api
+  name: Voyant.io Messaging Framework API
+  description: >-
+    Core GTM messaging assets: personas, products, use cases, positioning, and value propositions.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - messaging-framework
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-messaging-framework-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-notion-api
+  name: Voyant.io Notion API
+  description: Notion workspace integration for content sync.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - notion
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-notion-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-notion-auth-api
+  name: Voyant.io Notion Auth API
+  description: Notion OAuth authentication flow.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - notion-auth
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-notion-auth-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-onboarding-wizard-api
+  name: Voyant.io Onboarding Wizard API
+  description: AI-assisted onboarding. Generate messaging framework from your website.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - onboarding-wizard
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-onboarding-wizard-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-ontology-api
+  name: Voyant.io Ontology API
+  description: The ontology API from Voyant.io — 3 operation(s) for ontology.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - ontology
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-ontology-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-org-settings-api
+  name: Voyant.io Org Settings API
+  description: 'Organization settings: domain, company name, preferences.'
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - org-settings
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-org-settings-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-pdfs-api
+  name: Voyant.io PD Fs API
+  description: PDF upload and processing. Extract text and structure from documents.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - PDFs
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-pdfs-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-pipeline-api
+  name: Voyant.io Pipeline API
+  description: Pipeline framework for multi-step agent workflows (Blueprints).
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - pipeline
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-pipeline-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-pitch-deck-generator-api
+  name: Voyant.io Pitch Deck Generator API
+  description: Generate pitch decks from website content and context.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Pitch Deck Generator
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-pitch-deck-generator-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-playbooks-api
+  name: Voyant.io Playbooks API
+  description: 'GTM playbooks: sequences, triggers, and automated workflows.'
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - playbooks
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-playbooks-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-rag-api
+  name: Voyant.io Rag API
+  description: The Rag API from Voyant.io — 7 operation(s) for rag.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Rag
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-rag-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-reddit-lite-signals-api
+  name: Voyant.io Reddit Lite Signals API
+  description: >-
+    Reddit monitoring across subreddits. Track brand mentions, competitor discussions, and community sentiment.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - reddit-lite-signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-reddit-lite-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-resources-api
+  name: Voyant.io Resources API
+  description: Marketing resource management
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - resources
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-resources-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-session-status-api
+  name: Voyant.io Session Status API
+  description: The Session Status API from Voyant.io — 1 operation(s) for session status.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Session Status
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-session-status-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-signals-api
+  name: Voyant.io Signals API
+  description: >-
+    Unified signal ingestion across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Discord, Twitter/X,
+    ProductHunt, Slack, YouTube, G2, and government sources (SAM.gov, FERC).
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-signals-discord-api
+  name: Voyant.io Signals Discord API
+  description: >-
+    Discord server monitoring for developer communities. Track mentions and community discussions.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - signals-discord
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-signals-discord-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-simple-onboarding-api
+  name: Voyant.io Simple Onboarding API
+  description: Streamlined 5-step onboarding flow.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - simple-onboarding
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-simple-onboarding-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-strategy-pipeline-api
+  name: Voyant.io Strategy Pipeline API
+  description: The Strategy Pipeline API from Voyant.io — 8 operation(s) for strategy pipeline.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Strategy Pipeline
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-strategy-pipeline-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-stream-api
+  name: Voyant.io Stream API
+  description: Server-sent events for real-time updates.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - stream
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-stream-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-sync-api
+  name: Voyant.io Sync API
+  description: Organization data synchronization
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - sync
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-sync-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-target-graph-api
+  name: Voyant.io Target Graph API
+  description: Account and contact intelligence. Build and enrich your target account list.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - target-graph
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-target-graph-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-targetgraph-api
+  name: Voyant.io Targetgraph API
+  description: Target graph queries and relationship mapping.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - targetgraph
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-targetgraph-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-targets-api
+  name: Voyant.io Targets API
+  description: The Targets API from Voyant.io — 1 operation(s) for targets.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Targets
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-targets-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-telemetry-api
+  name: Voyant.io Telemetry API
+  description: >-
+    Site visitor tracking with IP geolocation and company enrichment. Identify anonymous visitors.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - telemetry
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-telemetry-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-templates-api
+  name: Voyant.io Templates API
+  description: The Templates API from Voyant.io — 5 operation(s) for templates.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-templates-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-test-search-api
+  name: Voyant.io Test Search API
+  description: The Test Search API from Voyant.io — 1 operation(s) for test search.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Test Search
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-test-search-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-unified-discovery-api
+  name: Voyant.io Unified Discovery API
+  description: Automated discovery across all signal platforms. Schedule and manage discovery jobs.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - unified-discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-unified-discovery-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-video-generation-api
+  name: Voyant.io Video Generation API
+  description: AI video script generation and storyboarding.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Video Generation
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-video-generation-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-video-script-generation-api
+  name: Voyant.io Video Script Generation API
+  description: Generate video scripts from your brand context.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Video Script Generation
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-video-script-generation-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-video-script-management-api
+  name: Voyant.io Video Script Management API
+  description: Manage and version video scripts.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Video Script Management
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-video-script-management-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-voice-training-api
+  name: Voyant.io Voice Training API
+  description: Train custom voice models on your brand content.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Voice Training
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-voice-training-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-voyantio-api-api
+  name: Voyant.io VoyantIO API
+  description: The VoyantIO API API from Voyant.io — 2 operation(s) for voyantio api.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - VoyantIO API
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-voyantio-api-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-webflow-api
+  name: Voyant.io Webflow API
+  description: Webflow site management and content publishing.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - Webflow
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-webflow-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-webflow-auth-api
+  name: Voyant.io Webflow Auth API
+  description: Webflow OAuth authentication flow.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - webflow-auth
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-webflow-auth-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-well-known-api
+  name: Voyant.io Well Known API
+  description: Generate llms.txt, context.txt, and agents.json for AI discoverability.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - well-known
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-well-known-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-youtube-signals-api
+  name: Voyant.io Youtube Signals API
+  description: >-
+    YouTube video tracking: tutorials, reviews, mentions, and developer content about your product.
+  humanURL: https://voice-forge-production.up.railway.app/docs
+  baseURL: https://voice-forge-production.up.railway.app
+  tags:
+  - youtube-signals
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-youtube-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
 common:
+  - type: Overlay
+    url: overlays/voyant-gypsum-openapi-overlay.yaml
   - type: Website
     url: https://www.voyant.io/
   - type: DeveloperPortal
