@@ -15,12 +15,13 @@ deliveryModel:
   model: saas
   open_source: false
   commercial: true
-  callable_host: false
+  callable_host: true
   label: Hosted service · you call their endpoint
-  confidence: medium
+  confidence: high
   source:
+  - openapi
   - pricing
-  generated: '2026-08-12'
+  generated: '2026-08-28'
   method: derived
 accessModel:
   pricing: unknown
@@ -2477,6 +2478,9 @@ apis:
   - type: AgenticAccess
     url: agentic-access/voyant-agentic-access.yml
 common:
+  - type: CapabilityMap
+    url: capabilities/voyant-capability-edges.yml
+    name: Voyant.io Business Capability Map
   - type: Overlay
     url: overlays/voyant-gypsum-openapi-overlay.yaml
   - type: Website
