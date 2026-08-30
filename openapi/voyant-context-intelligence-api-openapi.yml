@@ -1,0 +1,912 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Context Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: context-intelligence
+  description: Context streams and brand knowledge management. Create, update, and query your organization's unified knowledge base.
+paths:
+  /api/context-intelligence/process:
+    post:
+      tags:
+      - context-intelligence
+      summary: Process Content With Intelligence
+      description: 'Process content with intelligent metadata extraction and flexible chunking
+
+
+        This endpoint:
+
+        - Extracts rich metadata using AI and patterns
+
+        - Creates multiple chunk versions (standard, micro, 18-token)
+
+        - Suggests and optionally creates context streams
+
+        - Stores everything for retrieval'
+      operationId: process_content_with_intelligence_api_context_intelligence_process_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/process/immediate:
+    post:
+      tags:
+      - context-intelligence
+      summary: Process Content Immediate
+      description: Process content immediately (for smaller content)
+      operationId: process_content_immediate_api_context_intelligence_process_immediate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/streams:
+    get:
+      tags:
+      - context-intelligence
+      summary: List Context Streams
+      description: List available context streams
+      operationId: list_context_streams_api_context_intelligence_streams_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: include_public
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include public streams
+          default: true
+          title: Include Public
+        description: Include public streams
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - context-intelligence
+      summary: Create Context Stream
+      description: Create a new context stream
+      operationId: create_context_stream_api_context_intelligence_streams_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStreamRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/streams/gypsum-messaging:
+    post:
+      tags:
+      - context-intelligence
+      summary: Refresh Gypsum Messaging Stream
+      description: "Refresh the Gypsum messaging framework context stream.\n\nOptionally pass version_metadata to track training rationale:\n{\n    \"version_metadata\": {\n        \"Headline\": {\"content_version_id\": \"uuid\", \"change_rationale\": \"Updated per brand guidelines\"},\n        \"Persona: CTO\": {\"content_version_id\": \"uuid\", \"change_rationale\": \"Refined pain points\"}\n    },\n    \"change_source\": \"training\",\n    \"change_rationale\": \"Bulk update after training session\"\n}"
+      operationId: refresh_gypsum_messaging_stream_api_context_intelligence_streams_gypsum_messaging_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/GypsumSyncRequest'
+              - type: 'null'
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/streams/competitor-intelligence:
+    post:
+      tags:
+      - context-intelligence
+      summary: Refresh Competitor Intelligence Stream
+      description: 'Refresh the Competitive Intelligence context stream.
+
+
+        This endpoint:
+
+        1. Ensures the Competitive Intelligence stream exists
+
+        2. Re-ingests all active competitors into the context stream
+
+        3. Generates embeddings for competitor chunks
+
+
+        Use this to sync competitor data into the context system after:
+
+        - Adding new competitors via /api/competitors
+
+        - Running competitor scans
+
+        - Periodic refresh'
+      operationId: refresh_competitor_intelligence_stream_api_context_intelligence_streams_competitor_intelligence_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/streams/{stream_id}/touch:
+    post:
+      tags:
+      - context-intelligence
+      summary: Touch Context Stream
+      description: Touch a context stream to refresh the 'last_accessed' timestamp.
+      operationId: touch_context_stream_api_context_intelligence_streams__stream_id__touch_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: stream_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Stream Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/streams/{stream_id}/refresh:
+    post:
+      tags:
+      - context-intelligence
+      summary: Refresh Context Stream
+      description: Rebuilds the chunk/embedding data for a context stream.
+      operationId: refresh_context_stream_api_context_intelligence_streams__stream_id__refresh_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: stream_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Stream Id
+      - name: chunk_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 50
+          - type: 'null'
+          description: Override chunk size (tokens)
+          title: Chunk Size
+        description: Override chunk size (tokens)
+      - name: chunk_overlap
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+          description: Override chunk overlap (tokens)
+          title: Chunk Overlap
+        description: Override chunk overlap (tokens)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/streams/{stream_id}/purge:
+    post:
+      tags:
+      - context-intelligence
+      summary: Purge Context Stream
+      description: 'Purge all derived content for a stream — chunks, embeddings, versions —
+
+        while keeping the stream so Refresh can repopulate it. Tenant-scoped.'
+      operationId: purge_context_stream_api_context_intelligence_streams__stream_id__purge_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: stream_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Stream Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/streams/{stream_id}:
+    get:
+      tags:
+      - context-intelligence
+      summary: Get Stream Detail
+      description: Get detailed information about a specific stream including quality metrics
+      operationId: get_stream_detail_api_context_intelligence_streams__stream_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: stream_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Stream Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/streams/{stream_id}/context:
+    get:
+      tags:
+      - context-intelligence
+      summary: Get Stream Context
+      description: Get context chunks for a specific stream
+      operationId: get_stream_context_api_context_intelligence_streams__stream_id__context_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: stream_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Stream Id
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Additional query filter
+          title: Query
+        description: Additional query filter
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Maximum chunks to return
+          default: 50
+          title: Limit
+        description: Maximum chunks to return
+      - name: token_limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Maximum total tokens
+          default: 2000
+          title: Token Limit
+        description: Maximum total tokens
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/context.txt:
+    get:
+      tags:
+      - context-intelligence
+      summary: Generate Context Txt
+      description: Generate context.txt file for AI agents
+      operationId: generate_context_txt_api_context_intelligence_context_txt_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: stream_ids
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: Context stream IDs
+          title: Stream Ids
+        description: Context stream IDs
+      - name: purpose
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Purpose of context
+          title: Purpose
+        description: Purpose of context
+      - name: technical_level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Technical level
+          default: intermediate
+          title: Technical Level
+        description: Technical level
+      - name: industry
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Industry focus
+          title: Industry
+        description: Industry focus
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/chunks/optimize:
+    post:
+      tags:
+      - context-intelligence
+      summary: Optimize Chunk
+      description: Optimize a chunk for specific token window (including 18-token challenge)
+      operationId: optimize_chunk_api_context_intelligence_chunks_optimize_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChunkOptimizationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/chunks/rerank:
+    post:
+      tags:
+      - context-intelligence
+      summary: Rerank Chunks
+      description: Rerank chunks based on custom criteria
+      operationId: rerank_chunks_api_context_intelligence_chunks_rerank_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RerankRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/chunks/override-ranking:
+    post:
+      tags:
+      - context-intelligence
+      summary: Override Chunk Ranking
+      description: Override ranking for specific chunk
+      operationId: override_chunk_ranking_api_context_intelligence_chunks_override_ranking_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RankingOverrideRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/analytics/metadata-coverage:
+    get:
+      tags:
+      - context-intelligence
+      summary: Get Metadata Coverage
+      description: Get analytics on metadata coverage across content
+      operationId: get_metadata_coverage_api_context_intelligence_analytics_metadata_coverage_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/context-intelligence/task/{task_id}:
+    get:
+      tags:
+      - context-intelligence
+      summary: Get Task Status
+      description: Get status of async task
+      operationId: get_task_status_api_context_intelligence_task__task_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/chunks/versions/{block_label}:
+    get:
+      tags:
+      - context-intelligence
+      summary: Get Chunk Version History
+      description: 'Get version history for a specific content block (e.g., ''Headline'', ''Persona: CTO'')'
+      operationId: get_chunk_version_history_api_context_intelligence_chunks_versions__block_label__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: block_label
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Block Label
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-intelligence/chunks/current:
+    get:
+      tags:
+      - context-intelligence
+      summary: Get Current Chunks
+      description: Get all current (latest version) chunks, optionally filtered by content_type
+      operationId: get_current_chunks_api_context_intelligence_chunks_current_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ProcessContentRequest:
+      properties:
+        content_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Id
+          description: ID of existing content to process
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+          description: Raw text to process
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+          description: Source URL
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Initial metadata
+        chunking_configs:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Chunking Configs
+          description: Custom chunking configurations
+        create_streams:
+          type: boolean
+          title: Create Streams
+          description: Auto-create suggested context streams
+          default: true
+      type: object
+      title: ProcessContentRequest
+      description: Request for processing content with intelligence
+    RankingOverrideRequest:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: Chunk to override
+        boost_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Boost Score
+          description: Boost score (positive or negative)
+        pin_position:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Pin Position
+          description: Pin to position
+        exclude:
+          type: boolean
+          title: Exclude
+          description: Exclude from results
+          default: false
+        reason:
+          type: string
+          title: Reason
+          description: Reason for override
+        context_stream_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Stream Id
+          description: Apply to specific stream
+      type: object
+      required:
+      - chunk_id
+      - reason
+      title: RankingOverrideRequest
+      description: Request for ranking override
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RerankRequest:
+      properties:
+        chunk_ids:
+          items:
+            type: string
+          type: array
+          title: Chunk Ids
+          description: Chunks to rerank
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking criteria
+        context_stream_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Stream Id
+          description: Optional stream context
+      type: object
+      required:
+      - chunk_ids
+      - ranking_criteria
+      title: RerankRequest
+      description: Request for reranking chunks
+    GypsumSyncRequest:
+      properties:
+        version_metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Version Metadata
+        change_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Source
+          default: sync
+        change_rationale:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Rationale
+      type: object
+      title: GypsumSyncRequest
+      description: Optional metadata to include when syncing from Gypsum
+    ChunkOptimizationRequest:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: Chunk ID to optimize
+        target_tokens:
+          type: integer
+          title: Target Tokens
+          description: Target token count
+        preserve_meaning:
+          type: boolean
+          title: Preserve Meaning
+          description: Whether to preserve semantic meaning
+          default: true
+        version_name:
+          type: string
+          title: Version Name
+          description: Name for this version
+      type: object
+      required:
+      - chunk_id
+      - target_tokens
+      - version_name
+      title: ChunkOptimizationRequest
+      description: Request for chunk optimization
+    CreateStreamRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Stream name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Stream description
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Metadata filters
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking configuration
+        token_limits:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Token Limits
+          description: Token limits by use case
+          default:
+            default: 2000
+        is_public:
+          type: boolean
+          title: Is Public
+          description: Whether stream is public
+          default: false
+      type: object
+      required:
+      - name
+      title: CreateStreamRequest
+      description: Request for creating a context stream
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

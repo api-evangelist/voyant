@@ -1,0 +1,759 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Youtube Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: youtube-signals
+  description: 'YouTube video tracking: tutorials, reviews, mentions, and developer content about your product.'
+paths:
+  /api/youtube/health:
+    get:
+      tags:
+      - youtube-signals
+      summary: Youtube Health
+      description: Check YouTube integration health
+      operationId: youtube_health_api_youtube_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/youtube/debug/brand-keywords:
+    get:
+      tags:
+      - youtube-signals
+      summary: Debug Brand Keywords
+      description: Debug endpoint to see what brand keywords are detected for the current tenant.
+      operationId: debug_brand_keywords_api_youtube_debug_brand_keywords_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/youtube/mentions:
+    get:
+      tags:
+      - youtube-signals
+      summary: Get Youtube Mentions
+      description: 'Search YouTube for videos mentioning a company/competitor.
+
+        Used by the competitor dashboard to find YouTube videos.
+
+
+        Supports smart filtering:
+
+        - If competitor_id provided, loads search_terms and search_exclusions from competitor
+
+        - Post-filters results to ensure exact matches and exclude false positives'
+      operationId: get_youtube_mentions_api_youtube_mentions_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Query
+      - name: competitor_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Competitor ID to load search config
+          title: Competitor Id
+        description: Competitor ID to load search config
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      - name: days_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 90
+          title: Days Back
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/brand-mentions:
+    get:
+      tags:
+      - youtube-signals
+      summary: Get Brand Youtube Mentions
+      description: 'Search YouTube for videos mentioning YOUR company/brand by external influencers.
+
+
+        This automatically:
+
+        1. Uses your configured brand keywords (from signal sources)
+
+        2. Excludes your own YouTube channel
+
+        3. Returns only external creator content
+
+
+        Use this to find influencers talking about your brand.'
+      operationId: get_brand_youtube_mentions_api_youtube_brand_mentions_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      - name: days_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 90
+          title: Days Back
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/creators:
+    get:
+      tags:
+      - youtube-signals
+      summary: List Creators
+      description: List all tracked creators for the organization
+      operationId: list_creators_api_youtube_creators_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - youtube-signals
+      summary: Add Creator
+      description: "Add a creator to track.\n\nRequest body:\n{\n    \"channel_id\": \"UCsBjURrPoezykLs9EqgamOA\",  // OR\n    \"channel_name\": \"Fireship\",  // Will search for channel\n    \"keywords\": [\"kubernetes\", \"docker\"],  // Keywords to watch for\n    \"competitors_to_track\": [\"Apache Kafka\", \"RabbitMQ\"],\n    \"notes\": \"Key DevOps influencer\"\n}"
+      operationId: add_creator_api_youtube_creators_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/creators/suggested:
+    get:
+      tags:
+      - youtube-signals
+      summary: Get Suggested Creators
+      description: Get suggested tech creators to track
+      operationId: get_suggested_creators_api_youtube_creators_suggested_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/youtube/creators/bulk:
+    post:
+      tags:
+      - youtube-signals
+      summary: Add Creators Bulk
+      description: "Add multiple creators at once.\n\nRequest body:\n{\n    \"creators\": [\n        {\"channel_id\": \"UCsBjURrPoezykLs9EqgamOA\", \"keywords\": [\"web dev\"]},\n        {\"channel_name\": \"ThePrimeagen\", \"keywords\": [\"rust\", \"performance\"]}\n    ]\n}"
+      operationId: add_creators_bulk_api_youtube_creators_bulk_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/youtube/creators/{creator_id}:
+    put:
+      tags:
+      - youtube-signals
+      summary: Update Creator
+      description: Update a creator's tracking configuration
+      operationId: update_creator_api_youtube_creators__creator_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: creator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Creator Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - youtube-signals
+      summary: Delete Creator
+      description: Stop tracking a creator
+      operationId: delete_creator_api_youtube_creators__creator_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: creator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Creator Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/creators/{creator_id}/videos:
+    get:
+      tags:
+      - youtube-signals
+      summary: Get Creator Videos
+      description: Get recent videos from a tracked creator
+      operationId: get_creator_videos_api_youtube_creators__creator_id__videos_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: creator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Creator Id
+      - name: max_results
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Max Results
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/creators/check-all:
+    post:
+      tags:
+      - youtube-signals
+      summary: Check All Creators
+      description: "Check all tracked creators for new content.\n\nRequest body:\n{\n    \"hours_back\": 168,  // Check for content from last week\n    \"max_videos_per_creator\": 5\n}"
+      operationId: check_all_creators_api_youtube_creators_check_all_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/youtube/signals/discover:
+    post:
+      tags:
+      - youtube-signals
+      summary: Discover Youtube Signals
+      description: "Discover YouTube signals by searching for videos matching keywords.\n\nRequest body:\n{\n    \"keywords\": [\"kubernetes tutorial\", \"docker devops\"],\n    \"time_window_hours\": 168,\n    \"max_results\": 50\n}"
+      operationId: discover_youtube_signals_api_youtube_signals_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/youtube/signals:
+    get:
+      tags:
+      - youtube-signals
+      summary: List Youtube Signals
+      description: List YouTube signals
+      operationId: list_youtube_signals_api_youtube_signals_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - youtube-signals
+      summary: Delete Youtube Signals
+      description: Delete all YouTube signals
+      operationId: delete_youtube_signals_api_youtube_signals_delete
+      security:
+      - HTTPBearer: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/youtube/videos/{video_id}/transcript:
+    get:
+      tags:
+      - youtube-signals
+      summary: Get Video Transcript
+      description: 'Get the transcript for a specific YouTube video.
+
+        Returns timestamped segments.'
+      operationId: get_video_transcript_api_youtube_videos__video_id__transcript_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: video_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Video Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/videos/{video_id}/scan-mentions:
+    post:
+      tags:
+      - youtube-signals
+      summary: Scan Video For Mentions
+      description: "Scan a specific video's transcript for company/competitor mentions.\n\nRequest body:\n{\n    \"company_names\": [\"Redpanda\", \"Redpanda Data\"],\n    \"competitor_names\": [\"Apache Kafka\", \"Confluent\", \"Pulsar\"]\n}\n\nReturns timestamped mentions with context and direct YouTube links."
+      operationId: scan_video_for_mentions_api_youtube_videos__video_id__scan_mentions_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: video_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Video Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/creators/{creator_id}/scan-mentions:
+    post:
+      tags:
+      - youtube-signals
+      summary: Scan Creator For Mentions
+      description: "Scan a tracked creator's recent videos for company/competitor mentions.\nDownloads and parses transcripts to find exact timestamps.\n\nRequest body:\n{\n    \"company_names\": [\"Redpanda\", \"Redpanda Data\"],\n    \"competitor_names\": [\"Apache Kafka\", \"Confluent\"],\n    \"max_videos\": 10,\n    \"hours_back\": 720  // 30 days\n}"
+      operationId: scan_creator_for_mentions_api_youtube_creators__creator_id__scan_mentions_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: creator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Creator Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/youtube/scan-all-creators:
+    post:
+      tags:
+      - youtube-signals
+      summary: Scan All Creators For Mentions
+      description: "Scan ALL tracked creators for company/competitor mentions.\nThis is the big one - finds every mention across all your tracked influencers.\n\nRequest body:\n{\n    \"company_names\": [\"Redpanda\", \"Redpanda Data\"],\n    \"competitor_names\": [\"Apache Kafka\", \"Confluent\", \"Pulsar\"],\n    \"max_videos_per_creator\": 5,\n    \"hours_back\": 720\n}\n\nReturns all mentions with:\n- Direct YouTube links with timestamps (e.g., youtube.com/watch?v=xxx&t=123s)\n- Context around each mention\n- Sentiment indicators"
+      operationId: scan_all_creators_for_mentions_api_youtube_scan_all_creators_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/youtube/blacklist:
+    get:
+      tags:
+      - youtube-signals
+      summary: List Blacklist
+      description: List all blacklist entries for the org.
+      operationId: list_blacklist_api_youtube_blacklist_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - youtube-signals
+      summary: Add To Blacklist
+      description: "Add an entry to the blacklist.\n\nRequest body:\n{\n    \"blacklist_type\": \"channel_name\" | \"channel_id\" | \"term\" | \"video_id\",\n    \"value\": \"signpath pharmaceuticals\",\n    \"reason\": \"Wrong company - pharmaceuticals not software\"\n}"
+      operationId: add_to_blacklist_api_youtube_blacklist_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/youtube/blacklist/{entry_id}:
+    delete:
+      tags:
+      - youtube-signals
+      summary: Remove From Blacklist
+      description: Remove an entry from the blacklist.
+      operationId: remove_from_blacklist_api_youtube_blacklist__entry_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: entry_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entry Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

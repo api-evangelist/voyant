@@ -1,0 +1,435 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Hubspot API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: hubspot
+  description: 'HubSpot CRM integration: contacts, companies, deals, and engagement.'
+paths:
+  /api/hubspot/status:
+    get:
+      tags:
+      - hubspot
+      summary: Get Hubspot Status
+      description: 'Check HubSpot integration status.
+
+        Returns whether credentials are configured and connection is working.
+
+
+        Checks both org-level settings (from CRM Integration) and env var.'
+      operationId: get_hubspot_status_api_hubspot_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/hubspot/refresh:
+    post:
+      tags:
+      - hubspot
+      summary: Refresh Token
+      description: Refresh the HubSpot access token.
+      operationId: refresh_token_api_hubspot_refresh_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/hubspot/disconnect:
+    post:
+      tags:
+      - hubspot
+      summary: Disconnect Hubspot
+      description: Disconnect HubSpot integration.
+      operationId: disconnect_hubspot_api_hubspot_disconnect_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/hubspot/mqls:
+    get:
+      tags:
+      - hubspot
+      summary: Get Mqls
+      description: 'Get Marketing Qualified Leads from HubSpot.
+
+
+        Returns contacts who reached MQL lifecycle stage within the specified period.'
+      operationId: get_mqls_api_hubspot_mqls_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Days to look back
+          default: 30
+          title: Days
+        description: Days to look back
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Max MQLs to return
+          default: 100
+          title: Limit
+        description: Max MQLs to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hubspot/mqls/summary:
+    get:
+      tags:
+      - hubspot
+      summary: Get Mql Summary
+      description: 'Get MQL summary metrics for CMO dashboard.
+
+
+        Includes current count, targets, cost per MQL, and trend data.'
+      operationId: get_mql_summary_api_hubspot_mqls_summary_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      - name: quarterly_target
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Quarterly MQL target
+          default: 1625
+          title: Quarterly Target
+        description: Quarterly MQL target
+      - name: annual_target
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Annual MQL target
+          default: 6500
+          title: Annual Target
+        description: Annual MQL target
+      - name: budget_spent
+        in: query
+        required: false
+        schema:
+          type: number
+          description: Budget spent this period
+          default: 0
+          title: Budget Spent
+        description: Budget spent this period
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hubspot/mqls/trends:
+    get:
+      tags:
+      - hubspot
+      summary: Get Mql Trends
+      description: 'Get MQL counts grouped by time period.
+
+
+        Used for trend charts showing MQL generation over time.'
+      operationId: get_mql_trends_api_hubspot_mqls_trends_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 7
+          default: 90
+          title: Days
+      - name: group_by
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(day|week|month)$
+          default: week
+          title: Group By
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hubspot/campaigns:
+    get:
+      tags:
+      - hubspot
+      summary: Get Campaigns
+      description: 'Get email campaign performance with MQL attribution.
+
+
+        Returns campaigns with open rates, click rates, conversions, and MQL generation.'
+      operationId: get_campaigns_api_hubspot_campaigns_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hubspot/gated-content:
+    get:
+      tags:
+      - hubspot
+      summary: Get Gated Content
+      description: 'Get gated content (forms) performance stats.
+
+
+        Returns views, submissions, conversion rates, and MQL generation by content.'
+      operationId: get_gated_content_api_hubspot_gated_content_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hubspot/context/mqls:
+    get:
+      tags:
+      - hubspot
+      summary: Get Mql Context
+      description: 'Generate MQL context data for RAG/AI consumption.
+
+
+        Returns structured data about MQL performance, trends, and insights.'
+      operationId: get_mql_context_api_hubspot_context_mqls_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hubspot/context/campaigns:
+    get:
+      tags:
+      - hubspot
+      summary: Get Campaign Context
+      description: 'Generate campaign context data for RAG/AI consumption.
+
+
+        Returns structured data about campaign performance and insights.'
+      operationId: get_campaign_context_api_hubspot_context_campaigns_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,201 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Well Known API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: well-known
+  description: Generate llms.txt, context.txt, and agents.json for AI discoverability.
+paths:
+  /api/well-known/context.txt:
+    get:
+      tags:
+      - well-known
+      summary: Generate Context Txt
+      description: 'Generate a dynamic context.txt file for the user''s organization.
+
+
+        This is the "shadow web" - a semantic layer for AI agents that parallels
+
+        the human-readable website. Includes:
+
+        - Identity & governance
+
+        - Knowledge graph (entities & relationships)
+
+        - Context streams
+
+        - Agent guidance'
+      operationId: generate_context_txt_api_well_known_context_txt_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/well-known/llms.txt:
+    get:
+      tags:
+      - well-known
+      summary: Generate Llms Txt
+      description: 'Generate a dynamic llms.txt file for the user''s domain.
+
+
+        This file instructs AI agents on:
+
+        - How to navigate the knowledge graph
+
+        - Available context streams and their purposes
+
+        - Semantic relationships to understand
+
+        - Best practices for content generation'
+      operationId: generate_llms_txt_api_well_known_llms_txt_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/well-known/ontology.jsonld:
+    get:
+      tags:
+      - well-known
+      summary: Generate Ontology Jsonld
+      description: 'Generate a JSON-LD ontology file for machine parsing.
+
+
+        This is the fully structured, machine-readable version of the knowledge graph
+
+        that AI agents can parse directly for semantic understanding.'
+      operationId: generate_ontology_jsonld_api_well_known_ontology_jsonld_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/well-known/trust.txt:
+    get:
+      tags:
+      - well-known
+      summary: Generate Trust Txt
+      description: 'Generate a trust.txt file for the user''s organization.
+
+        Declares security posture and verifiable credentials.'
+      operationId: generate_trust_txt_api_well_known_trust_txt_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/well-known/generate-both:
+    post:
+      tags:
+      - well-known
+      summary: Generate Well Known Files
+      description: Generate both context.txt and llms.txt files with custom configuration.
+      operationId: generate_well_known_files_api_well_known_generate_both_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - additionalProperties: true
+                type: object
+              - type: 'null'
+              title: Config
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

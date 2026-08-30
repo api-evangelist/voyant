@@ -1,0 +1,602 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Target Graph API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: target-graph
+  description: Account and contact intelligence. Build and enrich your target account list.
+paths:
+  /api/target-graph/organizations/{org_id}:
+    get:
+      tags:
+      - target-graph
+      summary: Get Organization Detail
+      description: Get detailed information about a specific organization.
+      operationId: get_organization_detail_api_target_graph_organizations__org_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/stats:
+    get:
+      tags:
+      - target-graph
+      summary: Get Stats
+      description: Get target graph statistics
+      operationId: get_stats_api_target_graph_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/target-graph/organizations:
+    get:
+      tags:
+      - target-graph
+      summary: List Organizations
+      description: List all discovered organizations
+      operationId: list_organizations_api_target_graph_organizations_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Search organization names
+          title: Search
+        description: Search organization names
+      - name: min_members
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Minimum member count
+          title: Min Members
+        description: Minimum member count
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Sort by: member_count, total_signals, last_updated_at'
+          default: member_count
+          title: Sort By
+        description: 'Sort by: member_count, total_signals, last_updated_at'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/people:
+    get:
+      tags:
+      - target-graph
+      summary: List People
+      description: List all discovered people
+      operationId: list_people_api_target_graph_people_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Search names
+          title: Search
+        description: Search names
+      - name: organization_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by organization ID
+          title: Organization Id
+        description: Filter by organization ID
+      - name: has_contact
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Has contact info
+          title: Has Contact
+        description: Has contact info
+      - name: min_signals
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Minimum signal count
+          title: Min Signals
+        description: Minimum signal count
+      - name: repository_filter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by repository
+          title: Repository Filter
+        description: Filter by repository
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Sort by: total_signals, last_signal_at'
+          default: total_signals
+          title: Sort By
+        description: 'Sort by: total_signals, last_signal_at'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/framework-personas:
+    get:
+      tags:
+      - target-graph
+      summary: Framework Personas
+      description: 'The brand''s personas FROM the messaging framework (Gypsum), fused with the
+
+        resolved audience: each framework persona is matched to its resolved shopper
+
+        segment (by name overlap) with real people count + top interests. This is the
+
+        persona-collision view — intended persona vs. who''s actually out there.'
+      operationId: framework_personas_api_target_graph_framework_personas_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/target-graph/discover-decision-makers:
+    post:
+      tags:
+      - target-graph
+      summary: Discover Decision Makers
+      description: Discover decision makers on LinkedIn for a specific organization
+      operationId: discover_decision_makers_api_target_graph_discover_decision_makers_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties:
+                type: string
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/target-graph/high-value-targets:
+    get:
+      tags:
+      - target-graph
+      summary: Get High Value Targets
+      description: 'Identify High Value Targets (companies/orgs with multiple developers)
+
+        based on signal analysis.'
+      operationId: get_high_value_targets_api_target_graph_high_value_targets_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/target-graph/high-value-targets/summary:
+    get:
+      tags:
+      - target-graph
+      summary: Get Hvt Summary
+      description: 'Get HVT rollup summary by CRM stage for CMO dashboard.
+
+        Returns counts and totals by pipeline phase.'
+      operationId: get_hvt_summary_api_target_graph_high_value_targets_summary_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/target-graph/organizations/{target_org_id}/interactions:
+    post:
+      tags:
+      - target-graph
+      summary: Log Interaction
+      description: Log an interaction with an organization (call, email, meeting, etc.)
+      operationId: log_interaction_api_target_graph_organizations__target_org_id__interactions_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: target_org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Target Org Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/organizations/{target_org_id}/hypothesis:
+    put:
+      tags:
+      - target-graph
+      summary: Update Hypothesis
+      description: Update sales hypothesis for an organization (F.I.R.E. methodology)
+      operationId: update_hypothesis_api_target_graph_organizations__target_org_id__hypothesis_put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: target_org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Target Org Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/organizations/{target_org_id}/details:
+    get:
+      tags:
+      - target-graph
+      summary: Get Organization Details
+      description: Get full organization details including hypothesis and interaction history
+      operationId: get_organization_details_api_target_graph_organizations__target_org_id__details_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: target_org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Target Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/clustering-modes:
+    get:
+      tags:
+      - target-graph
+      summary: Get Clustering Modes
+      description: Get available clustering modes for the graph visualization.
+      operationId: get_clustering_modes_api_target_graph_clustering_modes_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/target-graph/graph-clustered:
+    get:
+      tags:
+      - target-graph
+      summary: Get Clustered Graph
+      description: 'Get graph data with anchor nodes for clustering visualization.
+
+
+        Anchor nodes are larger "hub" nodes that organizations and people cluster around.
+
+        This enables strategic views like:
+
+        - Tech Stack: See all companies using Kafka together
+
+        - CRM Stage: Visual pipeline view
+
+        - Journey Stage: See awareness funnel
+
+        - Industry: Vertical clustering'
+      operationId: get_clustered_graph_api_target_graph_graph_clustered_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: clustering_mode
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Clustering mode: none, tech_stack, journey_stage, industry, crm_stage, subreddit, github_repo'
+          default: none
+          title: Clustering Mode
+        description: 'Clustering mode: none, tech_stack, journey_stage, industry, crm_stage, subreddit, github_repo'
+      - name: limit_orgs
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 300
+          minimum: 1
+          default: 100
+          title: Limit Orgs
+      - name: limit_people
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 200
+          title: Limit People
+      - name: include_people
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include people nodes
+          default: true
+          title: Include People
+        description: Include people nodes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/target-graph/load-demo-data:
+    post:
+      tags:
+      - target-graph
+      summary: Load Demo Data
+      description: 'Load demo data to simulate CRM integration.
+
+        Creates sample organizations, people, and signals for demonstration.'
+      operationId: load_demo_data_api_target_graph_load_demo_data_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/target-graph/clear-demo-data:
+    delete:
+      tags:
+      - target-graph
+      summary: Clear Demo Data
+      description: 'Clear demo data from the target graph.
+
+        Only removes data that was created by the demo loader.'
+      operationId: clear_demo_data_api_target_graph_clear_demo_data_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

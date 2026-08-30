@@ -1,0 +1,658 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Crawler API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: crawler
+  description: Website crawling and content extraction. Ingest web pages, blogs, and documentation.
+paths:
+  /api/crawl/engines:
+    get:
+      tags:
+      - crawler
+      summary: List Crawler Engines
+      description: 'List available crawler engines and their status.
+
+
+        Returns engines with availability status based on configured credentials.'
+      operationId: list_crawler_engines_api_crawl_engines_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/crawl/estimate:
+    post:
+      tags:
+      - crawler
+      summary: Estimate Crawl Scope
+      description: Estimate number of URLs by checking sitemap.xml.
+      operationId: estimate_crawl_scope_api_crawl_estimate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrawlEstimateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crawl/start:
+    post:
+      tags:
+      - crawler
+      summary: Start Crawl
+      description: 'Start a new crawl job using Celery.
+
+
+        The crawl runs in a Celery worker and can be monitored via the status endpoint.'
+      operationId: start_crawl_api_crawl_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrawlRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrawlResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crawl/status/{crawl_id}:
+    get:
+      tags:
+      - crawler
+      summary: Get Crawl Status
+      description: Get status of a crawl job.
+      operationId: get_crawl_status_api_crawl_status__crawl_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/summary/{crawl_id}:
+    get:
+      tags:
+      - crawler
+      summary: Get Crawl Summary
+      description: Get summary of a completed crawl job.
+      operationId: get_crawl_summary_api_crawl_summary__crawl_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrawlSummary'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/jobs:
+    get:
+      tags:
+      - crawler
+      summary: List Crawl Jobs
+      description: List all crawl jobs for organization.
+      operationId: list_crawl_jobs_api_crawl_jobs_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/cancel:
+    post:
+      tags:
+      - crawler
+      summary: Cancel Crawl
+      description: Cancel a running crawl job.
+      operationId: cancel_crawl_api_crawl__crawl_id__cancel_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/stream/{crawl_id}:
+    get:
+      tags:
+      - crawler
+      summary: Stream Crawl Events
+      description: Stream crawl progress and newly captured content via SSE.
+      operationId: stream_crawl_events_api_crawl_stream__crawl_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/contents:
+    get:
+      tags:
+      - crawler
+      summary: List Crawl Contents
+      description: Return captured content rows for a crawl to support polling UI updates.
+      operationId: list_crawl_contents_api_crawl__crawl_id__contents_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      - name: since
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Return items extracted after this ISO timestamp
+          title: Since
+        description: Return items extracted after this ISO timestamp
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/debug/health:
+    get:
+      tags:
+      - crawler
+      summary: Debug Health
+      description: Debug endpoint to check crawler and Celery health.
+      operationId: debug_health_api_crawl_debug_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/crawl/import-authoritative:
+    post:
+      tags:
+      - crawler
+      summary: Import Authoritative Content
+      description: 'Import llms.txt or context.txt as authoritative context content.
+
+
+        This content gets the highest priority in RAG retrieval because it represents
+
+        the official, curated information that a site wants AI systems to use.'
+      operationId: import_authoritative_content_api_crawl_import_authoritative_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportAuthoritativeContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crawl/cleanup/all:
+    delete:
+      tags:
+      - crawler
+      summary: Cleanup All Crawl Data
+      description: 'Delete ALL crawl data for the organization.
+
+
+        This removes all contents, content_chunks, and crawl_jobs for the org.
+
+        Use confirm=true to execute.
+
+
+        Example: DELETE /api/crawler/cleanup/all?confirm=true'
+      operationId: cleanup_all_crawl_data_api_crawl_cleanup_all_delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: confirm
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Must be true to confirm deletion
+          default: false
+          title: Confirm
+        description: Must be true to confirm deletion
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/cleanup/external-content:
+    delete:
+      tags:
+      - crawler
+      summary: Cleanup External Content
+      description: 'Delete content that was incorrectly crawled from external domains.
+
+
+        This endpoint removes content matching a URL pattern from the organization''s data.
+
+        Use this to clean up content that was crawled due to domain filtering bugs.
+
+
+        Example: DELETE /api/crawler/cleanup/external-content?domain_pattern=grafana.com'
+      operationId: cleanup_external_content_api_crawl_cleanup_external_content_delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: domain_pattern
+        in: query
+        required: true
+        schema:
+          type: string
+          description: URL pattern to match (e.g., 'grafana.com')
+          title: Domain Pattern
+        description: URL pattern to match (e.g., 'grafana.com')
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    CrawlRequest:
+      properties:
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: List of domains to crawl
+        max_pages:
+          type: integer
+          maximum: 2000.0
+          minimum: 1.0
+          title: Max Pages
+          description: Maximum pages to crawl
+          default: 500
+        max_depth:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Max Depth
+          description: Maximum crawl depth
+          default: 3
+        respect_robots:
+          type: boolean
+          title: Respect Robots
+          description: Respect robots.txt
+          default: true
+        same_domain_only:
+          type: boolean
+          title: Same Domain Only
+          description: Only crawl same domain
+          default: true
+        static_workers:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Static Workers
+          description: Parallel workers for static sites
+          default: 5
+        headless:
+          type: boolean
+          title: Headless
+          description: Run browser in headless mode
+          default: true
+        include_patterns:
+          items:
+            type: string
+          type: array
+          title: Include Patterns
+          description: Regex URL/path patterns to include
+        exclude_patterns:
+          items:
+            type: string
+          type: array
+          title: Exclude Patterns
+          description: Regex URL/path patterns to exclude
+        exclude_subdomains:
+          items:
+            type: string
+          type: array
+          title: Exclude Subdomains
+          description: Subdomains to exclude (e.g., ['docs', 'api', 'cdn'])
+      type: object
+      required:
+      - domains
+      title: CrawlRequest
+      description: Request model for crawl job.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ImportAuthoritativeContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The full content of the file
+        source_url:
+          type: string
+          title: Source Url
+          description: URL where the file was found
+        file_type:
+          type: string
+          title: File Type
+          description: 'Type of file: ''llms.txt'' or ''context.txt'''
+        domain:
+          type: string
+          title: Domain
+          description: Domain the file belongs to
+      type: object
+      required:
+      - content
+      - source_url
+      - file_type
+      - domain
+      title: ImportAuthoritativeContentRequest
+      description: Request model for importing llms.txt or context.txt as authoritative content.
+    CrawlResponse:
+      properties:
+        crawl_id:
+          type: string
+          title: Crawl Id
+        task_id:
+          type: string
+          title: Task Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - crawl_id
+      - task_id
+      - status
+      - message
+      title: CrawlResponse
+      description: Response model for crawl job.
+    CrawlSummary:
+      properties:
+        crawl_id:
+          type: string
+          title: Crawl Id
+        org_id:
+          type: string
+          title: Org Id
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+        total_urls_found:
+          type: integer
+          title: Total Urls Found
+        total_urls_crawled:
+          type: integer
+          title: Total Urls Crawled
+        total_pages_saved:
+          type: integer
+          title: Total Pages Saved
+        success_rate:
+          type: number
+          title: Success Rate
+        elapsed_time:
+          type: number
+          title: Elapsed Time
+        pages_per_second:
+          type: number
+          title: Pages Per Second
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - crawl_id
+      - org_id
+      - domains
+      - total_urls_found
+      - total_urls_crawled
+      - total_pages_saved
+      - success_rate
+      - elapsed_time
+      - pages_per_second
+      - status
+      title: CrawlSummary
+      description: Summary model for completed crawl.
+    CrawlEstimateRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain or URL to estimate
+      type: object
+      required:
+      - domain
+      title: CrawlEstimateRequest
+      description: Request model for scan estimate.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

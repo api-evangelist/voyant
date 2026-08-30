@@ -1,0 +1,597 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Pipeline API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: pipeline
+  description: Pipeline framework for multi-step agent workflows (Blueprints).
+paths:
+  /api/pipeline/blueprints:
+    get:
+      tags:
+      - pipeline
+      summary: Get Blueprints
+      description: 'List all available blueprints.
+
+
+        Returns a list of blueprints with their metadata and input schemas.'
+      operationId: get_blueprints_api_pipeline_blueprints_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BlueprintSummary'
+                type: array
+                title: Response Get Blueprints Api Pipeline Blueprints Get
+  /api/pipeline/blueprints/{blueprint_id}:
+    get:
+      tags:
+      - pipeline
+      summary: Get Blueprint Detail
+      description: 'Get detailed information about a blueprint.
+
+
+        Includes full step definitions and configuration.'
+      operationId: get_blueprint_detail_api_pipeline_blueprints__blueprint_id__get
+      parameters:
+      - name: blueprint_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Blueprint Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Blueprint Detail Api Pipeline Blueprints  Blueprint Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pipeline/tools:
+    get:
+      tags:
+      - pipeline
+      summary: List Available Tools
+      description: 'List all available tools that can be used in blueprints.
+
+
+        Groups tools by platform/provider.'
+      operationId: list_available_tools_api_pipeline_tools_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    type: string
+                  type: array
+                type: object
+                title: Response List Available Tools Api Pipeline Tools Get
+  /api/pipeline/execute:
+    post:
+      tags:
+      - pipeline
+      summary: Execute Blueprint
+      description: 'Execute a blueprint.
+
+
+        If stream=True, returns a Server-Sent Events stream.
+
+        Otherwise, returns the complete execution outcome.'
+      operationId: execute_blueprint_api_pipeline_execute_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Execute Blueprint Api Pipeline Execute Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pipeline/executions:
+    get:
+      tags:
+      - pipeline
+      summary: List Executions
+      description: List execution history for the organization.
+      operationId: list_executions_api_pipeline_executions_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: blueprint_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by blueprint
+          title: Blueprint Id
+        description: Filter by blueprint
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by status
+          title: Status
+        description: Filter by status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Executions Api Pipeline Executions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pipeline/executions/{execution_id}:
+    get:
+      tags:
+      - pipeline
+      summary: Get Execution
+      description: Get details of a specific execution.
+      operationId: get_execution_api_pipeline_executions__execution_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Execution Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Execution Api Pipeline Executions  Execution Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pipeline/signals/company:
+    post:
+      tags:
+      - pipeline
+      summary: Discover Company Signals
+      description: 'Discover people at a company via LinkedIn signals.
+
+
+        Returns identity hints (name, profile URL) for resolution.
+
+        No expensive profile enrichment - just signal collection.'
+      operationId: discover_company_signals_api_pipeline_signals_company_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: company_name
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Company name to search
+          title: Company Name
+        description: Company name to search
+      - name: roles
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+          description: Target roles
+          title: Roles
+        description: Target roles
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          description: Max profiles
+          default: 10
+          title: Limit
+        description: Max profiles
+      - name: stream
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Stream updates
+          default: false
+          title: Stream
+        description: Stream updates
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Discover Company Signals Api Pipeline Signals Company Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pipeline/signals/topic:
+    post:
+      tags:
+      - pipeline
+      summary: Discover Topic Signals
+      description: 'Find people discussing a topic across platforms.
+
+
+        Collects signals from thought leaders and discussions for identity resolution.'
+      operationId: discover_topic_signals_api_pipeline_signals_topic_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Topic to search (e.g., 'real-time streaming')
+          title: Topic
+        description: Topic to search (e.g., 'real-time streaming')
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          description: Results per source
+          default: 10
+          title: Limit
+        description: Results per source
+      - name: stream
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Stream updates
+          default: false
+          title: Stream
+        description: Stream updates
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Discover Topic Signals Api Pipeline Signals Topic Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pipeline/signals/competitor:
+    post:
+      tags:
+      - pipeline
+      summary: Discover Competitor Signals
+      description: 'Find people engaging with competitor content.
+
+
+        Discovers potential prospects discussing or comparing competitor products.'
+      operationId: discover_competitor_signals_api_pipeline_signals_competitor_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_name
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Competitor company name
+          title: Competitor Name
+        description: Competitor company name
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Max signals
+          default: 20
+          title: Limit
+        description: Max signals
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Discover Competitor Signals Api Pipeline Signals Competitor Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pipeline/resolve/identity:
+    post:
+      tags:
+      - pipeline
+      summary: Resolve Identity
+      description: 'Resolve identity across platforms given hints.
+
+
+        Takes any known identity hints and attempts to find and link
+
+        profiles across LinkedIn, GitHub, Twitter, etc.'
+      operationId: resolve_identity_api_pipeline_resolve_identity_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Person's name
+          title: Name
+        description: Person's name
+      - name: company
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Company name
+          title: Company
+        description: Company name
+      - name: email
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Email address
+          title: Email
+        description: Email address
+      - name: github
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: GitHub username
+          title: Github
+        description: GitHub username
+      - name: twitter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Twitter handle
+          title: Twitter
+        description: Twitter handle
+      - name: linkedin
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: LinkedIn URL or username
+          title: Linkedin
+        description: LinkedIn URL or username
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Resolve Identity Api Pipeline Resolve Identity Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ExecuteRequest:
+      properties:
+        blueprint_id:
+          type: string
+          title: Blueprint Id
+          description: ID of the blueprint to execute
+        inputs:
+          additionalProperties: true
+          type: object
+          title: Inputs
+          description: Input parameters
+        stream:
+          type: boolean
+          title: Stream
+          description: Whether to stream execution updates
+          default: false
+      type: object
+      required:
+      - blueprint_id
+      title: ExecuteRequest
+      description: Request to execute a blueprint
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    BlueprintSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        version:
+          type: string
+          title: Version
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+        input_schema:
+          additionalProperties: true
+          type: object
+          title: Input Schema
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - version
+      - tags
+      - input_schema
+      title: BlueprintSummary
+      description: Summary of a blueprint
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

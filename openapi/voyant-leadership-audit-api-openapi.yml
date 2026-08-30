@@ -1,0 +1,327 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Leadership Audit API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Leadership Audit
+  description: Analyze leadership team presence and thought leadership visibility.
+paths:
+  /api/leadership/leaders:
+    get:
+      tags:
+      - Leadership Audit
+      summary: List Leaders
+      description: List all company leaders for the organization.
+      operationId: list_leaders_api_leadership_leaders_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - Leadership Audit
+      summary: Add Leader
+      description: Add a new company leader.
+      operationId: add_leader_api_leadership_leaders_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaderCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/leadership/leaders/{leader_id}/metrics:
+    put:
+      tags:
+      - Leadership Audit
+      summary: Update Leader Metrics
+      description: Update a leader's social metrics.
+      operationId: update_leader_metrics_api_leadership_leaders__leader_id__metrics_put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: leader_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Leader Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaderMetricsUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/leadership/leaders/{leader_id}/sync-linkedin:
+    post:
+      tags:
+      - Leadership Audit
+      summary: Sync Leader Linkedin
+      description: 'Sync a leader''s metrics from LinkedIn using Playwright.
+
+        Requires LinkedIn session to be active.'
+      operationId: sync_leader_linkedin_api_leadership_leaders__leader_id__sync_linkedin_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: leader_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Leader Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/leadership/sync-all-linkedin:
+    post:
+      tags:
+      - Leadership Audit
+      summary: Sync All Leaders Linkedin
+      description: Sync LinkedIn metrics for all leaders in the organization.
+      operationId: sync_all_leaders_linkedin_api_leadership_sync_all_linkedin_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/leadership/leaders/{leader_id}:
+    delete:
+      tags:
+      - Leadership Audit
+      summary: Delete Leader
+      description: Remove a leader from tracking.
+      operationId: delete_leader_api_leadership_leaders__leader_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: leader_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Leader Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/leadership/audit-summary:
+    get:
+      tags:
+      - Leadership Audit
+      summary: Get Audit Summary
+      description: Get leadership audit summary for GTM report - measurable metrics only.
+      operationId: get_audit_summary_api_leadership_audit_summary_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LeaderCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        title:
+          type: string
+          title: Title
+        linkedin_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linkedin Url
+        twitter_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Twitter Url
+        github_username:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Github Username
+      type: object
+      required:
+      - name
+      - title
+      title: LeaderCreate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    LeaderMetricsUpdate:
+      properties:
+        linkedin_followers:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Linkedin Followers
+        linkedin_posts_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Linkedin Posts 30D
+        linkedin_avg_engagement:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Linkedin Avg Engagement
+        linkedin_last_post_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Linkedin Last Post Date
+        twitter_followers:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Twitter Followers
+        twitter_posts_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Twitter Posts 30D
+        github_commits_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Github Commits 30D
+        github_repos_active:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Github Repos Active
+      type: object
+      title: LeaderMetricsUpdate
+      description: All fields are measurable/verifiable.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

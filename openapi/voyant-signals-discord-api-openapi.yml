@@ -1,0 +1,323 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Signals Discord API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: signals-discord
+  description: Discord server monitoring for developer communities. Track mentions and community discussions.
+paths:
+  /api/signals/discord/health:
+    get:
+      tags:
+      - signals-discord
+      summary: Discord Health
+      description: Check Discord integration health
+      operationId: discord_health_api_signals_discord_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/signals/discord/sources:
+    get:
+      tags:
+      - signals-discord
+      summary: Get Discord Sources
+      description: Get configured Discord sources (servers to monitor) for this org
+      operationId: get_discord_sources_api_signals_discord_sources_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - signals-discord
+      summary: Add Discord Source
+      description: Add a new Discord source (server to monitor)
+      operationId: add_discord_source_api_signals_discord_sources_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/discord/sources/{source_id}:
+    put:
+      tags:
+      - signals-discord
+      summary: Update Discord Source
+      description: Update a Discord source configuration
+      operationId: update_discord_source_api_signals_discord_sources__source_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: source_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Source Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - signals-discord
+      summary: Delete Discord Source
+      description: Delete a Discord source
+      operationId: delete_discord_source_api_signals_discord_sources__source_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: source_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Source Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/discord/discover:
+    post:
+      tags:
+      - signals-discord
+      summary: Discover Discord Signals
+      description: 'Discover signals from configured Discord servers.
+
+        Uses the org''s configured sources from signal_sources table.'
+      operationId: discover_discord_signals_api_signals_discord_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoverRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/discord/signals:
+    get:
+      tags:
+      - signals-discord
+      summary: Get Discord Signals
+      description: Get stored Discord signals for this org.
+      operationId: get_discord_signals_api_signals_discord_signals_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: server
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by server name
+          title: Server
+        description: Filter by server name
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/discord/stats:
+    get:
+      tags:
+      - signals-discord
+      summary: Get Discord Stats
+      description: Get statistics for Discord signal discovery.
+      operationId: get_discord_stats_api_signals_discord_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DiscoverRequest:
+      properties:
+        keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Keywords
+        time_window_hours:
+          type: integer
+          title: Time Window Hours
+          default: 24
+        source_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Source Ids
+      type: object
+      title: DiscoverRequest
+      description: Request to discover Discord signals
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

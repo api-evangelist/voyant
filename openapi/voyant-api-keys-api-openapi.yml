@@ -1,0 +1,308 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO API Keys API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: api-keys
+  description: API key management for programmatic access and AI agents.
+paths:
+  /api/api-keys:
+    get:
+      tags:
+      - api-keys
+      summary: List Api Keys
+      description: List all API keys for the current organization.
+      operationId: list_api_keys_api_api_keys_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ApiKeyResponse'
+                type: array
+                title: Response List Api Keys Api Api Keys Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - api-keys
+      summary: Create Api Key
+      description: 'Create a new API key.
+
+
+        IMPORTANT: The full key is only returned once during creation.
+
+        Store it securely - it cannot be retrieved again.'
+      operationId: create_api_key_api_api_keys_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiKeyResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/api-keys/{key_id}:
+    delete:
+      tags:
+      - api-keys
+      summary: Revoke Api Key
+      description: Revoke an API key. This cannot be undone.
+      operationId: revoke_api_key_api_api_keys__key_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: key_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Key Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - api-keys
+      summary: Get Api Key
+      description: Get details of a specific API key.
+      operationId: get_api_key_api_api_keys__key_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: key_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Key Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiKeyResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        key_prefix:
+          type: string
+          title: Key Prefix
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+        created_at:
+          type: string
+          title: Created At
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expires At
+        last_used_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Used At
+        usage_count:
+          type: integer
+          title: Usage Count
+        is_active:
+          type: boolean
+          title: Is Active
+      type: object
+      required:
+      - id
+      - name
+      - key_prefix
+      - scopes
+      - created_at
+      - expires_at
+      - last_used_at
+      - usage_count
+      - is_active
+      title: ApiKeyResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CreateApiKeyRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: Human-readable name for this key
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+          description: 'Permissions: read, write, crawl, admin'
+          default:
+          - read
+        expires_in_days:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Expires In Days
+          description: Days until expiration (None = never)
+      type: object
+      required:
+      - name
+      title: CreateApiKeyRequest
+    CreateApiKeyResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        key:
+          type: string
+          title: Key
+        key_prefix:
+          type: string
+          title: Key Prefix
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+        created_at:
+          type: string
+          title: Created At
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expires At
+      type: object
+      required:
+      - id
+      - name
+      - key
+      - key_prefix
+      - scopes
+      - created_at
+      - expires_at
+      title: CreateApiKeyResponse
+      description: Response when creating a key - includes the full key (only shown once).
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Llm Exports API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: llm-exports
+  description: Export context in LLM-friendly formats.
+paths:
+  /api/crawl/{crawl_id}/llms-txt:
+    get:
+      tags:
+      - llm-exports
+      summary: Download Llms Txt
+      operationId: download_llms_txt_api_crawl__crawl_id__llms_txt_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      - name: include_paths
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated path prefixes
+          title: Include Paths
+        description: Comma-separated path prefixes
+      - name: exclude_paths
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated path prefixes
+          title: Exclude Paths
+        description: Comma-separated path prefixes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/ai-export:
+    post:
+      tags:
+      - llm-exports
+      summary: Export Ai Friendly Pack
+      operationId: export_ai_friendly_pack_api_crawl__crawl_id__ai_export_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiExportRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/llms-txt/webflow:
+    post:
+      tags:
+      - llm-exports
+      summary: Publish Llms To Webflow
+      operationId: publish_llms_to_webflow_api_crawl__crawl_id__llms_txt_webflow_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebflowPublishRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/ai-export/webflow:
+    post:
+      tags:
+      - llm-exports
+      summary: Publish Ai Export To Webflow
+      operationId: publish_ai_export_to_webflow_api_crawl__crawl_id__ai_export_webflow_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebflowPublishRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    WebflowPublishRequest:
+      properties:
+        collection_id:
+          type: string
+          title: Collection Id
+          description: Webflow collection ID
+        title_field:
+          type: string
+          title: Title Field
+          description: Field key for the title
+          default: name
+        slug_field:
+          type: string
+          title: Slug Field
+          description: Field key for the slug
+          default: slug
+        content_field:
+          type: string
+          title: Content Field
+          description: Field key for the body content
+          default: content
+        item_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Item Title
+          description: Title override for the item
+        item_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Item Slug
+          description: Slug override for the item
+        include_paths:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Include Paths
+          description: URL path prefixes to include
+        exclude_paths:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Exclude Paths
+          description: URL path prefixes to exclude
+        max_pages:
+          type: integer
+          maximum: 200.0
+          minimum: 1.0
+          title: Max Pages
+          default: 50
+      type: object
+      required:
+      - collection_id
+      title: WebflowPublishRequest
+    AiExportRequest:
+      properties:
+        include_paths:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Include Paths
+          description: URL path prefixes to include
+        exclude_paths:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Exclude Paths
+          description: URL path prefixes to exclude
+        max_pages:
+          type: integer
+          maximum: 1000.0
+          minimum: 1.0
+          title: Max Pages
+          default: 200
+        include_llms_txt:
+          type: boolean
+          title: Include Llms Txt
+          default: true
+        include_index:
+          type: boolean
+          title: Include Index
+          default: true
+      type: object
+      title: AiExportRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

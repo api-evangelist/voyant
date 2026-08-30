@@ -1,0 +1,399 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Linkedin Playwright API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: linkedin-playwright
+  description: LinkedIn data extraction via browser automation.
+paths:
+  /api/linkedin-playwright/status:
+    get:
+      tags:
+      - linkedin-playwright
+      summary: Get Status
+      description: Check Playwright browser connection status
+      operationId: get_status_api_linkedin_playwright_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/linkedin-playwright/check-login:
+    get:
+      tags:
+      - linkedin-playwright
+      summary: Check Linkedin Login
+      description: Check if we're logged into LinkedIn
+      operationId: check_linkedin_login_api_linkedin_playwright_check_login_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/linkedin-playwright/search-people:
+    post:
+      tags:
+      - linkedin-playwright
+      summary: Search People
+      description: Search for people on LinkedIn
+      operationId: search_people_api_linkedin_playwright_search_people_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchPeopleRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/linkedin-playwright/map-organization:
+    post:
+      tags:
+      - linkedin-playwright
+      summary: Map Organization
+      description: 'Map people at an organization.
+
+
+        This is the KILLER feature: find engineering leadership at a company,
+
+        optionally matching GitHub usernames to LinkedIn profiles.'
+      operationId: map_organization_api_linkedin_playwright_map_organization_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MapOrganizationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/linkedin-playwright/search-content:
+    post:
+      tags:
+      - linkedin-playwright
+      summary: Search Content
+      description: Search for content/posts on LinkedIn
+      operationId: search_content_api_linkedin_playwright_search_content_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/linkedin-playwright/profile/{profile_id}:
+    get:
+      tags:
+      - linkedin-playwright
+      summary: Get Profile
+      description: Get detailed profile information
+      operationId: get_profile_api_linkedin_playwright_profile__profile_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: profile_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Profile Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/linkedin-playwright/leadership-metrics/{profile_id}:
+    get:
+      tags:
+      - linkedin-playwright
+      summary: Get Leadership Metrics
+      description: 'Get leadership metrics from a LinkedIn profile for GTM Intelligence Report.
+
+        Returns: followers, connections, posts_30d, avg_engagement'
+      operationId: get_leadership_metrics_api_linkedin_playwright_leadership_metrics__profile_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: profile_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Profile Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/linkedin-playwright/disconnect:
+    post:
+      tags:
+      - linkedin-playwright
+      summary: Disconnect Browser
+      description: Disconnect from the browser
+      operationId: disconnect_browser_api_linkedin_playwright_disconnect_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/linkedin-playwright/inject-session:
+    post:
+      tags:
+      - linkedin-playwright
+      summary: Inject Linkedin Session
+      description: 'Inject stored LinkedIn session cookies into the browser.
+
+
+        This loads cookies from .linkedin_sessions.json and injects them
+
+        into the Playwright browser context, enabling LinkedIn access
+
+        without manual login.'
+      operationId: inject_linkedin_session_api_linkedin_playwright_inject_session_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/linkedin-playwright/discover:
+    post:
+      tags:
+      - linkedin-playwright
+      summary: Discover Signals Streaming
+      description: 'Discover LinkedIn signals using Playwright (streaming).
+
+
+        This replaces the old requests-based discovery that kept hitting authwall.
+
+        Requires Chrome to be running with remote debugging and logged into LinkedIn.'
+      operationId: discover_signals_streaming_api_linkedin_playwright_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoverSignalsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    MapOrganizationRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        github_usernames:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Github Usernames
+        target_titles:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Titles
+      type: object
+      required:
+      - company_name
+      title: MapOrganizationRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SearchContentRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        limit:
+          type: integer
+          title: Limit
+          default: 20
+      type: object
+      required:
+      - query
+      title: SearchContentRequest
+    DiscoverSignalsRequest:
+      properties:
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords
+          default: []
+        hashtags:
+          items:
+            type: string
+          type: array
+          title: Hashtags
+          default: []
+        max_signals:
+          type: integer
+          title: Max Signals
+          default: 50
+      type: object
+      title: DiscoverSignalsRequest
+    SearchPeopleRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        company:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company
+        limit:
+          type: integer
+          title: Limit
+          default: 10
+      type: object
+      required:
+      - query
+      title: SearchPeopleRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

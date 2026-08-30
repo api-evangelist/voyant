@@ -1,0 +1,745 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Context Graph API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: context-graph
+  description: Ontology and provenance tracking. Explore relationships between entities in your context graph.
+paths:
+  /api/context-graph/:
+    get:
+      tags:
+      - context-graph
+      summary: Get Context Graph Ontology
+      description: 'Get the Context Graph ontology.
+
+
+        Supports content negotiation:
+
+        - text/html: Human-readable documentation
+
+        - application/ld+json: JSON-LD context
+
+        - application/json: JSON schema'
+      operationId: get_context_graph_ontology_api_context_graph__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/context-graph:
+    get:
+      tags:
+      - context-graph
+      summary: Get Context Graph Ontology
+      description: 'Get the Context Graph ontology.
+
+
+        Supports content negotiation:
+
+        - text/html: Human-readable documentation
+
+        - application/ld+json: JSON-LD context
+
+        - application/json: JSON schema'
+      operationId: get_context_graph_ontology_api_context_graph_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/context-graph/context.jsonld:
+    get:
+      tags:
+      - context-graph
+      summary: Get Jsonld Context
+      description: 'Get the JSON-LD context file.
+
+
+        Use this in your JSON-LD documents:
+
+        {"@context": "https://voyant.io/context-graph/context.jsonld", ...}'
+      operationId: get_jsonld_context_api_context_graph_context_jsonld_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/context-graph/claims:
+    get:
+      tags:
+      - context-graph
+      summary: Get Claim Types
+      description: Get all supported claim types.
+      operationId: get_claim_types_api_context_graph_claims_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/context-graph/claims/{claim_id}:
+    get:
+      tags:
+      - context-graph
+      summary: Get Claim Type
+      description: Get a specific claim type definition.
+      operationId: get_claim_type_api_context_graph_claims__claim_id__get
+      parameters:
+      - name: claim_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Claim Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-graph/schema:
+    get:
+      tags:
+      - context-graph
+      summary: Get Schema
+      description: Get the full ontology schema.
+      operationId: get_schema_api_context_graph_schema_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/context-graph/mutations:
+    post:
+      tags:
+      - context-graph
+      summary: Create Mutation
+      description: 'Create a new context mutation with attestations.
+
+
+        This is the primary API for tracking context changes with provenance.'
+      operationId: create_mutation_api_context_graph_mutations_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MutationCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - context-graph
+      summary: List Mutations
+      description: List context mutations for the organization.
+      operationId: list_mutations_api_context_graph_mutations_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: entity_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by entity type
+          title: Entity Type
+        description: Filter by entity type
+      - name: entity_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by entity ID
+          title: Entity Id
+        description: Filter by entity ID
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-graph/mutations/{mutation_id}:
+    get:
+      tags:
+      - context-graph
+      summary: Get Mutation
+      description: Get a specific mutation by ID.
+      operationId: get_mutation_api_context_graph_mutations__mutation_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: mutation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mutation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-graph/provenance:
+    post:
+      tags:
+      - context-graph
+      summary: Create Provenance
+      description: Create a provenance relationship between entities.
+      operationId: create_provenance_api_context_graph_provenance_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvenanceCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-graph/entities/{entity_type}/{entity_id}/provenance:
+    get:
+      tags:
+      - context-graph
+      summary: Get Entity Provenance
+      description: 'Get the provenance graph for an entity.
+
+
+        Returns all derivation relationships up to the specified depth.'
+      operationId: get_entity_provenance_api_context_graph_entities__entity_type___entity_id__provenance_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: entity_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entity Type
+      - name: entity_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entity Id
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          description: up (ancestors), down (descendants), or both
+          default: both
+          title: Direction
+        description: up (ancestors), down (descendants), or both
+      - name: depth
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          description: How many levels to traverse
+          default: 5
+          title: Depth
+        description: How many levels to traverse
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-graph/policies:
+    post:
+      tags:
+      - context-graph
+      summary: Create Policy
+      description: Create a governance policy for context changes.
+      operationId: create_policy_api_context_graph_policies_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovernancePolicyCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - context-graph
+      summary: List Policies
+      description: List governance policies for the organization.
+      operationId: list_policies_api_context_graph_policies_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: active_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Only return active policies
+          default: true
+          title: Active Only
+        description: Only return active policies
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-graph/policies/{policy_id}:
+    get:
+      tags:
+      - context-graph
+      summary: Get Policy
+      description: Get a specific governance policy.
+      operationId: get_policy_api_context_graph_policies__policy_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: policy_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Policy Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    GovernancePolicyCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        version:
+          type: string
+          title: Version
+          default: '1.0'
+        applies_to_entity_types:
+          items:
+            type: string
+          type: array
+          title: Applies To Entity Types
+        applies_to_field_paths:
+          items:
+            type: string
+          type: array
+          title: Applies To Field Paths
+        required_claim_types:
+          items:
+            type: string
+          type: array
+          title: Required Claim Types
+        required_actor_roles:
+          items:
+            type: string
+          type: array
+          title: Required Actor Roles
+        min_attestations:
+          type: integer
+          minimum: 1.0
+          title: Min Attestations
+          default: 1
+        validation_schema:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Validation Schema
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+      type: object
+      required:
+      - name
+      title: GovernancePolicyCreate
+      description: Create a governance policy
+    ProvenanceCreate:
+      properties:
+        source_entity_type:
+          type: string
+          title: Source Entity Type
+        source_entity_id:
+          type: string
+          title: Source Entity Id
+        source_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Entity Uri
+        source_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Version
+        derived_entity_type:
+          type: string
+          title: Derived Entity Type
+        derived_entity_id:
+          type: string
+          title: Derived Entity Id
+        derived_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Derived Entity Uri
+        relationship_type:
+          type: string
+          title: Relationship Type
+          description: derived, informed, supersedes
+          default: derived
+        transformation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation
+          description: How the derivation was performed
+        transformation_agent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation Agent
+          description: Who/what performed the transformation
+      type: object
+      required:
+      - source_entity_type
+      - source_entity_id
+      - derived_entity_type
+      - derived_entity_id
+      title: ProvenanceCreate
+      description: Create a provenance relationship between entities
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    MutationCreate:
+      properties:
+        entity_type:
+          type: string
+          title: Entity Type
+          description: 'Type: persona, product, use_case, etc.'
+        entity_id:
+          type: string
+          title: Entity Id
+          description: ID of the mutated entity
+        entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Uri
+          description: Full URI for linked data
+        field_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Path
+          description: JSON path to the changed field
+        previous_value:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Previous Value
+        new_value:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: New Value
+        mutation_type:
+          type: string
+          title: Mutation Type
+          description: create, update, delete, merge, split
+          default: update
+        semantic_delta:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Semantic Delta
+          description: Human-readable description of what changed
+        attestations:
+          items:
+            $ref: '#/components/schemas/AttestationCreate'
+          type: array
+          title: Attestations
+      type: object
+      required:
+      - entity_type
+      - entity_id
+      title: MutationCreate
+      description: Create a new context mutation with attestations
+    AttestationCreate:
+      properties:
+        claim_type:
+          type: string
+          title: Claim Type
+          description: 'Claim type: authored, reviewed, rationale, etc.'
+        claim_payload:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Claim Payload
+          description: Structured claim data
+        actor_id:
+          type: string
+          title: Actor Id
+          description: User ID, agent ID, or system ID
+        actor_type:
+          type: string
+          title: Actor Type
+          description: human, ai_agent, system, integration
+          default: human
+        actor_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Actor Name
+          description: Display name
+        actor_role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Actor Role
+          description: Role at time of attestation
+        confidence:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Confidence
+          description: Confidence level
+        evidence:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/AttestationEvidenceCreate'
+            type: array
+          - type: 'null'
+          title: Evidence
+      type: object
+      required:
+      - claim_type
+      - actor_id
+      title: AttestationCreate
+      description: A signed claim about context
+    AttestationEvidenceCreate:
+      properties:
+        evidence_type:
+          type: string
+          title: Evidence Type
+          description: 'Type: document, url, analysis, conversation'
+        evidence_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Uri
+          description: URI to the evidence
+        evidence_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Hash
+          description: Content hash for verification
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        content_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Excerpt
+          description: Relevant excerpt from the evidence
+      type: object
+      required:
+      - evidence_type
+      title: AttestationEvidenceCreate
+      description: Evidence supporting an attestation
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

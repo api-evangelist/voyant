@@ -1,0 +1,317 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Video Script Generation API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Video Script Generation
+  description: Generate video scripts from your brand context.
+paths:
+  /api/video-scripts/generate:
+    post:
+      tags:
+      - Video Script Generation
+      summary: Generate Video Script
+      description: 'Generate a NextTechStack video script using VoiceForge content.
+
+
+        This endpoint analyzes your organization''s crawled content to create
+
+        a professional B2B tech video script suitable for NextTechStack channel.'
+      operationId: generate_video_script_api_video_scripts_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoScriptRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoScriptResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/video-scripts/companies:
+    get:
+      tags:
+      - Video Script Generation
+      summary: Get Available Companies
+      description: 'Get list of companies available for video script generation.
+
+
+        Returns companies in your VoiceForge database with sufficient content
+
+        for creating quality video scripts.'
+      operationId: get_available_companies_api_video_scripts_companies_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/video-scripts/templates:
+    get:
+      tags:
+      - Video Script Generation
+      summary: Get Script Templates
+      description: 'Get available video script templates.
+
+
+        Returns the different funnel stages and styles available for video generation.'
+      operationId: get_script_templates_api_video_scripts_templates_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/video-scripts/health:
+    get:
+      tags:
+      - Video Script Generation
+      summary: Video Script Health
+      description: Health check for video script generation service
+      operationId: video_script_health_api_video_scripts_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    VideoScriptResponse:
+      properties:
+        script_id:
+          type: string
+          title: Script Id
+        company_name:
+          type: string
+          title: Company Name
+        company_domain:
+          type: string
+          title: Company Domain
+        total_duration:
+          type: integer
+          title: Total Duration
+        script_text:
+          type: string
+          title: Script Text
+        scenes:
+          items:
+            $ref: '#/components/schemas/VideoScene'
+          type: array
+          title: Scenes
+        generated_at:
+          type: string
+          title: Generated At
+        content_sources:
+          items:
+            type: string
+          type: array
+          title: Content Sources
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - script_id
+      - company_name
+      - company_domain
+      - total_duration
+      - script_text
+      - scenes
+      - generated_at
+      - content_sources
+      - metadata
+      title: VideoScriptResponse
+      description: Generated video script response
+    VideoScene:
+      properties:
+        scene_id:
+          type: string
+          title: Scene Id
+        duration:
+          type: integer
+          title: Duration
+        scene_type:
+          type: string
+          title: Scene Type
+        script_text:
+          type: string
+          title: Script Text
+        visual_notes:
+          type: string
+          title: Visual Notes
+        timestamp_start:
+          type: integer
+          title: Timestamp Start
+        timestamp_end:
+          type: integer
+          title: Timestamp End
+      type: object
+      required:
+      - scene_id
+      - duration
+      - scene_type
+      - script_text
+      - visual_notes
+      - timestamp_start
+      - timestamp_end
+      title: VideoScene
+      description: Individual video scene
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    VideoScriptRequest:
+      properties:
+        company_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Domain
+          description: Specific company domain to focus on
+        script_length:
+          type: integer
+          maximum: 300.0
+          minimum: 30.0
+          title: Script Length
+          description: Target script length in seconds
+          default: 120
+        funnel_stage:
+          $ref: '#/components/schemas/FunnelStage'
+          description: Target funnel stage
+          default: tofu
+        tone:
+          $ref: '#/components/schemas/ContentTone'
+          description: Video tone
+          default: professional
+        include_intro:
+          type: boolean
+          title: Include Intro
+          description: Include NextTechStack intro
+          default: true
+        include_outro:
+          type: boolean
+          title: Include Outro
+          description: Include standard outro
+          default: true
+        focus_areas:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Focus Areas
+          description: Specific topics to emphasize
+      type: object
+      title: VideoScriptRequest
+      description: Request for generating video script
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

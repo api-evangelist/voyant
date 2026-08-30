@@ -1,0 +1,870 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: signals
+  description: 'Unified signal ingestion across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Discord, Twitter/X, ProductHunt, Slack, YouTube, G2, and government sources (SAM.gov, FERC).'
+paths:
+  /api/signals/stats:
+    get:
+      tags:
+      - signals
+      summary: Get Signal Stats
+      description: Return counts of signals for the current org (optionally per platform).
+      operationId: get_signal_stats_api_signals_stats_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by platform (github, reddit, linkedin)
+          title: Platform
+        description: Filter by platform (github, reddit, linkedin)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/top-by-engagement:
+    get:
+      tags:
+      - signals
+      summary: Get Top Signals By Engagement
+      description: 'Get top signals by engagement grouped by platform.
+
+        Used by Content Strategist Community tab.'
+      operationId: get_top_signals_by_engagement_api_signals_top_by_engagement_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit_per_platform
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 5
+          title: Limit Per Platform
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/trends:
+    get:
+      tags:
+      - signals
+      summary: Get Signal Trends
+      description: 'Get signal counts by date and platform for trend charts.
+
+        Returns data grouped by date for the last N days.
+
+        Includes keywords per day and company mention highlights.'
+      operationId: get_signal_trends_api_signals_trends_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Days
+      - name: company_keywords
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Company Keywords
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/configured-sources:
+    get:
+      tags:
+      - signals
+      summary: Get Configured Sources
+      description: 'Get configured signal sources with their keywords, grouped by platform.
+
+        Returns the keywords that users have configured for monitoring.
+
+        Used by Content Strategist to show what''s being tracked.'
+      operationId: get_configured_sources_api_signals_configured_sources_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Platform
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/competitor-trends:
+    get:
+      tags:
+      - signals
+      summary: Get Competitor Trends
+      description: 'Get competitor mention trends over time.
+
+        Shows how often competitors are mentioned in community signals vs your company.'
+      operationId: get_competitor_trends_api_signals_competitor_trends_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Days
+      - name: competitors
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Competitors
+      - name: company_keywords
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Company Keywords
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/publishing-comparison:
+    get:
+      tags:
+      - signals
+      summary: Get Publishing Comparison
+      description: 'Compare publishing activity between your company and competitors.
+
+
+        NOTE: For competitors, we track their actual publishing (blog posts, releases, docs).
+
+        For your company, we show community engagement signals (mentions, discussions about you).
+
+        These are different metrics but shown together for competitive context.'
+      operationId: get_publishing_comparison_api_signals_publishing_comparison_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/count:
+    get:
+      tags:
+      - signals
+      summary: Get Signal Count
+      description: Return a simple signal count for the current organization.
+      operationId: get_signal_count_api_signals_count_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by platform
+          title: Platform
+        description: Filter by platform
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/github/monthly:
+    get:
+      tags:
+      - signals
+      summary: Get Github Monthly Signal Count
+      description: Count GitHub signals discovered in the last 30 days.
+      operationId: get_github_monthly_signal_count_api_signals_github_monthly_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/signals/profile/{username}:
+    get:
+      tags:
+      - signals
+      summary: Get Github Profile
+      description: Get GitHub profile data for a specific user to test social link extraction
+      operationId: get_github_profile_api_signals_profile__username__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Username
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/alerts:
+    get:
+      tags:
+      - signals
+      summary: Get System Alerts
+      description: Get active system alerts for the organization
+      operationId: get_system_alerts_api_signals_alerts_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/signals/alerts/{alert_id}/resolve:
+    post:
+      tags:
+      - signals
+      summary: Resolve System Alert
+      description: Mark a system alert as resolved
+      operationId: resolve_system_alert_api_signals_alerts__alert_id__resolve_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Alert Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/discover:
+    post:
+      tags:
+      - signals
+      summary: Discover Signals
+      description: 'Discover GitHub signals (stars, issues, discussions, PRs)
+
+
+        Parameters:
+
+        - sources: list of repositories to monitor
+
+        - time_filter: ''hour'', ''day'', ''week'', ''month'', ''3months'', ''6months'', ''year''
+
+        - max_items_per_source: number of items per repository (default 20, max 200 for deep discovery)
+
+        - discovery_mode: ''standard'' or ''deep'' (deep fetches more historical data)
+
+        - signal_types: list of types to discover: [''stars'', ''issues'', ''discussions'', ''prs''] (default: all)'
+      operationId: discover_signals_api_signals_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/list:
+    get:
+      tags:
+      - signals
+      summary: List Signals
+      description: List discovered signals
+      operationId: list_signals_api_signals_list_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: platform
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by platform (github, reddit, linkedin)
+          title: Platform
+        description: Filter by platform (github, reddit, linkedin)
+      - name: signal_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by signal type
+          title: Signal Type
+        description: Filter by signal type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/search:
+    get:
+      tags:
+      - signals
+      summary: Search Signals
+      description: 'Search signals by query string (matches title and content).
+
+        Used by competitor dashboard to find signals mentioning competitors.
+
+
+        Supports smart filtering via competitor_id to exclude false positives.'
+      operationId: search_signals_api_signals_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Search query for competitor name
+          title: Query
+        description: Search query for competitor name
+      - name: competitor_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Competitor ID to load search config
+          title: Competitor Id
+        description: Competitor ID to load search config
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: platform
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by platform
+          title: Platform
+        description: Filter by platform
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/sources:
+    get:
+      tags:
+      - signals
+      summary: List Signal Sources
+      description: List signal sources
+      operationId: list_signal_sources_api_signals_sources_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - signals
+      summary: Add Signal Source
+      description: Add a new signal source (GitHub, Reddit, YouTube, etc.)
+      operationId: add_signal_source_api_signals_sources_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/sources/{source_id}:
+    delete:
+      tags:
+      - signals
+      summary: Delete Signal Source
+      description: Delete a signal source
+      operationId: delete_signal_source_api_signals_sources__source_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: source_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Source Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/health:
+    get:
+      tags:
+      - signals
+      summary: Health Check
+      description: Health check endpoint
+      operationId: health_check_api_signals_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/signals/baseline-discovery:
+    post:
+      tags:
+      - signals
+      summary: Baseline Discovery
+      description: 'Establish a baseline of signals to understand current engagement landscape
+
+
+        This discovers a broader set of signals to establish who''s currently
+
+        interested in your technology stack, providing context for ongoing monitoring.'
+      operationId: baseline_discovery_api_signals_baseline_discovery_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/clear:
+    delete:
+      tags:
+      - signals
+      summary: Clear All Signals
+      description: Clear all signals for the organization
+      operationId: clear_all_signals_api_signals_clear_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/signals/sources/bulk:
+    post:
+      tags:
+      - signals
+      summary: Bulk Add Signal Sources
+      description: "Bulk add signal sources from a seed configuration\n\nRequest body:\n{\n    \"sources\": [\n        {\"repo\": \"owner/repo\", \"category\": \"multi_agent_ai\", \"description\": \"...\"},\n        ...\n    ],\n    \"replace_existing\": false  // If true, removes existing sources first\n}"
+      operationId: bulk_add_signal_sources_api_signals_sources_bulk_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/sources/presets:
+    get:
+      tags:
+      - signals
+      summary: Get Source Presets
+      description: Get available preset signal source configurations
+      operationId: get_source_presets_api_signals_sources_presets_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/signals/sources/load-preset/{preset_name}:
+    post:
+      tags:
+      - signals
+      summary: Load Source Preset
+      description: 'Load a preset signal source configuration
+
+
+        Parameters:
+
+        - preset_name: Name of the preset (e.g., "vantiq")
+
+        - categories: Optional list of categories to load (default: all)'
+      operationId: load_source_preset_api_signals_sources_load_preset__preset_name__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: preset_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Preset Name
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Request
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/discover-topics:
+    post:
+      tags:
+      - signals
+      summary: Discover By Topics
+      description: "Discover signals from GitHub topics\n\nThis searches for repositories tagged with specific topics and\nidentifies active contributors as potential leads.\n\nRequest body:\n{\n    \"topics\": [\"multi-agent\", \"event-driven-architecture\", \"iot-platform\"],\n    \"max_repos_per_topic\": 10,\n    \"max_contributors_per_repo\": 5\n}"
+      operationId: discover_by_topics_api_signals_discover_topics_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/generate-topics:
+    post:
+      tags:
+      - signals
+      summary: Generate Topic Suggestions
+      description: "Generate GitHub topic suggestions based on company/product context using AI.\n\nRequest body:\n{\n    \"company_name\": \"Redpanda\",\n    \"product_description\": \"Kafka-compatible streaming data platform\",\n    \"target_audience\": \"Data engineers, platform teams\",\n    \"competitors\": [\"Apache Kafka\", \"Pulsar\"],\n    \"use_cases\": [\"Real-time analytics\", \"Event streaming\"]\n}\n\nReturns categorized topic suggestions that can be added as signal sources."
+      operationId: generate_topic_suggestions_api_signals_generate_topics_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

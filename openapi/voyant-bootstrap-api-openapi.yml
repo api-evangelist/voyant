@@ -1,0 +1,254 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Bootstrap API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: bootstrap
+  description: Initialize a new organization with default context streams.
+paths:
+  /api/bootstrap/start:
+    post:
+      tags:
+      - bootstrap
+      summary: Start Bootstrap
+      description: 'Start the organization bootstrap process.
+
+
+        Returns a streaming response with progress updates.'
+      operationId: start_bootstrap_api_bootstrap_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BootstrapRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/bootstrap/generate-element:
+    post:
+      tags:
+      - bootstrap
+      summary: Generate Element
+      description: 'Generate a single element of the messaging framework.
+
+
+        Powers the "Generate with AI" button throughout Gypsum and VoiceForge.
+
+
+        Supports element_type:
+
+        - product: Generate a product definition
+
+        - persona: Generate a buyer persona
+
+        - use_case: Generate a use case
+
+        - positioning: Generate positioning statement
+
+        - icp: Generate ideal customer profile'
+      operationId: generate_element_api_bootstrap_generate_element_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateElementRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/bootstrap/status/{org_id}:
+    get:
+      tags:
+      - bootstrap
+      summary: Get Bootstrap Status
+      description: 'Get the current bootstrap status for an organization.
+
+
+        Checks what''s set up and what''s missing.'
+      operationId: get_bootstrap_status_api_bootstrap_status__org_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    BootstrapRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain to crawl and analyze
+        competitors:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitors
+          description: Known competitors (optional)
+        skip_crawl:
+          type: boolean
+          title: Skip Crawl
+          description: Skip crawl if content already exists
+          default: false
+      type: object
+      required:
+      - domain
+      title: BootstrapRequest
+      description: Request to bootstrap a new organization.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    GenerateElementRequest:
+      properties:
+        element_type:
+          type: string
+          title: Element Type
+          description: 'Type: product, persona, use_case, positioning, icp'
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Company domain for context
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Company name
+        existing_data:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Existing Data
+          description: Existing framework data
+        additional_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additional Context
+          description: Additional instructions
+      type: object
+      required:
+      - element_type
+      title: GenerateElementRequest
+      description: Request to generate a single element with AI.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

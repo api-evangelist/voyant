@@ -1,0 +1,400 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Discovery API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: discovery
+  description: One-time discovery runs and results.
+paths:
+  /api/discovery/insights:
+    get:
+      tags:
+      - discovery
+      summary: Get Discovery Insights
+      description: "Get latest discovery insights, patterns, and predictions.\n\nArgs:\n    limit: Maximum number of items to return per category\n    days_back: Number of days to look back for insights\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    Overview of discovery system with latest insights"
+      operationId: get_discovery_insights_api_discovery_insights_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: Limit
+      - name: days_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 7
+          title: Days Back
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryOverview'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/discovery/sources:
+    get:
+      tags:
+      - discovery
+      summary: Get Discovery Sources
+      description: "Get all discovery sources and their current state.\n\nArgs:\n    active_only: Only return active sources\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    List of discovery sources with their state"
+      operationId: get_discovery_sources_api_discovery_sources_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: active_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Active Only
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiscoveryStateResponse'
+                title: Response Get Discovery Sources Api Discovery Sources Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/discovery/insights/{insight_id}/action:
+    post:
+      tags:
+      - discovery
+      summary: Mark Insight Action Taken
+      description: "Mark that action has been taken on an insight.\n\nArgs:\n    insight_id: ID of the insight\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    Success message"
+      operationId: mark_insight_action_taken_api_discovery_insights__insight_id__action_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: insight_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Insight Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/discovery/patterns/{pattern_type}:
+    get:
+      tags:
+      - discovery
+      summary: Get Patterns By Type
+      description: "Get discovery patterns by type.\n\nArgs:\n    pattern_type: Type of pattern (team_formation, migration, velocity_change)\n    limit: Maximum number of patterns to return\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    List of patterns of the specified type"
+      operationId: get_patterns_by_type_api_discovery_patterns__pattern_type__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pattern_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pattern Type
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DiscoveryPatternResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        pattern_type:
+          type: string
+          title: Pattern Type
+        confidence:
+          type: number
+          title: Confidence
+        first_seen:
+          type: string
+          format: date-time
+          title: First Seen
+        last_seen:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Seen
+        entities:
+          additionalProperties: true
+          type: object
+          title: Entities
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - pattern_type
+      - confidence
+      - first_seen
+      - last_seen
+      - entities
+      - metadata
+      title: DiscoveryPatternResponse
+      description: Response model for discovery patterns.
+    DiscoveryOverview:
+      properties:
+        latest_discoveries:
+          items:
+            $ref: '#/components/schemas/DiscoveryInsightResponse'
+          type: array
+          title: Latest Discoveries
+        active_patterns:
+          items:
+            $ref: '#/components/schemas/DiscoveryPatternResponse'
+          type: array
+          title: Active Patterns
+        predictions:
+          items:
+            $ref: '#/components/schemas/DiscoveryInsightResponse'
+          type: array
+          title: Predictions
+        next_deep_discovery:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Next Deep Discovery
+        total_sources:
+          type: integer
+          title: Total Sources
+        active_sources:
+          type: integer
+          title: Active Sources
+        api_calls_today:
+          type: integer
+          title: Api Calls Today
+        api_calls_remaining:
+          type: integer
+          title: Api Calls Remaining
+      type: object
+      required:
+      - latest_discoveries
+      - active_patterns
+      - predictions
+      - next_deep_discovery
+      - total_sources
+      - active_sources
+      - api_calls_today
+      - api_calls_remaining
+      title: DiscoveryOverview
+      description: Overview of discovery system status.
+    DiscoveryStateResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        source:
+          type: string
+          title: Source
+        source_type:
+          type: string
+          title: Source Type
+        signal_count:
+          type: integer
+          title: Signal Count
+        quality_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Quality Score
+        is_active:
+          type: boolean
+          title: Is Active
+        last_checked:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Checked
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - source
+      - source_type
+      - signal_count
+      - quality_score
+      - is_active
+      - last_checked
+      - metadata
+      title: DiscoveryStateResponse
+      description: Response model for discovery source state.
+    DiscoveryInsightResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        insight_type:
+          type: string
+          title: Insight Type
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        confidence:
+          type: number
+          title: Confidence
+        is_actionable:
+          type: boolean
+          title: Is Actionable
+        action_taken:
+          type: boolean
+          title: Action Taken
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - insight_type
+      - title
+      - description
+      - confidence
+      - is_actionable
+      - action_taken
+      - created_at
+      - metadata
+      title: DiscoveryInsightResponse
+      description: Response model for discovery insights.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

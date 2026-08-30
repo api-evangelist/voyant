@@ -1,0 +1,1159 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Content Voices API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: content-voices
+  description: Extracted writing style characteristics. Analyze and replicate your brand's unique voice.
+paths:
+  /api/content-voices/content-types:
+    get:
+      tags:
+      - content-voices
+      summary: List Content Types
+      description: List available content types for voice profiles.
+      operationId: list_content_types_api_content_voices_content_types_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Content Types Api Content Voices Content Types Get
+  /api/content-voices/crawled-content:
+    get:
+      tags:
+      - content-voices
+      summary: List Crawled Content
+      description: 'List content available for voice extraction.
+
+        Includes both crawled content and existing voice training data.
+
+        Users select from this list to create structured voice profiles.'
+      operationId: list_crawled_content_api_content_voices_crawled_content_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by content type
+          title: Content Type
+        description: Filter by content type
+      - name: include_voice_training
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include voice training data
+          default: true
+          title: Include Voice Training
+        description: Include voice training data
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CrawledContentItem'
+                title: Response List Crawled Content Api Content Voices Crawled Content Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices:
+    get:
+      tags:
+      - content-voices
+      summary: List Voices
+      description: List all content voices for the organization.
+      operationId: list_voices_api_content_voices_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by content type
+          title: Content Type
+        description: Filter by content type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VoiceResponse'
+                title: Response List Voices Api Content Voices Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - content-voices
+      summary: Create Voice
+      description: 'Create a new content voice by extracting characteristics from selected content.
+
+
+        1. User selects content samples (blog posts, docs, etc.)
+
+        2. System analyzes samples using LLM
+
+        3. Extracts tone, themes, principles, vocabulary
+
+        4. Creates voice profile for use in content generation'
+      operationId: create_voice_api_content_voices_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVoiceRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/default/{content_type}:
+    get:
+      tags:
+      - content-voices
+      summary: Get Default Voice
+      description: Get the default voice for a content type.
+      operationId: get_default_voice_api_content_voices_default__content_type__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Content Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/VoiceResponse'
+                - type: 'null'
+                title: Response Get Default Voice Api Content Voices Default  Content Type  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/{voice_id}:
+    get:
+      tags:
+      - content-voices
+      summary: Get Voice
+      description: Get a specific content voice.
+      operationId: get_voice_api_content_voices__voice_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: voice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Voice Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - content-voices
+      summary: Update Voice
+      description: Update a content voice.
+      operationId: update_voice_api_content_voices__voice_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: voice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Voice Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVoiceRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - content-voices
+      summary: Delete Voice
+      description: Delete a content voice.
+      operationId: delete_voice_api_content_voices__voice_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: voice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Voice Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/{voice_id}/re-extract:
+    post:
+      tags:
+      - content-voices
+      summary: Re Extract Voice
+      description: 'Re-extract voice characteristics from the source content.
+
+        Useful after improving extraction prompts or adding more source content.'
+      operationId: re_extract_voice_api_content_voices__voice_id__re_extract_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: voice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Voice Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/extract-dna:
+    post:
+      tags:
+      - content-voices
+      summary: Extract Content Dna
+      description: 'Extract complete Content DNA from selected content samples.
+
+
+        This is the comprehensive extraction that captures everything needed
+
+        to generate content that sounds authentically like the company:
+
+        - Voice & tone (personality, confidence, formality)
+
+        - Writing patterns (sentence structure, rhetorical devices)
+
+        - Technical vocabulary (terms, acronyms, signature phrases)
+
+        - Narrative structure (how they build arguments)
+
+        - Example passages (actual snippets to emulate)
+
+        - Style rules (always/never do)
+
+
+        Use this on your best 3-5 blog posts to capture your voice.'
+      operationId: extract_content_dna_api_content_voices_extract_dna_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: save_to_framework
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Save To Framework
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              title: Content Ids
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/dna:
+    get:
+      tags:
+      - content-voices
+      summary: Get Content Dna
+      description: Get existing Content DNA for the organization.
+      operationId: get_content_dna_api_content_voices_dna_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content-voices/dna/generation-context:
+    get:
+      tags:
+      - content-voices
+      summary: Get Dna Generation Context
+      description: 'Get formatted Content DNA context for content generation.
+
+        Returns a string ready to inject into generation prompts.'
+      operationId: get_dna_generation_context_api_content_voices_dna_generation_context_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: blog
+          title: Content Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/extract-vocabulary:
+    post:
+      tags:
+      - content-voices
+      summary: Extract Technical Vocabulary
+      description: 'Extract technical vocabulary from selected content.
+
+        Returns structured vocabulary that can be added to the messaging framework.
+
+
+        Use this to analyze blog posts, docs, etc. for technical terminology.'
+      operationId: extract_technical_vocabulary_api_content_voices_extract_vocabulary_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                type: string
+              type: array
+              title: Content Ids
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content-voices/{voice_id}/context:
+    get:
+      tags:
+      - content-voices
+      summary: Get Voice Context
+      description: 'Get formatted voice context for content generation.
+
+        Returns a string that can be injected into generation prompts.'
+      operationId: get_voice_context_api_content_voices__voice_id__context_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: voice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Voice Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/quality/train:
+    post:
+      tags:
+      - content-voices
+      summary: Train Quality Model
+      description: 'Train a quality model by comparing gold (best) vs baseline (average) content.
+
+
+        Select your 3-5 best pieces of content as "gold" and 3-5 average pieces
+
+        as "baseline". The system learns what specifically makes YOUR content
+
+        excellent vs mediocre.
+
+
+        This creates a scoring rubric tailored to your standards, not generic
+
+        writing advice.'
+      operationId: train_quality_model_api_content_voices_quality_train_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainQualityRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QualityProfileResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content-voices/quality/score:
+    post:
+      tags:
+      - content-voices
+      summary: Score Content
+      description: 'Score content against the trained quality model.
+
+
+        Returns detailed scoring across dimensions (opening, technical depth,
+
+        voice consistency, structure, evidence, differentiation) plus specific
+
+        improvement suggestions.
+
+
+        Requires training a quality model first via /quality/train.'
+      operationId: score_content_api_content_voices_quality_score_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content-voices/quality/critique:
+    post:
+      tags:
+      - content-voices
+      summary: Quick Critique
+      description: 'Quick critique - just the top issues and how to fix them.
+
+
+        Lighter-weight than full scoring, focused on actionable improvements.'
+      operationId: quick_critique_api_content_voices_quality_critique_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content-voices/quality/profiles:
+    get:
+      tags:
+      - content-voices
+      summary: List Quality Profiles
+      description: List all quality profiles for the organization.
+      operationId: list_quality_profiles_api_content_voices_quality_profiles_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content-voices/quality/profiles/{content_type}:
+    get:
+      tags:
+      - content-voices
+      summary: Get Quality Profile
+      description: Get the quality profile for a specific content type.
+      operationId: get_quality_profile_api_content_voices_quality_profiles__content_type__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Content Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/quality/analyze-blogs:
+    post:
+      tags:
+      - content-voices
+      summary: Analyze Blog Quality
+      description: 'Analyze and score all blog content.
+
+
+        Automatically:
+
+        1. Identifies gold (best) vs baseline (average) blog content
+
+        2. Trains a quality model from gold/baseline
+
+        3. Extracts Content DNA (voice, strategic intent) from gold content
+
+        4. Scores every blog post against the quality model
+
+        5. Stores scores on content records
+
+
+        Call after a crawl completes, or anytime to re-score all blogs.'
+      operationId: analyze_blog_quality_api_content_voices_quality_analyze_blogs_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Scope to specific crawl
+          title: Crawl Id
+        description: Scope to specific crawl
+      - name: force_retrain
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Force retrain quality model
+          default: false
+          title: Force Retrain
+        description: Force retrain quality model
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-voices/quality/blog-summary:
+    get:
+      tags:
+      - content-voices
+      summary: Get Blog Quality Summary
+      description: 'Get summary of blog content quality.
+
+
+        Returns score distribution, top blogs, and blogs needing improvement.'
+      operationId: get_blog_quality_summary_api_content_voices_quality_blog_summary_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content-voices/quality/rescore/{content_id}:
+    post:
+      tags:
+      - content-voices
+      summary: Rescore Content
+      description: Re-score a single content item against the current quality model.
+      operationId: rescore_content_api_content_voices_quality_rescore__content_id__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Content Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    VoiceResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        content_type:
+          type: string
+          title: Content Type
+        source_urls:
+          items:
+            type: string
+          type: array
+          title: Source Urls
+        source_content_ids:
+          items:
+            type: string
+          type: array
+          title: Source Content Ids
+        tone_profile:
+          additionalProperties: true
+          type: object
+          title: Tone Profile
+        thought_leadership_themes:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Thought Leadership Themes
+        writing_principles:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Writing Principles
+        vocabulary_patterns:
+          additionalProperties: true
+          type: object
+          title: Vocabulary Patterns
+        example_passages:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Example Passages
+        style_guide:
+          additionalProperties: true
+          type: object
+          title: Style Guide
+        extraction_model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Extraction Model
+        extraction_confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Extraction Confidence
+        status:
+          type: string
+          title: Status
+        is_default:
+          type: boolean
+          title: Is Default
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        updated_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Updated At
+        last_extracted_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Extracted At
+      type: object
+      required:
+      - id
+      - org_id
+      - name
+      - description
+      - content_type
+      - source_urls
+      - source_content_ids
+      - tone_profile
+      - thought_leadership_themes
+      - writing_principles
+      - vocabulary_patterns
+      - example_passages
+      - style_guide
+      - extraction_model
+      - extraction_confidence
+      - status
+      - is_default
+      - created_at
+      - updated_at
+      - last_extracted_at
+      title: VoiceResponse
+      description: Content voice response.
+    UpdateVoiceRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        is_default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Default
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      type: object
+      title: UpdateVoiceRequest
+      description: Request to update a content voice.
+    TrainQualityRequest:
+      properties:
+        gold_content_ids:
+          items:
+            type: string
+          type: array
+          title: Gold Content Ids
+          description: IDs of best/gold content samples
+        baseline_content_ids:
+          items:
+            type: string
+          type: array
+          title: Baseline Content Ids
+          description: IDs of average/baseline content samples
+        content_type:
+          type: string
+          title: Content Type
+          description: 'Type of content: blog, whitepaper, docs'
+          default: blog
+      type: object
+      required:
+      - gold_content_ids
+      - baseline_content_ids
+      title: TrainQualityRequest
+      description: Request to train a quality model from gold vs baseline content.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ScoreContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: Content text to score
+        content_type:
+          type: string
+          title: Content Type
+          description: Type of content
+          default: blog
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Title for context
+      type: object
+      required:
+      - content
+      title: ScoreContentRequest
+      description: Request to score content against the quality model.
+    QualityProfileResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        content_type:
+          type: string
+          title: Content Type
+        gold_content_ids:
+          items:
+            type: string
+          type: array
+          title: Gold Content Ids
+        baseline_content_ids:
+          items:
+            type: string
+          type: array
+          title: Baseline Content Ids
+        quality_markers:
+          additionalProperties: true
+          type: object
+          title: Quality Markers
+        baseline_gaps:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Baseline Gaps
+        excellence_patterns:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Excellence Patterns
+        scoring_rubric:
+          additionalProperties: true
+          type: object
+          title: Scoring Rubric
+        anti_patterns:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Anti Patterns
+        training_confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Training Confidence
+        status:
+          type: string
+          title: Status
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        last_trained_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Trained At
+      type: object
+      required:
+      - id
+      - org_id
+      - content_type
+      - gold_content_ids
+      - baseline_content_ids
+      - quality_markers
+      - baseline_gaps
+      - excellence_patterns
+      - scoring_rubric
+      - anti_patterns
+      - training_confidence
+      - status
+      - created_at
+      - last_trained_at
+      title: QualityProfileResponse
+      description: Quality profile response.
+    CrawledContentItem:
+      properties:
+        id:
+          type: string
+          title: Id
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        content_type:
+          type: string
+          title: Content Type
+        is_voice_training:
+          type: boolean
+          title: Is Voice Training
+          default: false
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Snippet
+        extracted_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Extracted At
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+      type: object
+      required:
+      - id
+      - url
+      - title
+      - content_type
+      - snippet
+      - extracted_at
+      - domain
+      title: CrawledContentItem
+      description: Crawled content available for voice selection.
+    CreateVoiceRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Name for this voice profile
+        content_type:
+          type: string
+          title: Content Type
+          description: 'Type: blog, whitepaper, docs, case_study'
+        source_content_ids:
+          items:
+            type: string
+          type: array
+          title: Source Content Ids
+          description: IDs of content to analyze
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Description of this voice
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Set as default for this content type
+          default: false
+      type: object
+      required:
+      - name
+      - content_type
+      - source_content_ids
+      title: CreateVoiceRequest
+      description: Request to create a new content voice.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

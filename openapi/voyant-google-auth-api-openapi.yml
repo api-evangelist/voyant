@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Google Auth API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: google-auth
+  description: Google OAuth for Drive and Analytics integrations.
+paths:
+  /api/auth/google-drive/authorize:
+    post:
+      tags:
+      - google-auth
+      summary: Get Authorization Url
+      description: Get Google OAuth2 authorization URL for user
+      operationId: get_authorization_url_api_auth_google_drive_authorize_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/auth/google-drive/callback:
+    post:
+      tags:
+      - google-auth
+      summary: Oauth Callback
+      description: Handle OAuth2 callback and store tokens
+      operationId: oauth_callback_api_auth_google_drive_callback_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api__google_auth__CallbackRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/auth/google-drive/disconnect:
+    post:
+      tags:
+      - google-auth
+      summary: Disconnect Google Drive
+      description: Disconnect user's Google Drive
+      operationId: disconnect_google_drive_api_auth_google_drive_disconnect_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    api__google_auth__CallbackRequest:
+      properties:
+        code:
+          type: string
+          title: Code
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+      type: object
+      required:
+      - code
+      title: CallbackRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

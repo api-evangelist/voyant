@@ -1,0 +1,349 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Voice Training API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Voice Training
+  description: Train custom voice models on your brand content.
+paths:
+  /api/voice-training/:
+    post:
+      tags:
+      - Voice Training
+      summary: Add Training Data
+      description: Add new content for voice training
+      operationId: add_training_data_api_voice_training__post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingDataCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingDataResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Voice Training
+      summary: List Training Data
+      description: List all voice training data
+      operationId: list_training_data_api_voice_training__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrainingDataResponse'
+                title: Response List Training Data Api Voice Training  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/voice-training/{training_id}:
+    delete:
+      tags:
+      - Voice Training
+      summary: Delete Training Data
+      description: Delete voice training data
+      operationId: delete_training_data_api_voice_training__training_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: training_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Training Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/voice-training/analytics:
+    get:
+      tags:
+      - Voice Training
+      summary: Get Voice Analytics
+      description: Get voice training analytics
+      operationId: get_voice_analytics_api_voice_training_analytics_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceAnalytics'
+      security:
+      - HTTPBearer: []
+  /api/voice-training/personas/{persona_id}:
+    get:
+      tags:
+      - Voice Training
+      summary: Get Persona Training Data
+      description: Get all training data for a specific persona
+      operationId: get_persona_training_data_api_voice_training_personas__persona_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: persona_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Persona Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/voice-training/health:
+    get:
+      tags:
+      - Voice Training
+      summary: Voice Training Health
+      description: Health check for voice training service
+      operationId: voice_training_health_api_voice_training_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    VoiceAnalytics:
+      properties:
+        total_items:
+          type: integer
+          title: Total Items
+        processed_items:
+          type: integer
+          title: Processed Items
+        voice_consistency_score:
+          type: integer
+          title: Voice Consistency Score
+        content_types:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Content Types
+        recent_additions:
+          items:
+            $ref: '#/components/schemas/TrainingDataResponse'
+          type: array
+          title: Recent Additions
+      type: object
+      required:
+      - total_items
+      - processed_items
+      - voice_consistency_score
+      - content_types
+      - recent_additions
+      title: VoiceAnalytics
+    TrainingDataCreate:
+      properties:
+        source_type:
+          type: string
+          title: Source Type
+        content:
+          type: string
+          title: Content
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+          default: []
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+          default: {}
+      type: object
+      required:
+      - source_type
+      - content
+      title: TrainingDataCreate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TrainingDataResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        source_type:
+          type: string
+          title: Source Type
+        title:
+          type: string
+          title: Title
+        source:
+          type: string
+          title: Source
+        status:
+          type: string
+          title: Status
+        content_preview:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Preview
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+        added_at:
+          type: string
+          format: date-time
+          title: Added At
+        processed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Processed At
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - source_type
+      - title
+      - source
+      - status
+      - tags
+      - added_at
+      - metadata
+      title: TrainingDataResponse
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

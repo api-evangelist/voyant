@@ -1,0 +1,98 @@
+openapi: 3.2.0
+info:
+  title: Voyant Health API
+  version: 1.0.0
+  description: 'Operations tagged health across 2 of this provider''s published API definitions: voyant-gypsum-openapi.json, voyant-openapi-original.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://gypsum.voyant.io
+  description: Production
+- url: http://localhost:3001
+  description: Local development
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: health
+  description: Service health and status
+paths:
+  /health:
+    get:
+      tags:
+      - health
+      summary: Health Check
+      description: Check if the Gypsum API server is running.
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  timestamp:
+                    type: string
+                    format: date-time
+    servers:
+    - url: https://gypsum.voyant.io
+      description: Production
+    - url: http://localhost:3001
+      description: Local development
+  /api/gypsum/connection-status:
+    get:
+      tags:
+      - health
+      summary: Connection Status
+      description: Check Gypsum API connection status (used by VoiceForge integrations).
+      operationId: connectionStatus
+      responses:
+        '200':
+          description: Connection status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connected:
+                    type: boolean
+                    example: true
+                  status:
+                    type: string
+                    example: OK
+                  timestamp:
+                    type: string
+                    format: date-time
+                  service:
+                    type: string
+                    example: gypsum-api
+    servers:
+    - url: https://gypsum.voyant.io
+      description: Production
+    - url: http://localhost:3001
+      description: Local development
+  /health/db:
+    get:
+      summary: Health Check Db
+      description: Deep health check that verifies all critical database tables exist.
+      operationId: health_check_db_health_db_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - health
+    servers:
+    - url: https://voice-forge-production.up.railway.app
+      description: Production
+components:
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+x-refined-from:
+- voyant-gypsum-openapi.json
+- voyant-openapi-original.json

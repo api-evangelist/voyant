@@ -1,0 +1,442 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Linkedin Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Linkedin Signals
+paths:
+  /api/linkedin-signals/discover-stream:
+    post:
+      summary: Discover Linkedin Signals Stream
+      description: 'Discover LinkedIn signals using Playwright-based browser automation.
+
+        Redirects to Playwright implementation which bypasses authwall issues.'
+      operationId: discover_linkedin_signals_stream_api_linkedin_signals_discover_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/discover:
+    post:
+      summary: Discover Linkedin Signals
+      description: Discover LinkedIn signals using built-in agent with user's session
+      operationId: discover_linkedin_signals_api_linkedin_signals_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/:
+    get:
+      summary: Get Linkedin Signals
+      description: Get stored LinkedIn signals/prospects from database
+      operationId: get_linkedin_signals_api_linkedin_signals__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/import-stream:
+    post:
+      summary: Import Linkedin Signals Stream
+      description: Import LinkedIn posts/profiles and stream them into the signals database.
+      operationId: import_linkedin_signals_stream_api_linkedin_signals_import_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/stats:
+    get:
+      summary: Get Linkedin Stats
+      description: Get LinkedIn signals statistics
+      operationId: get_linkedin_stats_api_linkedin_signals_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/generate-response:
+    post:
+      summary: Generate Linkedin Response
+      description: Generate AI response for LinkedIn prospect engagement
+      operationId: generate_linkedin_response_api_linkedin_signals_generate_response_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: signal_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Signal Id
+      - name: tone
+        in: query
+        required: false
+        schema:
+          type: string
+          default: professional
+          title: Tone
+      - name: response_type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: linkedin_message
+          title: Response Type
+      - name: include_context
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Include Context
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/session:
+    post:
+      summary: Capture Linkedin Session
+      description: 'Capture LinkedIn session from browser extension or manual input
+
+        Stores session for future use'
+      operationId: capture_linkedin_session_api_linkedin_signals_session_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Session Data
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/session-status:
+    get:
+      summary: Check Linkedin Session
+      description: Check if user has a valid LinkedIn session configured
+      operationId: check_linkedin_session_api_linkedin_signals_session_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/enrichment-settings:
+    get:
+      summary: Get Linkedin Enrichment Settings
+      operationId: get_linkedin_enrichment_settings_api_linkedin_signals_enrichment_settings_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+    post:
+      summary: Save Linkedin Enrichment Settings
+      operationId: save_linkedin_enrichment_settings_api_linkedin_signals_enrichment_settings_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Payload
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/discover-decision-makers:
+    post:
+      summary: Discover Decision Makers From Target Graph
+      description: 'Discover decision-makers on LinkedIn at companies from Target Graph
+
+        Returns all results at once (for backward compatibility)'
+      operationId: discover_decision_makers_from_target_graph_api_linkedin_signals_discover_decision_makers_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/map-organization-step:
+    post:
+      summary: Map Organization Step
+      description: 'Map one organization at a time for progressive UI updates
+
+
+        Request:
+
+        - company_id: Target Graph organization ID to map
+
+        - company_name: Company name
+
+        - roles_to_find: List of role types [''decision_maker'', ''team_lead'', ''individual_contributor'']
+
+        - max_profiles: Max profiles to return per company'
+      operationId: map_organization_step_api_linkedin_signals_map_organization_step_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Linkedin Signals
+  /api/linkedin-signals/test-agent:
+    post:
+      summary: Test Linkedin Agent Connection
+      description: Test connection to LinkedIn agent and trigger a small discovery
+      operationId: test_linkedin_agent_connection_api_linkedin_signals_test_agent_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Linkedin Signals
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

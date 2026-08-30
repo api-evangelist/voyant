@@ -1,0 +1,384 @@
+openapi: 3.2.0
+info:
+  title: Gypsum Context Campaigns API
+  description: '## Brand Context Management API
+
+
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
+
+
+    ### Core Capabilities
+
+
+    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
+
+    - **ICP Management** - Ideal Customer Profile CRUD operations
+
+    - **Campaign Management** - Marketing campaign tracking
+
+    - **AI Chat** - Brand-aware conversational AI
+
+
+    ### Authentication
+
+
+    Most endpoints require `user_id` query parameter (Clerk organization ID).
+
+    Demo access is available for testing.
+
+
+    ### Base URL
+
+
+    Production: `https://gypsum.voyant.io`
+
+    Local: `http://localhost:3001`'
+  version: 1.0.0
+  contact:
+    name: VoyantIO
+    url: https://voyant.io
+servers:
+- url: https://gypsum.voyant.io
+  description: Production
+- url: http://localhost:3001
+  description: Local development
+tags:
+- name: campaigns
+  description: Marketing campaign management
+paths:
+  /api/campaigns:
+    get:
+      tags:
+      - campaigns
+      summary: List Campaigns
+      description: Retrieve all marketing campaigns.
+      operationId: listCampaigns
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  campaigns:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Campaign'
+    post:
+      tags:
+      - campaigns
+      summary: Create Campaign
+      description: Create a new marketing campaign.
+      operationId: createCampaign
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignCreate'
+      responses:
+        '201':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+  /api/campaigns/{id}:
+    get:
+      tags:
+      - campaigns
+      summary: Get Campaign
+      description: Retrieve a specific campaign by ID.
+      operationId: getCampaign
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Campaign details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+    put:
+      tags:
+      - campaigns
+      summary: Update Campaign
+      description: Update an existing campaign.
+      operationId: updateCampaign
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignCreate'
+      responses:
+        '200':
+          description: Campaign updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+  /api/campaigns/{id}/generation-context:
+    get:
+      tags:
+      - campaigns
+      summary: Get Campaign Generation Context
+      description: Retrieve the full context needed for AI content generation for a campaign.
+      operationId: getCampaignGenerationContext
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Campaign generation context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignGenerationContext'
+components:
+  parameters:
+    userId:
+      name: user_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Clerk organization ID (e.g., org_abc123)
+  schemas:
+    CampaignCreate:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        target_personas:
+          type: array
+          items:
+            type: string
+        channels:
+          type: array
+          items:
+            type: string
+    MessagingContext:
+      type: object
+      properties:
+        elevator_pitch:
+          type: string
+        headline_message:
+          type: string
+        supporting_points:
+          type: string
+        tone_voice:
+          type: string
+        key_differentiators:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        tagline:
+          type: string
+        category:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        pricing_info:
+          type: object
+        target_audience:
+          type: array
+          items:
+            type: string
+        integration_capabilities:
+          type: array
+          items:
+            type: string
+        documentation_url:
+          type: string
+        demo_url:
+          type: string
+        status:
+          type: string
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+          - draft
+          - active
+          - paused
+          - completed
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        target_personas:
+          type: array
+          items:
+            type: string
+        channels:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Persona:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        role:
+          type: string
+        job_titles:
+          type: array
+          items:
+            type: string
+        seniority_level:
+          type: string
+        pain_points:
+          type: array
+          items:
+            type: string
+        goals:
+          type: array
+          items:
+            type: string
+        communication_style:
+          type: string
+        tech_stack:
+          type: array
+          items:
+            type: string
+        company_size:
+          type: string
+        industry:
+          type: string
+        budget_authority:
+          type: string
+        challenges:
+          type: array
+          items:
+            type: string
+        success_metrics:
+          type: array
+          items:
+            type: string
+        buying_criteria:
+          type: array
+          items:
+            type: string
+        content_preferences:
+          type: array
+          items:
+            type: string
+        decision_making_process:
+          type: string
+        demographics:
+          type: object
+    PositioningContext:
+      type: object
+      properties:
+        company_name:
+          type: string
+        target_market:
+          type: string
+        category:
+          type: string
+        differentiation:
+          type: string
+        competitive_alternatives:
+          type: array
+          items:
+            type: string
+        unique_capabilities:
+          type: array
+          items:
+            type: string
+        proof_points:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+        key_benefit:
+          type: string
+        compelling_reason:
+          type: string
+    CampaignGenerationContext:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/Campaign'
+        messaging:
+          $ref: '#/components/schemas/MessagingContext'
+        positioning:
+          $ref: '#/components/schemas/PositioningContext'
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'

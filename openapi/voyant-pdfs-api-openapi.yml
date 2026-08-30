@@ -1,0 +1,697 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO PD Fs API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: PDFs
+  description: PDF upload and processing. Extract text and structure from documents.
+paths:
+  /api/pdfs/upload:
+    post:
+      tags:
+      - PDFs
+      summary: Upload Pdf
+      description: 'Upload a PDF file. Processing is now separate and optional.
+
+
+        - **file**: PDF file to upload (max 10MB)
+
+        - **process_immediately**: Whether to queue processing immediately (default: False)
+
+        - Returns upload status and optionally task information'
+      operationId: upload_pdf_api_pdfs_upload_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_pdf_api_pdfs_upload_post'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+    options:
+      tags:
+      - PDFs
+      summary: Upload Pdf Options
+      description: Handle OPTIONS preflight request for PDF upload
+      operationId: upload_pdf_options_api_pdfs_upload_options
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/pdfs/{pdf_id}/process:
+    post:
+      tags:
+      - PDFs
+      summary: Process Pdf
+      description: 'Start processing a PDF that has been uploaded.
+
+
+        - **pdf_id**: ID of the PDF to process
+
+        - Returns task information for tracking progress'
+      operationId: process_pdf_api_pdfs__pdf_id__process_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/{pdf_id}/status:
+    get:
+      tags:
+      - PDFs
+      summary: Get Pdf Status
+      description: 'Get the processing status of a PDF, including real-time task progress.
+
+
+        - **pdf_id**: ID of the PDF
+
+        - Returns detailed status including task progress'
+      operationId: get_pdf_status_api_pdfs__pdf_id__status_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/{pdf_id}/cancel:
+    post:
+      tags:
+      - PDFs
+      summary: Cancel Pdf Processing
+      description: 'Cancel PDF processing if it''s in progress.
+
+
+        - **pdf_id**: ID of the PDF to cancel
+
+        - Returns 204 if successful, 404 if not found'
+      operationId: cancel_pdf_processing_api_pdfs__pdf_id__cancel_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/{pdf_id}/retry:
+    post:
+      tags:
+      - PDFs
+      summary: Retry Pdf Processing
+      description: 'Retry processing a failed PDF.
+
+
+        - **pdf_id**: ID of the PDF to retry
+
+        - Returns new task information'
+      operationId: retry_pdf_processing_api_pdfs__pdf_id__retry_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs:
+    get:
+      tags:
+      - PDFs
+      summary: List Pdfs Root
+      description: 'List uploaded PDFs for the organization.
+
+
+        - **status**: Filter by processing status (pending, processing, completed, failed)
+
+        - **limit**: Maximum number of results (1-100)
+
+        - **offset**: Offset for pagination
+
+        - Returns list of PDFs with usage statistics'
+      operationId: list_pdfs_root_api_pdfs_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/{pdf_id}:
+    delete:
+      tags:
+      - PDFs
+      summary: Delete Pdf
+      description: 'Delete a PDF and all associated data.
+
+
+        - **pdf_id**: ID of the PDF to delete
+
+        - Removes the PDF, its chunks, and updates usage tracking'
+      operationId: delete_pdf_api_pdfs__pdf_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/{pdf_id}/chunks:
+    get:
+      tags:
+      - PDFs
+      summary: Get Pdf Chunks
+      description: 'Get chunks for a specific PDF.
+
+
+        - **pdf_id**: ID of the PDF
+
+        - **page_number**: Optional filter by page number
+
+        - Returns list of text chunks with metadata'
+      operationId: get_pdf_chunks_api_pdfs__pdf_id__chunks_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      - name: page_number
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 1
+          - type: 'null'
+          title: Page Number
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/{pdf_id}/analyze:
+    post:
+      tags:
+      - PDFs
+      summary: Analyze Pdf
+      description: 'Generate AI analysis for a PDF.
+
+
+        - **pdf_id**: ID of the PDF to analyze
+
+        - **analysis_type**: Type of analysis (''summary'', ''keywords'', ''topics'')
+
+        - Returns analysis result with confidence score'
+      operationId: analyze_pdf_api_pdfs__pdf_id__analyze_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pdf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Pdf Id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_analyze_pdf_api_pdfs__pdf_id__analyze_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/generate-content:
+    post:
+      tags:
+      - PDFs
+      summary: Generate Content With Pdfs
+      description: 'Generate content using RAG with PDF context support.
+
+
+        - **query**: Question or topic for content generation
+
+        - **platform**: Target platform (twitter, instagram, etc.)
+
+        - **tone**: Desired tone (professional, casual, etc.)
+
+        - **pdf_ids**: Optional comma-separated list of PDF IDs to include in context
+
+        - **domain**: Optional domain filter for web content
+
+        - **content_type**: Optional content type filter
+
+        - **top_k**: Number of chunks to retrieve (1-20)
+
+        - Returns generated content with PDF and web source attribution'
+      operationId: generate_content_with_pdfs_api_pdfs_generate_content_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_generate_content_with_pdfs_api_pdfs_generate_content_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedContent'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pdfs/health:
+    get:
+      tags:
+      - PDFs
+      summary: Pdf Health Check
+      description: 'Health check for PDF functionality.
+
+        Verifies that required dependencies are available.'
+      operationId: pdf_health_check_api_pdfs_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/pdfs/test:
+    get:
+      tags:
+      - PDFs
+      summary: Pdf Test Endpoint
+      description: Simple test endpoint to verify PDF router is working.
+      operationId: pdf_test_endpoint_api_pdfs_test_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/pdfs/{path}:
+    options:
+      tags:
+      - PDFs
+      summary: Pdf Options Handler
+      description: Handle OPTIONS preflight requests for all PDF endpoints
+      operationId: pdf_options_handler_api_pdfs__path__options
+      parameters:
+      - name: path
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pdfs/usage:
+    get:
+      tags:
+      - PDFs
+      summary: Get Pdf Usage
+      description: 'Get PDF usage statistics for the organization.
+
+
+        Returns current usage against limits for the organization.'
+      operationId: get_pdf_usage_api_pdfs_usage_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    Body_analyze_pdf_api_pdfs__pdf_id__analyze_post:
+      properties:
+        analysis_type:
+          type: string
+          title: Analysis Type
+      type: object
+      required:
+      - analysis_type
+      title: Body_analyze_pdf_api_pdfs__pdf_id__analyze_post
+    GeneratedContent:
+      properties:
+        text:
+          type: string
+          title: Text
+          description: Generated content text
+        source_chunks:
+          items:
+            $ref: '#/components/schemas/SourceChunk'
+          type: array
+          title: Source Chunks
+          description: Source chunks used for generation
+        personality_used:
+          $ref: '#/components/schemas/PersonalityType'
+          description: Personality profile that was applied
+          default: default
+        template_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Template Id
+          description: ID of the template used
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Gypsum persona ID that was used
+        template_enhanced:
+          type: boolean
+          title: Template Enhanced
+          description: Whether custom template was used
+          default: false
+        persona_enhanced:
+          type: boolean
+          title: Persona Enhanced
+          description: Whether persona context was applied
+          default: false
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Generation metadata including enhancement details
+      type: object
+      required:
+      - text
+      - source_chunks
+      title: GeneratedContent
+      description: Response model for generated content.
+    Body_upload_pdf_api_pdfs_upload_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+        process_immediately:
+          type: boolean
+          title: Process Immediately
+          default: false
+      type: object
+      required:
+      - file
+      title: Body_upload_pdf_api_pdfs_upload_post
+    PersonalityType:
+      type: string
+      enum:
+      - the_architect
+      - human_first_closer
+      - default
+      title: PersonalityType
+      description: Available personality types for content generation.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Body_generate_content_with_pdfs_api_pdfs_generate_content_post:
+      properties:
+        query:
+          type: string
+          title: Query
+        platform:
+          type: string
+          title: Platform
+        tone:
+          type: string
+          title: Tone
+        pdf_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pdf Ids
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        top_k:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Top K
+          default: 5
+      type: object
+      required:
+      - query
+      - platform
+      - tone
+      title: Body_generate_content_with_pdfs_api_pdfs_generate_content_post
+    SourceChunk:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: ID of the source chunk
+        text:
+          type: string
+          title: Text
+          description: Snippet of the chunk text
+        similarity:
+          type: number
+          title: Similarity
+          description: Similarity score
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+      type: object
+      required:
+      - chunk_id
+      - text
+      - similarity
+      - content_id
+      title: SourceChunk
+      description: Source chunk information for generated content.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

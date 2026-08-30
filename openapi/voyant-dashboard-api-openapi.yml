@@ -1,0 +1,541 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Dashboard API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Dashboard
+paths:
+  /dashboard:
+    get:
+      summary: Dashboard Page
+      operationId: dashboard_page_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+      tags:
+      - Dashboard
+  /api/dashboard/summary:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Dashboard Summary
+      description: 'Get high-level dashboard summary statistics.
+
+        This is the main dashboard view.'
+      operationId: get_dashboard_summary_api_dashboard_summary_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of days to look back
+          default: 30
+          title: Days Back
+        description: Number of days to look back
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/active-companies:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Active Companies
+      description: 'Get the most active companies based on recent signals.
+
+        Simple view showing companies with the most activity.'
+      operationId: get_active_companies_api_dashboard_active_companies_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of days to look back
+          default: 7
+          title: Days Back
+        description: Number of days to look back
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of companies to return
+          default: 10
+          title: Limit
+        description: Number of companies to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/recent-activity:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Recent Activity
+      description: 'Get a feed of recent activity across all tracked entities.
+
+        Simple timeline view of what''s happening.'
+      operationId: get_recent_activity_api_dashboard_recent_activity_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of activities to return
+          default: 20
+          title: Limit
+        description: Number of activities to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/company/{company_id}:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Company Detail
+      description: Get detailed view of a single company and its team.
+      operationId: get_company_detail_api_dashboard_company__company_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Company Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/people:
+    get:
+      tags:
+      - Dashboard
+      summary: Get People List
+      description: Get a list of all tracked people.
+      operationId: get_people_list_api_dashboard_people_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of people to return
+          default: 20
+          title: Limit
+        description: Number of people to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Offset for pagination
+          default: 0
+          title: Offset
+        description: Offset for pagination
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/organizations:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Organizations List
+      description: Get a list of all organizations with velocity metrics.
+      operationId: get_organizations_list_api_dashboard_organizations_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of organizations to return
+          default: 100
+          title: Limit
+        description: Number of organizations to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Offset for pagination
+          default: 0
+          title: Offset
+        description: Offset for pagination
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Dashboard
+      summary: Create Organization
+      description: Create a new organization manually.
+      operationId: create_organization_api_dashboard_organizations_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Org Data
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/sync-signals:
+    post:
+      tags:
+      - Dashboard
+      summary: Sync Signals To Target Graph
+      description: 'Sync recent signals into the target graph.
+
+        This processes raw signals and creates Person/Organization records.
+
+        Now also detects tech stacks from signal content.'
+      operationId: sync_signals_to_target_graph_api_dashboard_sync_signals_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of signals to process
+          default: 100
+          title: Limit
+        description: Number of signals to process
+      - name: detect_tech
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Detect tech stacks
+          default: true
+          title: Detect Tech
+        description: Detect tech stacks
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/agent/sync-signals:
+    post:
+      tags:
+      - Dashboard
+      summary: Sync Signals With Agent
+      operationId: sync_signals_with_agent_api_dashboard_agent_sync_signals_post
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of signals to process
+          default: 100
+          title: Limit
+        description: Number of signals to process
+      - name: detect_tech
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Detect tech stacks
+          default: true
+          title: Detect Tech
+        description: Detect tech stacks
+      - name: X-Agent-API-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          title: X-Agent-Api-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/organizations/{org_id}/tech-stack:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Organization Tech Stack
+      description: Get the detected tech stack for an organization.
+      operationId: get_organization_tech_stack_api_dashboard_organizations__org_id__tech_stack_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/detect-tech-stacks:
+    post:
+      tags:
+      - Dashboard
+      summary: Detect All Tech Stacks
+      description: Detect tech stacks for organizations that don't have them yet.
+      operationId: detect_all_tech_stacks_api_dashboard_detect_tech_stacks_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of organizations to process
+          default: 10
+          title: Limit
+        description: Number of organizations to process
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/people/{person_id}:
+    patch:
+      tags:
+      - Dashboard
+      summary: Update Person
+      description: Update a person's information, including organization assignment.
+      operationId: update_person_api_dashboard_people__person_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Person Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Update Data
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/dashboard/health:
+    get:
+      tags:
+      - Dashboard
+      summary: Dashboard Health
+      description: Health check for dashboard API
+      operationId: dashboard_health_api_dashboard_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

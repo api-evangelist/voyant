@@ -1,0 +1,332 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Hackernews Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: hackernews-signals
+  description: HackerNews front page monitoring, Show HN tracking, comment sentiment, and discussion threads.
+paths:
+  /api/hackernews/health:
+    get:
+      tags:
+      - hackernews-signals
+      summary: Hackernews Health
+      description: Check Hacker News integration health
+      operationId: hackernews_health_api_hackernews_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/hackernews/signals/discover:
+    post:
+      tags:
+      - hackernews-signals
+      summary: Discover Hackernews Signals
+      description: "Discover Hacker News signals by searching stories and comments.\n\nRequest body:\n{\n    \"keywords\": [\"kubernetes\", \"rust programming\"],\n    \"time_window_hours\": 168,  // default: 1 week\n    \"max_results\": 50,\n    \"content_type\": \"story\",  // story, comment, or all\n    \"min_score\": 10  // minimum points to include\n}"
+      operationId: discover_hackernews_signals_api_hackernews_signals_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/hackernews/signals:
+    get:
+      tags:
+      - hackernews-signals
+      summary: List Hackernews Signals
+      description: List Hacker News signals with filtering options
+      operationId: list_hackernews_signals_api_hackernews_signals_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: min_score
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Min Score
+      - name: keyword
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Keyword
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - hackernews-signals
+      summary: Delete All Hackernews Signals
+      description: Delete all Hacker News signals for the organization
+      operationId: delete_all_hackernews_signals_api_hackernews_signals_delete
+      security:
+      - HTTPBearer: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/hackernews/scan-with-keywords:
+    post:
+      tags:
+      - hackernews-signals
+      summary: Scan Top Stories With Keywords
+      description: "Scan HN for keyword matches using multiple sources:\n1. Algolia search going back 3 months (historical)\n2. Current top stories\n3. Newest stories (fresh submissions)\n\nAlso crawls comment threads for keyword mentions.\n\nRequest:\n{\n    \"keywords\": [\"scylladb\", \"cassandra\"],  // Optional, uses configured sources if not provided\n    \"days_back\": 90,  // How far back to search (default 3 months)\n    \"scan_comments\": true,\n    \"min_score\": 1,  // Lower for newest\n    \"include_newest\": true  // Monitor /newest\n}"
+      operationId: scan_top_stories_with_keywords_api_hackernews_scan_with_keywords_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/hackernews/top-stories:
+    get:
+      tags:
+      - hackernews-signals
+      summary: Get Top Stories
+      description: Get current top stories from Hacker News
+      operationId: get_top_stories_api_hackernews_top_stories_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 30
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hackernews/sources:
+    get:
+      tags:
+      - hackernews-signals
+      summary: Get Hackernews Sources
+      description: Get configured Hacker News sources (keywords to monitor)
+      operationId: get_hackernews_sources_api_hackernews_sources_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - hackernews-signals
+      summary: Add Hackernews Source
+      description: Add a new Hacker News source (keyword to monitor)
+      operationId: add_hackernews_source_api_hackernews_sources_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/hackernews/sources/{source_id}:
+    delete:
+      tags:
+      - hackernews-signals
+      summary: Delete Hackernews Source
+      description: Delete a Hacker News source
+      operationId: delete_hackernews_source_api_hackernews_sources__source_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: source_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Source Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

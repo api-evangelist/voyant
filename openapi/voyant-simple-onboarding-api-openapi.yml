@@ -1,0 +1,377 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Simple Onboarding API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: simple-onboarding
+  description: Streamlined 5-step onboarding flow.
+paths:
+  /api/onboarding/simple/start:
+    post:
+      tags:
+      - simple-onboarding
+      summary: Start Simple Onboarding
+      description: 'Start simplified onboarding with just a domain.
+
+
+        Returns all discovery data, enrichment, messaging, and competitor suggestions
+
+        in a single response. User can then confirm/edit before finalizing.'
+      operationId: start_simple_onboarding_api_onboarding_simple_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimpleOnboardingRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleOnboardingResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/simple/confirm:
+    post:
+      tags:
+      - simple-onboarding
+      summary: Confirm Simple Onboarding
+      description: 'Confirm the onboarding data and create context streams.
+
+
+        This finalizes the onboarding:
+
+        1. Saves messaging framework
+
+        2. Creates confirmed competitors
+
+        3. Creates context streams (Messaging Framework, Competitive Intelligence)'
+      operationId: confirm_simple_onboarding_api_onboarding_simple_confirm_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmOnboardingRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/simple/status:
+    get:
+      tags:
+      - simple-onboarding
+      summary: Get Simple Onboarding Status
+      description: Get the current simple onboarding status/data if any
+      operationId: get_simple_onboarding_status_api_onboarding_simple_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    DiscoveryData:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        domain:
+          type: string
+          title: Domain
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+          default: []
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        social_links:
+          additionalProperties:
+            type: string
+          type: object
+          title: Social Links
+          default: {}
+      type: object
+      required:
+      - company_name
+      - domain
+      title: DiscoveryData
+      description: Homepage discovery data
+    SimpleOnboardingRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+      type: object
+      required:
+      - domain
+      title: SimpleOnboardingRequest
+      description: Start simplified onboarding with just a domain
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ConfirmOnboardingRequest:
+      properties:
+        session_id:
+          type: string
+          title: Session Id
+        company_name:
+          type: string
+          title: Company Name
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        messaging:
+          $ref: '#/components/schemas/MessagingData'
+        confirmed_competitors:
+          items:
+            type: string
+          type: array
+          title: Confirmed Competitors
+          default: []
+      type: object
+      required:
+      - session_id
+      - company_name
+      - messaging
+      title: ConfirmOnboardingRequest
+      description: User-confirmed onboarding data
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SimpleOnboardingResponse:
+      properties:
+        session_id:
+          type: string
+          title: Session Id
+        discovery:
+          $ref: '#/components/schemas/DiscoveryData'
+        enrichment:
+          anyOf:
+          - $ref: '#/components/schemas/EnrichmentData'
+          - type: 'null'
+        messaging:
+          $ref: '#/components/schemas/MessagingData'
+        competitors:
+          items:
+            $ref: '#/components/schemas/CompetitorSuggestion'
+          type: array
+          title: Competitors
+      type: object
+      required:
+      - session_id
+      - discovery
+      - messaging
+      - competitors
+      title: SimpleOnboardingResponse
+      description: Complete response from simple onboarding discovery
+    CompetitorSuggestion:
+      properties:
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        description:
+          type: string
+          title: Description
+        why_competitor:
+          type: string
+          title: Why Competitor
+        confirmed:
+          type: boolean
+          title: Confirmed
+          default: true
+      type: object
+      required:
+      - name
+      - domain
+      - description
+      - why_competitor
+      title: CompetitorSuggestion
+      description: A suggested competitor
+    EnrichmentData:
+      properties:
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+        employee_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Employee Count
+        revenue:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Revenue
+        headquarters:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Headquarters
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        founded_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Founded Year
+        linkedin_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linkedin Url
+        technologies:
+          items:
+            type: string
+          type: array
+          title: Technologies
+          default: []
+      type: object
+      title: EnrichmentData
+      description: Lusha enrichment data
+    MessagingData:
+      properties:
+        headline:
+          type: string
+          title: Headline
+        tagline:
+          type: string
+          title: Tagline
+        value_proposition:
+          type: string
+          title: Value Proposition
+        key_differentiators:
+          items:
+            type: string
+          type: array
+          title: Key Differentiators
+          default: []
+        target_audience:
+          type: string
+          title: Target Audience
+      type: object
+      required:
+      - headline
+      - tagline
+      - value_proposition
+      - target_audience
+      title: MessagingData
+      description: Generated high-level messaging
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

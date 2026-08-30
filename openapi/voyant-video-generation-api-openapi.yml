@@ -1,0 +1,395 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Video Generation API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Video Generation
+  description: AI video script generation and storyboarding.
+paths:
+  /api/video-generation/generate:
+    post:
+      tags:
+      - Video Generation
+      summary: Generate Complete Video
+      description: 'Generate a complete NextTechStack video from script to final video.
+
+
+        This endpoint:
+
+        1. Analyzes your VoiceForge content to generate a script
+
+        2. Creates a professional video using HeyGen AI avatars
+
+        3. Returns video ID for status tracking and download'
+      operationId: generate_complete_video_api_video_generation_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoGenerationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoGenerationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/video-generation/status/{video_id}:
+    get:
+      tags:
+      - Video Generation
+      summary: Get Video Status
+      description: 'Get the status of video generation.
+
+
+        Returns current status, progress, and download URL when complete.'
+      operationId: get_video_status_api_video_generation_status__video_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: video_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Video Id
+      - name: heygen_video_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Heygen Video Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoGenerationStatus'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/video-generation/avatars:
+    get:
+      tags:
+      - Video Generation
+      summary: Get Available Avatars
+      description: Get list of available HeyGen avatars for video generation.
+      operationId: get_available_avatars_api_video_generation_avatars_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/video-generation/templates:
+    get:
+      tags:
+      - Video Generation
+      summary: Get Video Templates
+      description: Get available video templates and settings.
+      operationId: get_video_templates_api_video_generation_templates_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/video-generation/health:
+    get:
+      tags:
+      - Video Generation
+      summary: Video Generation Health
+      description: Health check for video generation service
+      operationId: video_generation_health_api_video_generation_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    VideoScriptRequest:
+      properties:
+        company_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Domain
+          description: Specific company domain to focus on
+        script_length:
+          type: integer
+          maximum: 300.0
+          minimum: 30.0
+          title: Script Length
+          description: Target script length in seconds
+          default: 120
+        funnel_stage:
+          $ref: '#/components/schemas/FunnelStage'
+          description: Target funnel stage
+          default: tofu
+        tone:
+          $ref: '#/components/schemas/ContentTone'
+          description: Video tone
+          default: professional
+        include_intro:
+          type: boolean
+          title: Include Intro
+          description: Include NextTechStack intro
+          default: true
+        include_outro:
+          type: boolean
+          title: Include Outro
+          description: Include standard outro
+          default: true
+        focus_areas:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Focus Areas
+          description: Specific topics to emphasize
+      type: object
+      title: VideoScriptRequest
+      description: Request for generating video script
+    VideoGenerationStatus:
+      properties:
+        video_id:
+          type: string
+          title: Video Id
+        status:
+          type: string
+          title: Status
+        progress:
+          type: number
+          title: Progress
+        created_at:
+          type: string
+          title: Created At
+        updated_at:
+          type: string
+          title: Updated At
+        download_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Download Url
+        thumbnail_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Thumbnail Url
+        duration:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+      type: object
+      required:
+      - video_id
+      - status
+      - progress
+      - created_at
+      - updated_at
+      title: VideoGenerationStatus
+      description: Status of video generation
+    VideoGenerationRequest:
+      properties:
+        script_request:
+          $ref: '#/components/schemas/VideoScriptRequest'
+        avatar_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Avatar Id
+          description: HeyGen avatar ID
+          default: default_presenter
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+          description: Voice ID for narration
+          default: professional_male
+        background_style:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Style
+          description: Background style
+          default: office
+        video_quality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Video Quality
+          description: Video quality setting
+          default: 1080p
+        generate_subtitles:
+          type: boolean
+          title: Generate Subtitles
+          description: Generate video with subtitles
+          default: true
+      type: object
+      required:
+      - script_request
+      title: VideoGenerationRequest
+      description: Request for generating complete video
+    VideoGenerationResponse:
+      properties:
+        video_id:
+          type: string
+          title: Video Id
+        script_id:
+          type: string
+          title: Script Id
+        company_name:
+          type: string
+          title: Company Name
+        status:
+          type: string
+          title: Status
+        heygen_video_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Heygen Video Id
+        estimated_completion:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Estimated Completion
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - video_id
+      - script_id
+      - company_name
+      - status
+      - metadata
+      title: VideoGenerationResponse
+      description: Response from video generation request
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

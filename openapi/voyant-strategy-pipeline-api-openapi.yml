@@ -1,0 +1,397 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Strategy Pipeline API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Strategy Pipeline
+paths:
+  /api/v1/strategy/health:
+    get:
+      tags:
+      - Strategy Pipeline
+      summary: Health
+      operationId: health_api_v1_strategy_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/strategy/engagements:
+    get:
+      tags:
+      - Strategy Pipeline
+      summary: List Engagements
+      operationId: list_engagements_api_v1_strategy_engagements_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - Strategy Pipeline
+      summary: Create Engagement
+      operationId: create_engagement_api_v1_strategy_engagements_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/v1/strategy/usage:
+    get:
+      tags:
+      - Strategy Pipeline
+      summary: Usage
+      description: Per-user + per-source token usage for the caller's org (metering/cost).
+      operationId: usage_api_v1_strategy_usage_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/strategy/org-key:
+    get:
+      tags:
+      - Strategy Pipeline
+      summary: Get Org Key
+      description: Whether this org runs on its own Anthropic key (BYOK) or the platform key.
+      operationId: get_org_key_api_v1_strategy_org_key_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - Strategy Pipeline
+      summary: Set Org Key
+      operationId: set_org_key_api_v1_strategy_org_key_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgKeyRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+    delete:
+      tags:
+      - Strategy Pipeline
+      summary: Clear Org Key
+      description: Remove BYOK → fall back to the platform key.
+      operationId: clear_org_key_api_v1_strategy_org_key_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/v1/strategy/engagements/{engagement_id}:
+    get:
+      tags:
+      - Strategy Pipeline
+      summary: Get Engagement
+      operationId: get_engagement_api_v1_strategy_engagements__engagement_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: engagement_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Engagement Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/strategy/engagements/{engagement_id}/run:
+    post:
+      tags:
+      - Strategy Pipeline
+      summary: Run
+      operationId: run_api_v1_strategy_engagements__engagement_id__run_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: engagement_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Engagement Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/strategy/engagements/{engagement_id}/resume:
+    post:
+      tags:
+      - Strategy Pipeline
+      summary: Resume
+      operationId: resume_api_v1_strategy_engagements__engagement_id__resume_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: engagement_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Engagement Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/strategy/engagements/{engagement_id}/stream:
+    get:
+      tags:
+      - Strategy Pipeline
+      summary: Stream
+      description: 'SSE live pulse feed — Clerk-gated + org-scoped like every other endpoint.
+
+        The browser can''t put a Bearer on an EventSource, so studio reaches this via
+
+        its server-side proxy, which attaches the Clerk token from the session cookie.'
+      operationId: stream_api_v1_strategy_engagements__engagement_id__stream_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: engagement_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Engagement Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CreateRequest:
+      properties:
+        client_name:
+          type: string
+          title: Client Name
+        brief:
+          type: string
+          title: Brief
+          default: ''
+        brand_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Brand Id
+      type: object
+      required:
+      - client_name
+      title: CreateRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RunRequest:
+      properties:
+        mode:
+          type: string
+          title: Mode
+          default: recommended
+      type: object
+      title: RunRequest
+    ResumeRequest:
+      properties:
+        kind:
+          type: string
+          title: Kind
+          default: confirm_personas
+        selection:
+          items:
+            type: string
+          type: array
+          title: Selection
+          default: []
+      type: object
+      title: ResumeRequest
+    OrgKeyRequest:
+      properties:
+        api_key:
+          type: string
+          title: Api Key
+      type: object
+      required:
+      - api_key
+      title: OrgKeyRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

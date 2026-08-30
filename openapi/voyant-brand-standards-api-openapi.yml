@@ -1,0 +1,545 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Brand Standards API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: brand-standards
+  description: Terminology rules, voice guidelines, and compliance checks. Ensure consistent brand language.
+paths:
+  /api/brand-standards/rules:
+    get:
+      tags:
+      - brand-standards
+      summary: List Terminology Rules
+      description: List all terminology rules for the organization
+      operationId: list_terminology_rules_api_brand_standards_rules_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: is_active
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TerminologyRule'
+                title: Response List Terminology Rules Api Brand Standards Rules Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - brand-standards
+      summary: Create Terminology Rule
+      description: Create a new terminology rule
+      operationId: create_terminology_rule_api_brand_standards_rules_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TerminologyRuleCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminologyRule'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/brand-standards/rules/{rule_id}:
+    get:
+      tags:
+      - brand-standards
+      summary: Get Terminology Rule
+      description: Get a specific terminology rule
+      operationId: get_terminology_rule_api_brand_standards_rules__rule_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: rule_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Rule Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminologyRule'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - brand-standards
+      summary: Update Terminology Rule
+      description: Update a terminology rule
+      operationId: update_terminology_rule_api_brand_standards_rules__rule_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: rule_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Rule Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TerminologyRuleUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminologyRule'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - brand-standards
+      summary: Delete Terminology Rule
+      description: Delete a terminology rule
+      operationId: delete_terminology_rule_api_brand_standards_rules__rule_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: rule_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Rule Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/brand-standards/validate:
+    post:
+      tags:
+      - brand-standards
+      summary: Validate Content
+      description: 'Validate content against terminology rules.
+
+        Returns violations and optionally auto-corrected text.'
+      operationId: validate_content_api_brand_standards_validate_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Content
+      - name: auto_correct
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Auto Correct
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/brand-standards/export:
+    get:
+      tags:
+      - brand-standards
+      summary: Export Rules For Prompt
+      description: Export rules in a format suitable for system prompt injection.
+      operationId: export_rules_for_prompt_api_brand_standards_export_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesExport'
+      security:
+      - HTTPBearer: []
+  /api/brand-standards/rules/bulk:
+    post:
+      tags:
+      - brand-standards
+      summary: Bulk Create Rules
+      description: Create multiple terminology rules at once
+      operationId: bulk_create_rules_api_brand_standards_rules_bulk_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/TerminologyRuleCreate'
+              type: array
+              title: Rules
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TerminologyRule'
+                type: array
+                title: Response Bulk Create Rules Api Brand Standards Rules Bulk Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    TerminologyRuleUpdate:
+      properties:
+        incorrect_term:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Incorrect Term
+        correct_term:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correct Term
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        case_sensitive:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Case Sensitive
+        enforcement:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Enforcement
+        use_regex:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Use Regex
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        is_active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+      type: object
+      title: TerminologyRuleUpdate
+    RulesExport:
+      properties:
+        rules_count:
+          type: integer
+          title: Rules Count
+        legal_rules:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Legal Rules
+        style_rules:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Style Rules
+        banned_terms:
+          items:
+            type: string
+          type: array
+          title: Banned Terms
+        system_prompt_section:
+          type: string
+          title: System Prompt Section
+      type: object
+      required:
+      - rules_count
+      - legal_rules
+      - style_rules
+      - banned_terms
+      - system_prompt_section
+      title: RulesExport
+      description: Export format for system prompt injection
+    ValidationResult:
+      properties:
+        is_valid:
+          type: boolean
+          title: Is Valid
+        violations:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Violations
+        corrected_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Corrected Text
+      type: object
+      required:
+      - is_valid
+      - violations
+      title: ValidationResult
+    TerminologyRuleCreate:
+      properties:
+        incorrect_term:
+          type: string
+          title: Incorrect Term
+          description: The incorrect term or pattern to match
+        correct_term:
+          type: string
+          title: Correct Term
+          description: The correct term to use instead
+        category:
+          type: string
+          title: Category
+          description: 'Category: legal, style, or banned'
+          default: style
+        case_sensitive:
+          type: boolean
+          title: Case Sensitive
+          description: Whether matching is case-sensitive
+          default: false
+        enforcement:
+          type: string
+          title: Enforcement
+          description: 'Enforcement level: block or warn'
+          default: block
+        use_regex:
+          type: boolean
+          title: Use Regex
+          description: Whether incorrect_term is a regex pattern
+          default: false
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+          description: Additional notes about this rule
+        is_active:
+          type: boolean
+          title: Is Active
+          description: Whether this rule is active
+          default: true
+      type: object
+      required:
+      - incorrect_term
+      - correct_term
+      title: TerminologyRuleCreate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TerminologyRule:
+      properties:
+        incorrect_term:
+          type: string
+          title: Incorrect Term
+          description: The incorrect term or pattern to match
+        correct_term:
+          type: string
+          title: Correct Term
+          description: The correct term to use instead
+        category:
+          type: string
+          title: Category
+          description: 'Category: legal, style, or banned'
+          default: style
+        case_sensitive:
+          type: boolean
+          title: Case Sensitive
+          description: Whether matching is case-sensitive
+          default: false
+        enforcement:
+          type: string
+          title: Enforcement
+          description: 'Enforcement level: block or warn'
+          default: block
+        use_regex:
+          type: boolean
+          title: Use Regex
+          description: Whether incorrect_term is a regex pattern
+          default: false
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+          description: Additional notes about this rule
+        is_active:
+          type: boolean
+          title: Is Active
+          description: Whether this rule is active
+          default: true
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - incorrect_term
+      - correct_term
+      - id
+      - org_id
+      - created_at
+      - updated_at
+      title: TerminologyRule
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,327 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Github Org Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: github-org-intelligence
+  description: 'GitHub organization analysis: stars, forks, contributors, repository health, issue sentiment, and developer activity.'
+paths:
+  /api/github-orgs/organizations:
+    get:
+      tags:
+      - github-org-intelligence
+      summary: List Github Organizations
+      description: List GitHub organizations with intelligence and target counts
+      operationId: list_github_organizations_api_github_orgs_organizations_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Search organization names
+          title: Search
+        description: Search organization names
+      - name: min_targets
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Minimum target count
+          title: Min Targets
+        description: Minimum target count
+      - name: min_members
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Minimum member count
+          title: Min Members
+        description: Minimum member count
+      - name: topic_filter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by topic (e.g., 'fintech', 'kubernetes')
+          title: Topic Filter
+        description: Filter by topic (e.g., 'fintech', 'kubernetes')
+      - name: company_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by company size category
+          title: Company Size
+        description: Filter by company size category
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Sort by: target_count, member_count, followers, relevance_score'
+          default: target_count
+          title: Sort By
+        description: 'Sort by: target_count, member_count, followers, relevance_score'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/github-orgs/organizations/{login}:
+    get:
+      tags:
+      - github-org-intelligence
+      summary: Get Github Organization Details
+      description: Get detailed information about a specific GitHub organization
+      operationId: get_github_organization_details_api_github_orgs_organizations__login__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: login
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Login
+      - name: include_targets
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include target list
+          default: true
+          title: Include Targets
+        description: Include target list
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/github-orgs/stats:
+    get:
+      tags:
+      - github-org-intelligence
+      summary: Get Github Org Stats
+      description: Get comprehensive GitHub organization intelligence statistics
+      operationId: get_github_org_stats_api_github_orgs_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/github-orgs/refresh-intelligence:
+    post:
+      tags:
+      - github-org-intelligence
+      summary: Refresh Github Org Intelligence
+      description: Refresh GitHub organization intelligence (runs in background)
+      operationId: refresh_github_org_intelligence_api_github_orgs_refresh_intelligence_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: github_token
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional GitHub token for higher rate limits
+          title: Github Token
+        description: Optional GitHub token for higher rate limits
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/github-orgs/topics:
+    get:
+      tags:
+      - github-org-intelligence
+      summary: List Popular Topics
+      description: List most popular topics across tracked GitHub organizations
+      operationId: list_popular_topics_api_github_orgs_topics_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: min_org_count
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Minimum number of organizations using this topic
+          default: 1
+          title: Min Org Count
+        description: Minimum number of organizations using this topic
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/github-orgs/company-sizes:
+    get:
+      tags:
+      - github-org-intelligence
+      summary: Get Company Size Distribution
+      description: Get distribution of company sizes we're tracking
+      operationId: get_company_size_distribution_api_github_orgs_company_sizes_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

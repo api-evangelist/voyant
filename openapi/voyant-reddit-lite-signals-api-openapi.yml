@@ -1,0 +1,356 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Reddit Lite Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: reddit-lite-signals
+  description: Reddit monitoring across subreddits. Track brand mentions, competitor discussions, and community sentiment.
+paths:
+  /api/reddit-lite/health:
+    get:
+      tags:
+      - reddit-lite-signals
+      summary: Reddit Health
+      description: Check Reddit integration health
+      operationId: reddit_health_api_reddit_lite_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/reddit-lite/signals/discover:
+    post:
+      tags:
+      - reddit-lite-signals
+      summary: Discover Reddit Signals
+      description: 'Discover Reddit signals by searching subreddits for keywords
+
+        Similar to GitHub discovery but for Reddit content'
+      operationId: discover_reddit_signals_api_reddit_lite_signals_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/reddit-lite/signals/discover-stream:
+    post:
+      tags:
+      - reddit-lite-signals
+      summary: Discover Reddit Signals Stream
+      operationId: discover_reddit_signals_stream_api_reddit_lite_signals_discover_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/reddit-lite/signals:
+    get:
+      tags:
+      - reddit-lite-signals
+      summary: List Reddit Signals
+      description: List Reddit signals with filtering options
+      operationId: list_reddit_signals_api_reddit_lite_signals_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: subreddit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subreddit
+      - name: keyword
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Keyword
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - reddit-lite-signals
+      summary: Delete All Reddit Signals
+      description: Delete all Reddit signals for the organization
+      operationId: delete_all_reddit_signals_api_reddit_lite_signals_delete
+      security:
+      - HTTPBearer: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/reddit-lite/signals/summarize:
+    post:
+      tags:
+      - reddit-lite-signals
+      summary: Summarize Reddit Signals
+      description: Generate AI summaries for Reddit signals (on demand).
+      operationId: summarize_reddit_signals_api_reddit_lite_signals_summarize_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/reddit-lite/users/{username}/follow:
+    post:
+      tags:
+      - reddit-lite-signals
+      summary: Follow Reddit User
+      description: Follow a Reddit user (requires authenticated Reddit account)
+      operationId: follow_reddit_user_api_reddit_lite_users__username__follow_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Username
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/reddit-lite/sources:
+    get:
+      tags:
+      - reddit-lite-signals
+      summary: Get Reddit Sources
+      description: Get configured Reddit sources for this organization
+      operationId: get_reddit_sources_api_reddit_lite_sources_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/reddit-lite/mentions:
+    get:
+      tags:
+      - reddit-lite-signals
+      summary: Get Competitor Reddit Mentions
+      description: 'Search Reddit for mentions of a competitor.
+
+        Used by the competitor dashboard to find Reddit discussions.
+
+        Similar to YouTube mentions endpoint.'
+      operationId: get_competitor_reddit_mentions_api_reddit_lite_mentions_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Competitor name to search for
+          title: Query
+        description: Competitor name to search for
+      - name: competitor_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Competitor ID for smart filtering
+          title: Competitor Id
+        description: Competitor ID for smart filtering
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

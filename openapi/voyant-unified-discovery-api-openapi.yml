@@ -1,0 +1,306 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Unified Discovery API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: unified-discovery
+  description: Automated discovery across all signal platforms. Schedule and manage discovery jobs.
+paths:
+  /api/discovery/config:
+    get:
+      tags:
+      - unified-discovery
+      summary: Get Discovery Config
+      description: Get current discovery configuration
+      operationId: get_discovery_config_api_discovery_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - unified-discovery
+      summary: Create Or Update Discovery Config
+      description: Create or update daily discovery configuration
+      operationId: create_or_update_discovery_config_api_discovery_config_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoveryConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+    delete:
+      tags:
+      - unified-discovery
+      summary: Delete Discovery Config
+      description: Delete discovery configuration and cancel scheduled jobs
+      operationId: delete_discovery_config_api_discovery_config_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/discovery/run-now:
+    post:
+      tags:
+      - unified-discovery
+      summary: Run Discovery Now
+      description: Run discovery immediately (respects 24-hour limit unless forced)
+      operationId: run_discovery_now_api_discovery_run_now_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: force
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Force
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/discovery/status:
+    get:
+      tags:
+      - unified-discovery
+      summary: Get Discovery Status
+      description: Get discovery schedule status and last run info
+      operationId: get_discovery_status_api_discovery_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/discovery/history:
+    get:
+      tags:
+      - unified-discovery
+      summary: Get Discovery History
+      description: Get history of discovery runs
+      operationId: get_discovery_history_api_discovery_history_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/discovery/test-digest:
+    post:
+      tags:
+      - unified-discovery
+      summary: Test Digest
+      description: Send a test digest to configured channels
+      operationId: test_digest_api_discovery_test_digest_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DiscoveryConfigRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          default: Daily Discovery
+        enabled:
+          type: boolean
+          title: Enabled
+          default: true
+        schedule_hour:
+          type: integer
+          title: Schedule Hour
+          default: 9
+        platforms:
+          items:
+            type: string
+          type: array
+          title: Platforms
+          default:
+          - github
+          - reddit
+          - linkedin
+        hashtags:
+          items:
+            type: string
+          type: array
+          title: Hashtags
+          default: []
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords
+          default: []
+        github_repos:
+          items:
+            type: string
+          type: array
+          title: Github Repos
+          default: []
+        reddit_subreddits:
+          items:
+            type: string
+          type: array
+          title: Reddit Subreddits
+          default: []
+        send_digest:
+          type: boolean
+          title: Send Digest
+          default: true
+        slack_webhook:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Slack Webhook
+        email_recipients:
+          items:
+            type: string
+          type: array
+          title: Email Recipients
+          default: []
+        min_relevance:
+          type: number
+          title: Min Relevance
+          default: 0.6
+        max_signals_per_platform:
+          type: integer
+          title: Max Signals Per Platform
+          default: 50
+      type: object
+      title: DiscoveryConfigRequest
+      description: Request model for discovery configuration
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,444 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO CRM API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: crm
+  description: CRM integrations for syncing contacts, companies, and deal data.
+paths:
+  /api/crm/available:
+    get:
+      tags:
+      - crm
+      summary: Get Available Crms
+      description: Get list of available CRM integrations and their requirements
+      operationId: get_available_crms_api_crm_available_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - crm
+      summary: Get Available Crms Post
+      operationId: get_available_crms_post_api_crm_available_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    options:
+      tags:
+      - crm
+      summary: Available Crms Options
+      operationId: available_crms_options_api_crm_available_options
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/crm/config:
+    get:
+      tags:
+      - crm
+      summary: Get Crm Config
+      description: Get current CRM configuration for organization
+      operationId: get_crm_config_api_crm_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - crm
+      summary: Configure Crm
+      description: Configure CRM for organization
+      operationId: configure_crm_api_crm_config_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CRMConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crm/sync/contacts:
+    post:
+      tags:
+      - crm
+      summary: Sync Contacts
+      description: Sync contacts between VoiceForge and CRM
+      operationId: sync_contacts_api_crm_sync_contacts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactSyncRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crm/sync/contacts/immediate:
+    post:
+      tags:
+      - crm
+      summary: Sync Contacts Immediate
+      description: Sync contacts immediately (for small batches)
+      operationId: sync_contacts_immediate_api_crm_sync_contacts_immediate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactSyncRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crm/sync/signals:
+    post:
+      tags:
+      - crm
+      summary: Sync Signals
+      description: Sync signals as CRM activities
+      operationId: sync_signals_api_crm_sync_signals_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalSyncRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crm/campaigns/add-contacts:
+    post:
+      tags:
+      - crm
+      summary: Add Contacts To Campaign
+      description: Add contacts to a CRM campaign/list
+      operationId: add_contacts_to_campaign_api_crm_campaigns_add_contacts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignAddRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/crm/sync/status/{task_id}:
+    get:
+      tags:
+      - crm
+      summary: Get Sync Status
+      description: Get status of a sync task
+      operationId: get_sync_status_api_crm_sync_status__task_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crm/sync-from-crm:
+    post:
+      tags:
+      - crm
+      summary: Sync From Crm
+      description: Sync data FROM CRM into the Target Graph
+      operationId: sync_from_crm_api_crm_sync_from_crm_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/crm/test-connection:
+    get:
+      tags:
+      - crm
+      summary: Test Crm Connection
+      description: Test CRM connection for current organization
+      operationId: test_crm_connection_api_crm_test_connection_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    CampaignAddRequest:
+      properties:
+        campaign_id:
+          type: string
+          title: Campaign Id
+          description: CRM campaign/list ID
+        contact_emails:
+          items:
+            type: string
+          type: array
+          title: Contact Emails
+          description: Email addresses to add
+        create_if_missing:
+          type: boolean
+          title: Create If Missing
+          description: Create contacts if they don't exist
+          default: false
+      type: object
+      required:
+      - campaign_id
+      - contact_emails
+      title: CampaignAddRequest
+      description: Add contacts to campaign request
+    SignalSyncRequest:
+      properties:
+        signal_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Signal Ids
+          description: Specific signal IDs to sync
+        start_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Start Date
+          description: Sync signals after this date
+        end_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: End Date
+          description: Sync signals before this date
+        platforms:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Platforms
+          description: Filter by signal platforms
+      type: object
+      title: SignalSyncRequest
+      description: Signal sync request
+    CRMConfigRequest:
+      properties:
+        crm_type:
+          type: string
+          title: Crm Type
+          description: 'Type of CRM: pardot, hubspot, salesforce, etc.'
+        config:
+          additionalProperties: true
+          type: object
+          title: Config
+          description: CRM-specific configuration
+        test_connection:
+          type: boolean
+          title: Test Connection
+          description: Test connection after saving
+          default: true
+      type: object
+      required:
+      - crm_type
+      - config
+      title: CRMConfigRequest
+      description: CRM configuration request
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ContactSyncRequest:
+      properties:
+        contact_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Contact Ids
+          description: Specific contact IDs to sync (all if not provided)
+        sync_direction:
+          type: string
+          title: Sync Direction
+          description: 'Sync direction: to_crm, from_crm, bidirectional'
+          default: to_crm
+        update_existing:
+          type: boolean
+          title: Update Existing
+          description: Update existing contacts in CRM
+          default: true
+        sync_companies:
+          type: boolean
+          title: Sync Companies
+          description: Also sync associated companies
+          default: true
+      type: object
+      title: ContactSyncRequest
+      description: Contact sync request
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

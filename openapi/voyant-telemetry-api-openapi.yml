@@ -1,0 +1,777 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Telemetry API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: telemetry
+  description: Site visitor tracking with IP geolocation and company enrichment. Identify anonymous visitors.
+paths:
+  /api/telemetry/track:
+    post:
+      tags:
+      - telemetry
+      summary: Track Events
+      description: 'Track events from frontend.
+
+
+        This endpoint is public - no auth required.
+
+        Rate limited by IP.'
+      operationId: track_events_api_telemetry_track_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/end-session:
+    post:
+      tags:
+      - telemetry
+      summary: End Session
+      description: Mark a session as ended (called on page unload).
+      operationId: end_session_api_telemetry_end_session_post
+      parameters:
+      - name: session_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      - name: org_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/stats:
+    get:
+      tags:
+      - telemetry
+      summary: Get Stats
+      description: Get summary statistics for the organization.
+      operationId: get_stats_api_telemetry_stats_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryStatsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/visitors:
+    get:
+      tags:
+      - telemetry
+      summary: Get Visitors
+      description: Get list of visitors.
+      operationId: get_visitors_api_telemetry_visitors_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: enriched_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Enriched Only
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/visitors/{visitor_id}:
+    get:
+      tags:
+      - telemetry
+      summary: Get Visitor Detail
+      description: Get detailed visitor info with sessions.
+      operationId: get_visitor_detail_api_telemetry_visitors__visitor_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: visitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Visitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/sessions/{session_id}/events:
+    get:
+      tags:
+      - telemetry
+      summary: Get Session Events
+      description: Get all events for a session.
+      operationId: get_session_events_api_telemetry_sessions__session_id__events_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/companies:
+    get:
+      tags:
+      - telemetry
+      summary: Get Companies
+      description: Get identified companies from IP enrichment.
+      operationId: get_companies_api_telemetry_companies_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/pages:
+    get:
+      tags:
+      - telemetry
+      summary: Get Top Pages
+      description: Get top pages by views.
+      operationId: get_top_pages_api_telemetry_pages_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/events/by-type:
+    get:
+      tags:
+      - telemetry
+      summary: Get Events By Type
+      description: Get event counts grouped by type.
+      operationId: get_events_by_type_api_telemetry_events_by_type_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/search-terms:
+    get:
+      tags:
+      - telemetry
+      summary: Get Search Terms
+      description: 'Get Google Search Console search terms driving traffic.
+
+
+        Requires GSC to be connected via Google OAuth.'
+      operationId: get_search_terms_api_telemetry_search_terms_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 1
+          default: 28
+          title: Days
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/likely-search-term/public:
+    get:
+      tags:
+      - telemetry
+      summary: Get Likely Search Term Public
+      description: 'Public endpoint to get likely search term for a page.
+
+
+        Used by telemetry tracking to infer search terms from GSC data.
+
+        Limited to known organizations for security.'
+      operationId: get_likely_search_term_public_api_telemetry_likely_search_term_public_get
+      parameters:
+      - name: page_path
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Landing page path, e.g. /blog/ai-agents
+          title: Page Path
+        description: Landing page path, e.g. /blog/ai-agents
+      - name: org_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Organization ID
+          title: Org Id
+        description: Organization ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/likely-search-term:
+    get:
+      tags:
+      - telemetry
+      summary: Get Likely Search Term
+      description: 'Get likely search term(s) that drove traffic to a specific page.
+
+
+        Uses Google Search Console data to find top queries for the given landing page.
+
+        Useful for inferring what search term a visitor used when they came from Google.'
+      operationId: get_likely_search_term_api_telemetry_likely_search_term_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: page_path
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Landing page path, e.g. /blog/ai-agents
+          title: Page Path
+        description: Landing page path, e.g. /blog/ai-agents
+      - name: site_url
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Override site URL
+          title: Site Url
+        description: Override site URL
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 7
+          default: 28
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/telemetry/visitors/geo:
+    get:
+      tags:
+      - telemetry
+      summary: Get Visitors By Geo
+      description: Get visitor counts grouped by geography.
+      operationId: get_visitors_by_geo_api_telemetry_visitors_geo_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    TrackResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        visitor_id:
+          type: string
+          title: Visitor Id
+        session_id:
+          type: string
+          title: Session Id
+        events_tracked:
+          type: integer
+          title: Events Tracked
+      type: object
+      required:
+      - success
+      - visitor_id
+      - session_id
+      - events_tracked
+      title: TrackResponse
+      description: Response from tracking endpoint.
+    EventPayload:
+      properties:
+        event_type:
+          type: string
+          title: Event Type
+          description: 'Event type: page_view, click, scroll, assistant_message'
+        event_name:
+          type: string
+          title: Event Name
+          description: 'Event name: cta_click, integration_hover, etc.'
+        event_category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Event Category
+        page_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Url
+        page_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Path
+        page_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Title
+        element_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Element Id
+        element_class:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Element Class
+        element_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Element Text
+        scroll_depth:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Scroll Depth
+        time_on_page:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Time On Page
+        assistant_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Assistant Message
+        assistant_response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Assistant Response
+        properties:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Properties
+      type: object
+      required:
+      - event_type
+      - event_name
+      title: EventPayload
+      description: Single event payload from frontend.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TelemetryStatsResponse:
+      properties:
+        visitors:
+          type: integer
+          title: Visitors
+        sessions:
+          type: integer
+          title: Sessions
+        events:
+          type: integer
+          title: Events
+        page_views:
+          type: integer
+          title: Page Views
+        avg_session_duration_seconds:
+          type: number
+          title: Avg Session Duration Seconds
+        enriched_visitors:
+          type: integer
+          title: Enriched Visitors
+        enrichment_rate:
+          type: number
+          title: Enrichment Rate
+        since:
+          type: string
+          title: Since
+      type: object
+      required:
+      - visitors
+      - sessions
+      - events
+      - page_views
+      - avg_session_duration_seconds
+      - enriched_visitors
+      - enrichment_rate
+      - since
+      title: TelemetryStatsResponse
+      description: Summary statistics response.
+    TrackRequest:
+      properties:
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization ID
+        fingerprint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Fingerprint
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+        events:
+          items:
+            $ref: '#/components/schemas/EventPayload'
+          type: array
+          maxItems: 50
+          minItems: 1
+          title: Events
+        landing_page:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Landing Page
+        referrer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Referrer
+        utm_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Source
+        utm_medium:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Medium
+        utm_campaign:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Campaign
+        utm_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Content
+        utm_term:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Term
+      type: object
+      required:
+      - org_id
+      - events
+      title: TrackRequest
+      description: Request body for tracking events.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

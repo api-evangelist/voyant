@@ -1,0 +1,261 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Content Export API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: content-export
+  description: Export content in various formats (Markdown, JSON, PDF) for use in other tools.
+paths:
+  /api/content/drive-status:
+    get:
+      tags:
+      - content-export
+      summary: Get Drive Status
+      description: Get Google Drive connection status
+      operationId: get_drive_status_api_content_drive_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content/drive-health:
+    get:
+      tags:
+      - content-export
+      summary: Check Google Drive Health
+      description: Check Google Drive API connection health
+      operationId: check_google_drive_health_api_content_drive_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content/drive-config:
+    put:
+      tags:
+      - content-export
+      summary: Update Drive Config
+      description: Update Google Drive configuration
+      operationId: update_drive_config_api_content_drive_config_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriveConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content/export-to-drive:
+    post:
+      tags:
+      - content-export
+      summary: Export Content To Google Drive
+      description: Export content to Google Drive
+      operationId: export_content_to_google_drive_api_content_export_to_drive_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportToGoogleDriveRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content/exports:
+    get:
+      tags:
+      - content-export
+      summary: Get User Exports
+      description: Get list of user's exports
+      operationId: get_user_exports_api_content_exports_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ExportToGoogleDriveRequest:
+      properties:
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of content to export
+        export_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Export Type
+          description: docs or sheets, auto-determined if not provided
+        sharing_permission:
+          type: string
+          title: Sharing Permission
+          default: private
+        custom_folder_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Folder Path
+        include_collaboration_template:
+          type: boolean
+          title: Include Collaboration Template
+          default: true
+        custom_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Title
+      type: object
+      required:
+      - content_id
+      title: ExportToGoogleDriveRequest
+    DriveConfigRequest:
+      properties:
+        root_folder_name:
+          type: string
+          title: Root Folder Name
+        default_sharing:
+          type: string
+          title: Default Sharing
+        auto_export_enabled:
+          type: boolean
+          title: Auto Export Enabled
+      type: object
+      required:
+      - root_folder_name
+      - default_sharing
+      - auto_export_enabled
+      title: DriveConfigRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

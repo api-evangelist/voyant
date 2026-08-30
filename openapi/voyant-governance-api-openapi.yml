@@ -1,0 +1,202 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Governance API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: governance
+  description: Content governance rules and approval workflows.
+paths:
+  /api/governance/validate:
+    post:
+      tags:
+      - governance
+      summary: Validate Content
+      description: 'Validate a draft response against the organization''s governance policies.
+
+        This acts as the ''Firewall'' for Agent Inference.'
+      operationId: validate_content_api_governance_validate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/governance/policy/active:
+    get:
+      tags:
+      - governance
+      summary: Get Active Policy
+      description: 'Get the currently active governance policy (merged from context.txt + Gypsum).
+
+        Defined by Strategy, not just ''Tone''.'
+      operationId: get_active_policy_api_governance_policy_active_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationResponse:
+      properties:
+        is_safe:
+          type: boolean
+          title: Is Safe
+          description: Whether the content is safe to send
+        risk_score:
+          type: number
+          title: Risk Score
+          description: 0.0 (Safe) to 1.0 (High Risk)
+        violation_reasons:
+          items:
+            type: string
+          type: array
+          title: Violation Reasons
+          description: List of policy violations if any
+        correction_suggestion:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correction Suggestion
+          description: Suggested rewrite to make it safe
+        censor_mask:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Censor Mask
+          description: Redacted version of the content
+        timestamp:
+          type: string
+          title: Timestamp
+      type: object
+      required:
+      - is_safe
+      - risk_score
+      title: ValidationResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ValidationRequest:
+      properties:
+        draft_content:
+          type: string
+          title: Draft Content
+          description: The content the agent proposes to send
+        context_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Id
+          description: ID of the signal/context being responded to
+        agent_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Id
+          description: ID of the agent generating the content
+        policy_overrides:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Policy Overrides
+          description: Optional temporary policy overrides
+      type: object
+      required:
+      - draft_content
+      title: ValidationRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

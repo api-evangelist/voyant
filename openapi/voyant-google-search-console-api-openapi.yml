@@ -1,0 +1,479 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Google Search Console API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Google Search Console
+  description: GSC integration for search performance data.
+paths:
+  /api/gsc/status:
+    get:
+      tags:
+      - Google Search Console
+      summary: Get Gsc Status
+      description: Check if GSC is connected and available
+      operationId: get_gsc_status_api_gsc_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Gsc Status Api Gsc Status Get
+      security:
+      - HTTPBearer: []
+  /api/gsc/sites:
+    get:
+      tags:
+      - Google Search Console
+      summary: List Gsc Sites
+      description: List all verified sites in Google Search Console
+      operationId: list_gsc_sites_api_gsc_sites_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GSCSiteResponse'
+                type: array
+                title: Response List Gsc Sites Api Gsc Sites Get
+      security:
+      - HTTPBearer: []
+  /api/gsc/queries:
+    get:
+      tags:
+      - Google Search Console
+      summary: Get Search Queries
+      description: Get top search queries for a site
+      operationId: get_search_queries_api_gsc_queries_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: site_url
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Site URL from /sites endpoint
+          title: Site Url
+        description: Site URL from /sites endpoint
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Days to look back
+          default: 28
+          title: Days
+        description: Days to look back
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Max queries to return
+          default: 100
+          title: Limit
+        description: Max queries to return
+      - name: filter_query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter queries containing this text
+          title: Filter Query
+        description: Filter queries containing this text
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GSCQueriesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/gsc/opportunities:
+    get:
+      tags:
+      - Google Search Console
+      summary: Get Query Opportunities
+      description: 'Find query opportunities - high impression queries with poor rankings.
+
+
+        These are queries where you''re getting visibility but not clicks,
+
+        suggesting content optimization or new content opportunities.'
+      operationId: get_query_opportunities_api_gsc_opportunities_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: site_url
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Site URL
+          title: Site Url
+        description: Site URL
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 28
+          title: Days
+      - name: min_impressions
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 100
+          title: Min Impressions
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response Get Query Opportunities Api Gsc Opportunities Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/gsc/import-to-prompts:
+    post:
+      tags:
+      - Google Search Console
+      summary: Import Queries To Prompts
+      description: 'Import GSC queries as target prompts for GEO/AEO tracking.
+
+
+        Converts search queries into prompts that can be tracked
+
+        for AI search visibility.'
+      operationId: import_queries_to_prompts_api_gsc_import_to_prompts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportQueriesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/gsc/page-queries:
+    get:
+      tags:
+      - Google Search Console
+      summary: Get Page Queries
+      description: Get search queries driving traffic to a specific page
+      operationId: get_page_queries_api_gsc_page_queries_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: site_url
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Site URL
+          title: Site Url
+        description: Site URL
+      - name: page_url
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Specific page URL to analyze
+          title: Page Url
+        description: Specific page URL to analyze
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 28
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Page Queries Api Gsc Page Queries Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    GSCQueryResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        clicks:
+          type: integer
+          title: Clicks
+        impressions:
+          type: integer
+          title: Impressions
+        ctr:
+          type: number
+          title: Ctr
+        position:
+          type: number
+          title: Position
+      type: object
+      required:
+      - query
+      - clicks
+      - impressions
+      - ctr
+      - position
+      title: GSCQueryResponse
+      description: Response for a search query
+    GSCSiteResponse:
+      properties:
+        site_url:
+          type: string
+          title: Site Url
+        permission_level:
+          type: string
+          title: Permission Level
+      type: object
+      required:
+      - site_url
+      - permission_level
+      title: GSCSiteResponse
+      description: Response for a GSC site
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ImportQueriesRequest:
+      properties:
+        site_url:
+          type: string
+          title: Site Url
+        query_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Query Ids
+        topic:
+          type: string
+          title: Topic
+          description: Topic to assign to imported prompts
+          default: GSC Import
+        min_impressions:
+          type: integer
+          minimum: 0.0
+          title: Min Impressions
+          description: Minimum impressions filter
+          default: 50
+        min_position:
+          type: number
+          minimum: 1.0
+          title: Min Position
+          description: Minimum position filter
+          default: 1.0
+        max_position:
+          type: number
+          maximum: 100.0
+          title: Max Position
+          description: Maximum position filter
+          default: 20.0
+        limit:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Limit
+          description: Max queries to import
+          default: 25
+      type: object
+      required:
+      - site_url
+      title: ImportQueriesRequest
+      description: Request to import queries as target prompts
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GSCQueriesResponse:
+      properties:
+        site_url:
+          type: string
+          title: Site Url
+        queries:
+          items:
+            $ref: '#/components/schemas/GSCQueryResponse'
+          type: array
+          title: Queries
+        total_queries:
+          type: integer
+          title: Total Queries
+        total_clicks:
+          type: integer
+          title: Total Clicks
+        total_impressions:
+          type: integer
+          title: Total Impressions
+        avg_ctr:
+          type: number
+          title: Avg Ctr
+        period:
+          additionalProperties: true
+          type: object
+          title: Period
+      type: object
+      required:
+      - site_url
+      - queries
+      - total_queries
+      - total_clicks
+      - total_impressions
+      - avg_ctr
+      - period
+      title: GSCQueriesResponse
+      description: Response for search queries endpoint
+    ImportResult:
+      properties:
+        imported:
+          type: integer
+          title: Imported
+        skipped:
+          type: integer
+          title: Skipped
+        topic:
+          type: string
+          title: Topic
+        prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Prompts
+      type: object
+      required:
+      - imported
+      - skipped
+      - topic
+      - prompts
+      title: ImportResult
+      description: Result of import operation
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

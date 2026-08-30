@@ -1,0 +1,530 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO G2 API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: G2
+  description: 'G2 Crowd review monitoring: ratings, review sentiment, competitive comparisons, and category positioning.'
+paths:
+  /api/g2/status:
+    get:
+      tags:
+      - G2
+      summary: G2 Status
+      description: Check if G2 integration is configured
+      operationId: g2_status_api_g2_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/g2/signals:
+    get:
+      tags:
+      - G2
+      summary: Get G2 Signals
+      description: 'Get G2 signals for the current org.
+
+        Auto-discovers company from org settings or Gypsum positioning data.'
+      operationId: get_g2_signals_api_g2_signals_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: include_competitors
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include competitor G2 data
+          default: true
+          title: Include Competitors
+        description: Include competitor G2 data
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/search:
+    get:
+      tags:
+      - G2
+      summary: Search Products
+      description: Search for products by name to find product IDs
+      operationId: search_products_api_g2_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          description: Product name to search
+          title: Q
+        description: Product name to search
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}:
+    get:
+      tags:
+      - G2
+      summary: Get Product
+      description: Get product info from G2
+      operationId: get_product_api_g2_product__product_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/summary:
+    get:
+      tags:
+      - G2
+      summary: Get Product Summary
+      description: Get product summary with ratings
+      operationId: get_product_summary_api_g2_product__product_id__summary_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/reviews:
+    get:
+      tags:
+      - G2
+      summary: Get Reviews
+      description: Get reviews for a product
+      operationId: get_reviews_api_g2_product__product_id__reviews_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 25
+          title: Per Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/competitors:
+    get:
+      tags:
+      - G2
+      summary: Get Competitors
+      description: Get competitor products from G2
+      operationId: get_competitors_api_g2_product__product_id__competitors_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/dashboard:
+    get:
+      tags:
+      - G2
+      summary: Get Dashboard Data
+      description: Get all G2 data for dashboard display
+      operationId: get_dashboard_data_api_g2_product__product_id__dashboard_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/buyer-intent:
+    get:
+      tags:
+      - G2
+      summary: Get Buyer Intent
+      description: Get buyer intent signals
+      operationId: get_buyer_intent_api_g2_product__product_id__buyer_intent_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/market-signals:
+    get:
+      tags:
+      - G2
+      summary: Get Market Signals
+      description: Get market signals
+      operationId: get_market_signals_api_g2_product__product_id__market_signals_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/features:
+    get:
+      tags:
+      - G2
+      summary: Get Features
+      description: Get feature ratings
+      operationId: get_features_api_g2_product__product_id__features_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/product/{product_id}/competitive-comparison:
+    get:
+      tags:
+      - G2
+      summary: Get Competitive Comparison
+      description: Get full competitive comparison with ratings and features
+      operationId: get_competitive_comparison_api_g2_product__product_id__competitive_comparison_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/g2/scan:
+    post:
+      tags:
+      - G2
+      summary: Scan G2
+      description: 'Scan G2 for company and competitors.
+
+
+        This endpoint:
+
+        1. Searches G2 for the company (or uses org settings if not provided)
+
+        2. Gets the company''s G2 ratings and reviews
+
+        3. Discovers competitors from G2
+
+        4. Auto-creates competitor records in the database
+
+        5. Updates G2 fields on all competitors
+
+
+        Returns scan results with discovered competitors.'
+      operationId: scan_g2_api_g2_scan_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/G2ScanRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/g2/scan/status:
+    get:
+      tags:
+      - G2
+      summary: Get Scan Status
+      description: Get current G2 scan status - shows what's been scanned
+      operationId: get_scan_status_api_g2_scan_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    G2ScanRequest:
+      properties:
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+        auto_add_competitors:
+          type: boolean
+          title: Auto Add Competitors
+          default: true
+        max_competitors:
+          type: integer
+          title: Max Competitors
+          default: 10
+      type: object
+      title: G2ScanRequest
+      description: Request body for G2 scan
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

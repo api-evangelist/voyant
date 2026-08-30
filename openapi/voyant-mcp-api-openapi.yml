@@ -1,0 +1,106 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO MCP API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: MCP
+  description: Model Context Protocol server. Expose your context to AI agents (Claude Code, Cursor, etc).
+paths:
+  /mcp/sse:
+    get:
+      tags:
+      - MCP
+      summary: Mcp Sse
+      description: SSE endpoint for MCP protocol.
+      operationId: mcp_sse_mcp_sse_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /mcp/messages:
+    post:
+      tags:
+      - MCP
+      summary: Mcp Messages
+      description: Message handling endpoint for MCP protocol.
+      operationId: mcp_messages_mcp_messages_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /mcp/health:
+    get:
+      tags:
+      - MCP
+      summary: Mcp Health
+      description: Health check endpoint.
+      operationId: mcp_health_mcp_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /mcp/tools:
+    get:
+      tags:
+      - MCP
+      summary: Mcp Tools
+      description: List available tools.
+      operationId: mcp_tools_mcp_tools_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

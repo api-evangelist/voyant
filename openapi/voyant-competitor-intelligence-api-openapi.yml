@@ -1,0 +1,1974 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Competitor Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Competitor Intelligence
+  description: Deep competitor analysis including feature comparisons and win/loss patterns.
+paths:
+  /api/competitors/resolve:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Resolve Company Mention
+      description: 'Resolve a text mention to a canonical competitor.
+
+
+        Uses the company identity system to match mentions across channels.
+
+        Handles disambiguation for ambiguous names (Snowflake, Oracle, Box, etc.)'
+      operationId: resolve_company_mention_api_competitors_resolve_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/competitors/resolve/batch:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Resolve Company Mentions Batch
+      description: 'Resolve multiple mentions in batch.
+
+
+        Efficient for processing feeds of content.'
+      operationId: resolve_company_mentions_batch_api_competitors_resolve_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveBatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/competitors/resolve/suggest:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Suggest Competitor Matches
+      description: 'Get multiple possible competitor matches with confidence scores.
+
+
+        Useful for:
+
+        - UI autocomplete/suggestions
+
+        - Manual disambiguation when confidence is low'
+      operationId: suggest_competitor_matches_api_competitors_resolve_suggest_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: text
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          title: Text
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          default: 5
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/identities:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get All Company Identities
+      description: 'Get canonical identities for all competitors.
+
+
+        Useful for debugging and understanding how companies are identified.'
+      operationId: get_all_company_identities_api_competitors_identities_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/competitors/discover:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Discover Competitors Simple
+      description: 'AI-powered competitor discovery using org context.
+
+
+        Uses existing context streams to reason about competitive landscape.
+
+        Returns competitors directly (non-streaming).'
+      operationId: discover_competitors_simple_api_competitors_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoverCompetitorsRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/competitors/discover/stream:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Discover Competitors Stream
+      description: 'Stream competitive landscape analysis using org context.
+
+
+        Uses existing context streams to reason about who competitors are and why.
+
+        Streams reasoning text followed by structured competitor data.
+
+        Auto-saves the analysis to competitive_landscape_analyses table.
+
+
+        Response format (SSE):
+
+        - reasoning:text chunks as Claude thinks
+
+        - competitors:JSON array when complete
+
+        - error:message if something fails'
+      operationId: discover_competitors_stream_api_competitors_discover_stream_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: additional_context
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Extra context for pivots/changes
+          title: Additional Context
+        description: Extra context for pivots/changes
+      - name: competitors
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated confirmed competitor names — analysis focuses on these instead of discovering
+          title: Competitors
+        description: Comma-separated confirmed competitor names — analysis focuses on these instead of discovering
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/add-multiple:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Add Multiple Competitors
+      description: Add multiple competitors at once (from discovery results).
+      operationId: add_multiple_competitors_api_competitors_add_multiple_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMultipleCompetitorsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/competitors/landscape-analysis:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Save Landscape Analysis
+      description: 'Save a competitive landscape analysis for future reference and context.
+
+        The analysis is also ingested into the RAG pipeline for use in content generation.'
+      operationId: save_landscape_analysis_api_competitors_landscape_analysis_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveLandscapeAnalysisRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Landscape Analyses
+      description: Get recent competitive landscape analyses.
+      operationId: get_landscape_analyses_api_competitors_landscape_analysis_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/strategy-analysis/{competitor_id}:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Save Strategy Analysis
+      description: 'Save a strategy analysis for a specific competitor.
+
+        The analysis is also ingested into the RAG pipeline for competitive context.'
+      operationId: save_strategy_analysis_api_competitors_strategy_analysis__competitor_id__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveStrategyAnalysisRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Strategy Analyses
+      description: Get recent strategy analyses for a specific competitor.
+      operationId: get_strategy_analyses_api_competitors_strategy_analysis__competitor_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          default: 5
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/debug/schema:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Debug Landscape Analysis Schema
+      description: 'Debug endpoint to check the competitive_landscape_analyses table schema.
+
+        Returns the column names and types.'
+      operationId: debug_landscape_analysis_schema_api_competitors_debug_schema_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/competitors/github/search:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Search Github Organizations
+      description: 'Search GitHub for organizations and users matching a pattern.
+
+
+        Examples:
+
+        - /github/search?pattern=confluent -> finds confluentinc, confluent-*, etc.
+
+        - /github/search?pattern=redpanda* -> finds redpanda-data, redpandadata, etc.
+
+        - /github/search?pattern=stripe -> finds stripe, stripe-*, etc.
+
+
+        Returns organizations/users with their repos, stars, and metadata.'
+      operationId: search_github_organizations_api_competitors_github_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: pattern
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          description: Search pattern (e.g., 'confluent' or 'confluent*')
+          title: Pattern
+        description: Search pattern (e.g., 'confluent' or 'confluent*')
+      - name: include_users
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include user accounts (many companies use these)
+          default: true
+          title: Include Users
+        description: Include user accounts (many companies use these)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 25
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/github/org/{org_login}:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Github Org Info
+      description: 'Get detailed information about a specific GitHub organization or user.
+
+
+        Returns:
+
+        - Organization details (name, description, location, etc.)
+
+        - Top repositories with stars and activity
+
+        - Total stars across all repos'
+      operationId: get_github_org_info_api_competitors_github_org__org_login__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: org_login
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Org Login
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/dashboard:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Dashboard
+      description: Get competitor intelligence dashboard summary
+      operationId: get_dashboard_api_competitors_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/competitors/comparison:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Comparison
+      description: 'Get comparison metrics across all competitors for dashboard charts.
+
+
+        Returns aggregate metrics for:
+
+        - Blog activity: posts_6mo, posts_per_month, days_since_last_post, author_count
+
+        - Channel stats: youtube_subscribers, youtube_views (when available)'
+      operationId: get_competitor_comparison_api_competitors_comparison_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/competitors/context/stream:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Context
+      description: Get competitor context for content generation
+      operationId: get_competitor_context_api_competitors_context_stream_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: view
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Context view: full, positioning, battlecard, technical, market, summary'
+          default: summary
+          title: View
+        description: 'Context view: full, positioning, battlecard, technical, market, summary'
+      - name: tier
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by tier
+          title: Tier
+        description: Filter by tier
+      - name: max_tokens
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 10000
+          minimum: 500
+          default: 4000
+          title: Max Tokens
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/context/positioning:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Positioning Context
+      description: Get positioning context for primary competitors
+      operationId: get_positioning_context_api_competitors_context_positioning_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/competitors/alerts:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: List Alerts
+      description: Get competitor alerts
+      operationId: list_alerts_api_competitors_alerts_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: unacknowledged_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Unacknowledged Only
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/alerts/{alert_id}/acknowledge:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Acknowledge Alert
+      description: Acknowledge an alert
+      operationId: acknowledge_alert_api_competitors_alerts__alert_id__acknowledge_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Alert Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/scan/all:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Trigger Scan All
+      description: Trigger positioning scans for all competitors
+      operationId: trigger_scan_all_api_competitors_scan_all_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: tier
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only scan this tier
+          title: Tier
+        description: Only scan this tier
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/sync-signal-sources/all:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Sync All Signal Sources
+      description: Sync signal sources for all competitors in the organization
+      operationId: sync_all_signal_sources_api_competitors_sync_signal_sources_all_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/competitors:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: List Competitors
+      description: List all competitors for the organization
+      operationId: list_competitors_api_competitors_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: tier
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by tier
+          title: Tier
+        description: Filter by tier
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by status
+          default: active
+          title: Status
+        description: Filter by status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompetitorSummary'
+                title: Response List Competitors Api Competitors Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Add Competitor
+      description: Add a new competitor to track
+      operationId: add_competitor_api_competitors_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCompetitorRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Add Competitor Api Competitors Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor
+      description: Get full competitor details
+      operationId: get_competitor_api_competitors__competitor_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - Competitor Intelligence
+      summary: Update Competitor
+      description: Update competitor settings
+      operationId: update_competitor_api_competitors__competitor_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompetitorRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Competitor Intelligence
+      summary: Delete Competitor
+      description: Remove a competitor from tracking
+      operationId: delete_competitor_api_competitors__competitor_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/signal-sources:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Signal Sources
+      description: Get all signal sources linked to a competitor
+      operationId: get_competitor_signal_sources_api_competitors__competitor_id__signal_sources_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/sync-signal-sources:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Sync Competitor Signal Sources Endpoint
+      description: Manually sync signal sources for a competitor
+      operationId: sync_competitor_signal_sources_endpoint_api_competitors__competitor_id__sync_signal_sources_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/scan:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Trigger Scan
+      description: Trigger a positioning scan for a competitor (quick - extracts messaging/positioning)
+      operationId: trigger_scan_api_competitors__competitor_id__scan_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/deep-scan:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Trigger Deep Scan
+      description: Trigger a deep scan for a competitor (slow - Lusha enrichment, leadership, funding, battlecard)
+      operationId: trigger_deep_scan_api_competitors__competitor_id__deep_scan_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/scan/progress:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Scan Progress
+      description: Get progress of an ongoing scan
+      operationId: get_scan_progress_api_competitors__competitor_id__scan_progress_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/activity:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Activity
+      description: Get activity feed for a competitor
+      operationId: get_competitor_activity_api_competitors__competitor_id__activity_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/authors:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Authors
+      description: 'Get top content authors for a competitor.
+
+
+        Aggregates authors across all content sources:
+
+        - Company blog
+
+        - Medium/dev.to (future)
+
+        - LinkedIn articles (future)
+
+        - Conference talks (future)
+
+
+        Returns authors ranked by post count with their recent posts.'
+      operationId: get_competitor_authors_api_competitors__competitor_id__authors_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/strategic-moves:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Strategic Moves
+      description: 'Get strategic moves timeline for a competitor from REAL activity data.
+
+
+        Returns moves organized by quarter:
+
+        - Product launches
+
+        - Partnerships
+
+        - Funding announcements
+
+        - Acquisitions
+
+        - Leadership changes
+
+        - GitHub releases
+
+
+        Each move includes source URL for verification.'
+      operationId: get_competitor_strategic_moves_api_competitors__competitor_id__strategic_moves_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: months_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 36
+          minimum: 1
+          default: 12
+          title: Months Back
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/jobs:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Jobs
+      description: 'Fetch job listings for a competitor.
+
+        Uses Playwright for JS-rendered job boards (Ashby, Lever, Greenhouse, etc.)'
+      operationId: get_competitor_jobs_api_competitors__competitor_id__jobs_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/linkedin:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Linkedin Mentions
+      description: 'Search for LinkedIn content mentioning a competitor.
+
+        Uses DuckDuckGo with site:linkedin.com query (no API key needed).'
+      operationId: get_competitor_linkedin_mentions_api_competitors__competitor_id__linkedin_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 25
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/youtube-channel:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor Youtube Channel
+      description: 'Get videos from the competitor''s official YouTube channel.
+
+        This returns their own content (Key Creators), not influencer mentions.'
+      operationId: get_competitor_youtube_channel_api_competitors__competitor_id__youtube_channel_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: max_results
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Max Results
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/analyze-strategy:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Analyze Competitor Strategy
+      description: 'Stream an AI-powered deep strategy analysis for a competitor.
+
+        Uses Claude to analyze growth playbook, vulnerabilities, and counter-strategies.
+
+        Injects REAL strategic moves from our activity tracking (not hallucinated).'
+      operationId: analyze_competitor_strategy_api_competitors__competitor_id__analyze_strategy_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/check-updates:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Check Competitor Updates
+      description: Trigger a check for new competitor updates (sitemap, GitHub, etc.)
+      operationId: check_competitor_updates_api_competitors__competitor_id__check_updates_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/discover-sources:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Discover Competitor Sources
+      description: Auto-discover RSS, GitHub, and events sources for a competitor
+      operationId: discover_competitor_sources_api_competitors__competitor_id__discover_sources_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/battlecard:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Battlecard
+      description: Get sales battlecard for a competitor
+      operationId: get_battlecard_api_competitors__competitor_id__battlecard_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/history:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get Competitor History
+      description: Get historical snapshots for trending
+      operationId: get_competitor_history_api_competitors__competitor_id__history_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 7
+          default: 90
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/g2/search:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Search G2 Products
+      description: Search G2 for products matching the competitor.
+      operationId: search_g2_products_api_competitors__competitor_id__g2_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Search query (defaults to competitor name)
+          title: Q
+        description: Search query (defaults to competitor name)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/g2/link:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Link G2 Product
+      description: Link a G2 product to a competitor.
+      operationId: link_g2_product_api_competitors__competitor_id__g2_link_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_link_g2_product_api_competitors__competitor_id__g2_link_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/g2/themes:
+    get:
+      tags:
+      - Competitor Intelligence
+      summary: Get G2 Themes
+      description: Get cached G2 theme analysis for a competitor.
+      operationId: get_g2_themes_api_competitors__competitor_id__g2_themes_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/g2/analyze-themes:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Analyze G2 Themes
+      description: Analyze G2 reviews and extract positive/negative themes.
+      operationId: analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitors/{competitor_id}/g2/create-topics:
+    post:
+      tags:
+      - Competitor Intelligence
+      summary: Create Topics From G2 Themes
+      description: Create ContentTopics from G2 review themes.
+      operationId: create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    SaveStrategyAnalysisRequest:
+      properties:
+        reasoning_text:
+          type: string
+          title: Reasoning Text
+          description: The full AI strategy analysis text
+      type: object
+      required:
+      - reasoning_text
+      title: SaveStrategyAnalysisRequest
+      description: Request to save a competitor strategy analysis.
+    Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post:
+      properties:
+        force_refresh:
+          type: boolean
+          title: Force Refresh
+          default: false
+        max_reviews:
+          type: integer
+          maximum: 500.0
+          minimum: 10.0
+          title: Max Reviews
+          default: 100
+      type: object
+      title: Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post
+    CompetitorSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        tier:
+          type: string
+          title: Tier
+        cadence_grade:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cadence Grade
+        agent_readiness_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Agent Readiness Score
+        employee_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Employee Count
+        last_scan:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Scan
+      type: object
+      required:
+      - id
+      - name
+      - domain
+      - tier
+      - cadence_grade
+      - agent_readiness_score
+      - employee_count
+      - last_scan
+      title: CompetitorSummary
+    DiscoverCompetitorsRequest:
+      properties:
+        additional_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additional Context
+      type: object
+      title: DiscoverCompetitorsRequest
+    Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post:
+      properties:
+        theme_types:
+          items:
+            type: string
+          type: array
+          title: Theme Types
+          default:
+          - positive
+          - negative
+        theme_names:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Theme Names
+      type: object
+      title: Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Body_link_g2_product_api_competitors__competitor_id__g2_link_post:
+      properties:
+        g2_product_id:
+          type: string
+          title: G2 Product Id
+        g2_product_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: G2 Product Slug
+      type: object
+      required:
+      - g2_product_id
+      title: Body_link_g2_product_api_competitors__competitor_id__g2_link_post
+    AddCompetitorRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name
+        domain:
+          type: string
+          maxLength: 255
+          minLength: 3
+          title: Domain
+        tier:
+          type: string
+          title: Tier
+          default: disruptor
+        categories:
+          items:
+            type: string
+          type: array
+          title: Categories
+          default: []
+        run_initial_scan:
+          type: boolean
+          title: Run Initial Scan
+          default: true
+      type: object
+      required:
+      - name
+      - domain
+      title: AddCompetitorRequest
+    UpdateCompetitorRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+        categories:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Categories
+        scan_frequency_hours:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Scan Frequency Hours
+        search_terms:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Search Terms
+        search_exclusions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Search Exclusions
+        github_org:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Github Org
+        youtube_channel_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Youtube Channel Url
+        twitter_handle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Twitter Handle
+        blog_rss_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Blog Rss Url
+        linkedin_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linkedin Url
+        events_page_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Events Page Url
+        careers_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Careers Url
+        sitemap_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sitemap Url
+      type: object
+      title: UpdateCompetitorRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ResolveBatchRequest:
+      properties:
+        items:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Items
+          description: List of items to resolve
+        text_key:
+          type: string
+          title: Text Key
+          default: title
+        source_key:
+          type: string
+          title: Source Key
+          default: source
+      type: object
+      required:
+      - items
+      title: ResolveBatchRequest
+    AddMultipleCompetitorsRequest:
+      properties:
+        competitors:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Competitors
+        run_initial_scan:
+          type: boolean
+          title: Run Initial Scan
+          default: true
+      type: object
+      required:
+      - competitors
+      title: AddMultipleCompetitorsRequest
+    ResolveRequest:
+      properties:
+        text:
+          type: string
+          minLength: 1
+          title: Text
+          description: Text containing company mention
+        source:
+          type: string
+          title: Source
+          description: Source channel (youtube, news, etc.)
+          default: unknown
+        require_tech_context:
+          type: boolean
+          title: Require Tech Context
+          default: true
+      type: object
+      required:
+      - text
+      title: ResolveRequest
+    SaveLandscapeAnalysisRequest:
+      properties:
+        reasoning_text:
+          type: string
+          title: Reasoning Text
+          description: The full AI reasoning/analysis text
+        competitors_analyzed:
+          items:
+            type: string
+          type: array
+          title: Competitors Analyzed
+          description: Names of competitors in the analysis
+          default: []
+        additional_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additional Context
+          description: User-provided context
+      type: object
+      required:
+      - reasoning_text
+      title: SaveLandscapeAnalysisRequest
+      description: Request to save a competitive landscape analysis.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

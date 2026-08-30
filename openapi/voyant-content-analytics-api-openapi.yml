@@ -1,0 +1,518 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Content Analytics API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: content-analytics
+  description: Content performance tracking. Monitor engagement, reach, and effectiveness across platforms.
+paths:
+  /api/content-analytics/performance/overview:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Content Performance Overview
+      description: 'Get comprehensive content performance analysis combining GA data with VoiceForge content metrics.
+
+
+        Returns:
+
+        - Content pieces matched to GA pages
+
+        - Engagement scores combining GA metrics + RAG usage
+
+        - Persona affinity analysis
+
+        - Performance tier classification'
+      operationId: get_content_performance_overview_api_content_analytics_performance_overview_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Number of days to analyze
+          default: 30
+          title: Days
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/persona-engagement:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Persona Content Engagement
+      description: 'Analyze persona engagement with content using semantic matching.
+
+
+        Returns:
+
+        - Personas matched to relevant content
+
+        - Engagement metrics by persona
+
+        - Content gaps identification
+
+        - Optimization recommendations'
+      operationId: get_persona_content_engagement_api_content_analytics_persona_engagement_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Number of days to analyze
+          default: 30
+          title: Days
+        description: Number of days to analyze
+      - name: persona_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by specific persona ID
+          title: Persona Id
+        description: Filter by specific persona ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/content-gaps:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Content Gaps Analysis
+      description: 'Identify content gaps across personas and topics.
+
+
+        Returns:
+
+        - Personas with insufficient content coverage
+
+        - Missing topic areas
+
+        - Priority scores for content creation
+
+        - Impact estimates'
+      operationId: get_content_gaps_analysis_api_content_analytics_content_gaps_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: threshold
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          description: Minimum content count threshold
+          default: 5
+          title: Threshold
+        description: Minimum content count threshold
+      - name: persona_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Focus on specific persona
+          title: Persona Id
+        description: Focus on specific persona
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/realtime-metrics:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Realtime Content Metrics
+      description: 'Get real-time content performance metrics from Google Analytics.
+
+
+        Returns:
+
+        - Active users on content
+
+        - Top active content pieces
+
+        - Real-time engagement data'
+      operationId: get_realtime_content_metrics_api_content_analytics_realtime_metrics_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content-analytics/optimization-insights:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Content Optimization Insights
+      description: 'Get specific optimization recommendations for content.
+
+
+        Returns:
+
+        - Content performance analysis
+
+        - Specific improvement recommendations
+
+        - Expected impact estimates
+
+        - Implementation priorities'
+      operationId: get_content_optimization_insights_api_content_analytics_optimization_insights_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: content_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Get insights for specific content
+          title: Content Id
+        description: Get insights for specific content
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          description: Limit number of recommendations
+          default: 10
+          title: Limit
+        description: Limit number of recommendations
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/summary:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Content Analytics Summary
+      description: 'Get a comprehensive summary of content analytics.
+
+        Combines all major metrics into a single dashboard-ready response.'
+      operationId: get_content_analytics_summary_api_content_analytics_summary_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Number of days to analyze
+          default: 30
+          title: Days
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/ga-sync:
+    post:
+      tags:
+      - content-analytics
+      summary: Sync Ga Metrics
+      description: Stream GA metrics so the UI can show live analytics population.
+      operationId: sync_ga_metrics_api_content_analytics_ga_sync_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsSyncRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/content-analytics/seed-demo:
+    post:
+      tags:
+      - content-analytics
+      summary: Seed Demo Content Performance
+      description: Seed demo content performance data for testing.
+      operationId: seed_demo_content_performance_api_content_analytics_seed_demo_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/content-analytics/traffic-trends:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Traffic Trends
+      description: 'Get daily traffic trends for total web and blog traffic.
+
+        Data comes from Google Analytics.'
+      operationId: get_traffic_trends_api_content_analytics_traffic_trends_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 1
+          description: Number of days
+          default: 30
+          title: Days
+        description: Number of days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/gated-content:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Gated Content Stats
+      description: 'Get gated content performance stats.
+
+        Data comes from HubSpot forms and landing pages.
+
+        Returns views, conversions, and rates by content item and group.'
+      operationId: get_gated_content_stats_api_content_analytics_gated_content_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Number of days
+          default: 30
+          title: Days
+        description: Number of days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/content-analytics/campaigns:
+    get:
+      tags:
+      - content-analytics
+      summary: Get Campaign Stats
+      description: 'Get email campaign performance stats with MQL generation and content attribution.
+
+        Data comes from HubSpot/email marketing platform.
+
+        Returns campaigns with open rates, click rates, conversions, MQLs, and associated content.'
+      operationId: get_campaign_stats_api_content_analytics_campaigns_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Number of days
+          default: 30
+          title: Days
+        description: Number of days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    AnalyticsSyncRequest:
+      properties:
+        days:
+          type: integer
+          title: Days
+          default: 30
+        limit:
+          type: integer
+          title: Limit
+          default: 150
+      type: object
+      title: AnalyticsSyncRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

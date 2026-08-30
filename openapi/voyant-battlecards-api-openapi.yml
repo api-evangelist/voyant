@@ -1,0 +1,702 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Battlecards API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: battlecards
+  description: AI-generated competitive battlecards with objection handling and differentiators.
+paths:
+  /battlecards:
+    get:
+      tags:
+      - battlecards
+      summary: List Battlecards
+      operationId: list_battlecards_battlecards_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by status
+          title: Status
+        description: Filter by status
+      - name: include_archived
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include archived battlecards
+          default: false
+          title: Include Archived
+        description: Include archived battlecards
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BattlecardSummary'
+                title: Response List Battlecards Battlecards Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /battlecards/{battlecard_id}:
+    get:
+      tags:
+      - battlecards
+      summary: Get Battlecard
+      operationId: get_battlecard_battlecards__battlecard_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: battlecard_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Battlecard Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BattlecardDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - battlecards
+      summary: Delete Battlecard
+      operationId: delete_battlecard_battlecards__battlecard_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: battlecard_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Battlecard Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /battlecards/competitor/{competitor_id}:
+    get:
+      tags:
+      - battlecards
+      summary: Get Battlecard For Competitor
+      operationId: get_battlecard_for_competitor_battlecards_competitor__competitor_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/BattlecardDetail'
+                - type: 'null'
+                title: Response Get Battlecard For Competitor Battlecards Competitor  Competitor Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /battlecards/generate:
+    post:
+      tags:
+      - battlecards
+      summary: Generate Battlecard
+      operationId: generate_battlecard_battlecards_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateBattlecardRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BattlecardDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /battlecards/{battlecard_id}/status:
+    patch:
+      tags:
+      - battlecards
+      summary: Update Battlecard Status
+      operationId: update_battlecard_status_battlecards__battlecard_id__status_patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: battlecard_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Battlecard Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBattlecardStatusRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BattlecardDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /battlecards/{battlecard_id}/export-drive:
+    post:
+      tags:
+      - battlecards
+      summary: Export To Google Drive
+      operationId: export_to_google_drive_battlecards__battlecard_id__export_drive_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: battlecard_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Battlecard Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportToDriveRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api__battlecards__ExportResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /battlecards/refresh-stale:
+    post:
+      tags:
+      - battlecards
+      summary: Refresh Stale Battlecards
+      description: 'Refresh all stale battlecards in the organization.
+
+
+        A battlecard is considered stale when the competitor data has been updated
+
+        since the battlecard was last generated. This endpoint regenerates all
+
+        stale battlecards to incorporate the latest competitive intelligence.'
+      operationId: refresh_stale_battlecards_battlecards_refresh_stale_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshStaleResponse'
+      security:
+      - HTTPBearer: []
+  /battlecards/{battlecard_id}/refresh:
+    post:
+      tags:
+      - battlecards
+      summary: Refresh Battlecard
+      description: 'Refresh a specific battlecard with the latest competitor data.
+
+        This regenerates the battlecard even if it''s not marked as stale.'
+      operationId: refresh_battlecard_battlecards__battlecard_id__refresh_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: battlecard_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Battlecard Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BattlecardDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /battlecards/{battlecard_id}/markdown:
+    get:
+      tags:
+      - battlecards
+      summary: Get Battlecard Markdown
+      operationId: get_battlecard_markdown_battlecards__battlecard_id__markdown_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: battlecard_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Battlecard Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    GenerateBattlecardRequest:
+      properties:
+        competitor_id:
+          type: string
+          title: Competitor Id
+          description: UUID of the competitor
+        regenerate:
+          type: boolean
+          title: Regenerate
+          description: Whether to regenerate even if one exists
+          default: false
+      type: object
+      required:
+      - competitor_id
+      title: GenerateBattlecardRequest
+      description: Request to generate a new battlecard.
+    BattlecardSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        competitor_id:
+          type: string
+          title: Competitor Id
+        competitor_name:
+          type: string
+          title: Competitor Name
+        competitor_domain:
+          type: string
+          title: Competitor Domain
+        title:
+          type: string
+          title: Title
+        status:
+          type: string
+          title: Status
+        positioning_short:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Short
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        published_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Published At
+        google_drive_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Google Drive Url
+        is_stale:
+          type: boolean
+          title: Is Stale
+          default: false
+        competitor_updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Competitor Updated At
+      type: object
+      required:
+      - id
+      - competitor_id
+      - competitor_name
+      - competitor_domain
+      - title
+      - status
+      - created_at
+      - updated_at
+      title: BattlecardSummary
+      description: Summary view of a battlecard for list views.
+    BattlecardDetail:
+      properties:
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        competitor_id:
+          type: string
+          title: Competitor Id
+        competitor_name:
+          type: string
+          title: Competitor Name
+        competitor_domain:
+          type: string
+          title: Competitor Domain
+        title:
+          type: string
+          title: Title
+        status:
+          type: string
+          title: Status
+        quick_comparison:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Quick Comparison
+        competitor_overview:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Competitor Overview
+        competitor_weaknesses:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Competitor Weaknesses
+        differentiators:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Differentiators
+        objection_handlers:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Objection Handlers
+        when_we_win:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: When We Win
+        when_we_lose:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: When We Lose
+        discovery_questions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Discovery Questions
+        positioning_short:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Short
+        positioning_medium:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Medium
+        positioning_long:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Long
+        markdown_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Markdown Content
+        google_drive_file_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Google Drive File Id
+        google_drive_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Google Drive Url
+        last_exported_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Exported At
+        generation_metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Generation Metadata
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        published_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Published At
+        is_stale:
+          type: boolean
+          title: Is Stale
+          default: false
+        competitor_updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Competitor Updated At
+      type: object
+      required:
+      - id
+      - org_id
+      - competitor_id
+      - competitor_name
+      - competitor_domain
+      - title
+      - status
+      - created_at
+      - updated_at
+      title: BattlecardDetail
+      description: Full battlecard detail.
+    ExportToDriveRequest:
+      properties:
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+          description: Google Drive folder ID
+      type: object
+      title: ExportToDriveRequest
+      description: Request to export battlecard to Google Drive.
+    RefreshStaleResponse:
+      properties:
+        refreshed_count:
+          type: integer
+          title: Refreshed Count
+        refreshed_battlecards:
+          items:
+            type: string
+          type: array
+          title: Refreshed Battlecards
+        errors:
+          items:
+            type: string
+          type: array
+          title: Errors
+          default: []
+      type: object
+      required:
+      - refreshed_count
+      - refreshed_battlecards
+      title: RefreshStaleResponse
+      description: Response from refreshing stale battlecards.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    api__battlecards__ExportResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        file_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Id
+        web_view_link:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Web View Link
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - success
+      title: ExportResponse
+      description: Response from Google Drive export.
+    UpdateBattlecardStatusRequest:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: 'New status: draft, published, or archived'
+      type: object
+      required:
+      - status
+      title: UpdateBattlecardStatusRequest
+      description: Request to update battlecard status.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

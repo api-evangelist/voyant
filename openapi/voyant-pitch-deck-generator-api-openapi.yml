@@ -1,0 +1,376 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Pitch Deck Generator API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Pitch Deck Generator
+  description: Generate pitch decks from website content and context.
+paths:
+  /api/pitch-deck/templates:
+    get:
+      tags:
+      - Pitch Deck Generator
+      summary: List Deck Templates
+      description: List available deck templates.
+      operationId: list_deck_templates_api_pitch_deck_templates_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/pitch-deck/position:
+    post:
+      tags:
+      - Pitch Deck Generator
+      summary: Generate With Positioning
+      description: 'Generate a pitch deck using explicit positioning inputs.
+
+
+        This is the "smart" flow - you provide the positioning narrative,
+
+        we generate a deck that tells that story using the selected template.'
+      operationId: generate_with_positioning_api_pitch_deck_position_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateWithPositioningRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pitch-deck/position/html:
+    post:
+      tags:
+      - Pitch Deck Generator
+      summary: Generate With Positioning Html
+      description: Generate a pitch deck with positioning and return as HTML.
+      operationId: generate_with_positioning_html_api_pitch_deck_position_html_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateWithPositioningRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pitch-deck/generate:
+    post:
+      tags:
+      - Pitch Deck Generator
+      summary: Generate Pitch Deck
+      description: 'Generate a pitch deck from a website URL.
+
+
+        Scrapes the website, extracts messaging, and structures into slides.
+
+
+        Styles:
+
+        - investor: Focus on market, traction, team, ask
+
+        - sales: Focus on pain points, solution, proof, pricing
+
+        - product: Focus on features, how it works, getting started'
+      operationId: generate_pitch_deck_api_pitch_deck_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDeckRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pitch-deck/generate/stream:
+    post:
+      tags:
+      - Pitch Deck Generator
+      summary: Generate Pitch Deck Stream
+      description: 'Stream pitch deck generation with progress updates.
+
+
+        Returns Server-Sent Events with:
+
+        - {"status": "scraping", "message": "..."}
+
+        - {"status": "scraped", "pages": [...]}
+
+        - {"status": "generating", "message": "..."}
+
+        - {"status": "complete", "deck": {...}}'
+      operationId: generate_pitch_deck_stream_api_pitch_deck_generate_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDeckRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pitch-deck/generate/html:
+    post:
+      tags:
+      - Pitch Deck Generator
+      summary: Generate Pitch Deck Html
+      description: 'Generate a pitch deck and return as a self-contained HTML file.
+
+
+        The HTML uses brand colors and fonts extracted from the website.
+
+        Can be opened in browser, printed to PDF, or shared directly.'
+      operationId: generate_pitch_deck_html_api_pitch_deck_generate_html_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDeckRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/pitch-deck/preview:
+    get:
+      tags:
+      - Pitch Deck Generator
+      summary: Preview Website Content
+      description: 'Preview what content will be extracted from a website.
+
+        Useful for debugging before generating a full deck.'
+      operationId: preview_website_content_api_pitch_deck_preview_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Website URL to preview
+          title: Url
+        description: Website URL to preview
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    GenerateDeckRequest:
+      properties:
+        url:
+          type: string
+          title: Url
+          description: Website URL to analyze
+        style:
+          type: string
+          title: Style
+          description: 'Deck style: investor, sales, product'
+          default: sales
+        num_slides:
+          type: integer
+          maximum: 20.0
+          minimum: 6.0
+          title: Num Slides
+          default: 10
+      type: object
+      required:
+      - url
+      title: GenerateDeckRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GenerateWithPositioningRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        market_shift:
+          type: string
+          title: Market Shift
+          description: The massive industry shift
+        problem:
+          type: string
+          title: Problem
+          description: What's broken today (old way)
+        solution:
+          type: string
+          title: Solution
+          description: How you solve it (new way)
+        differentiation:
+          type: string
+          title: Differentiation
+          description: Why you vs alternatives
+        audience:
+          type: string
+          title: Audience
+          description: Who's the buyer
+        proof:
+          type: string
+          title: Proof
+          description: Evidence it works
+          default: ''
+        template:
+          type: string
+          title: Template
+          description: Deck template
+          default: market_shift
+        website_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Website Url
+          description: Website for brand styles
+      type: object
+      required:
+      - company_name
+      - market_shift
+      - problem
+      - solution
+      - differentiation
+      - audience
+      title: GenerateWithPositioningRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

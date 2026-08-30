@@ -1,0 +1,461 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Templates API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Templates
+paths:
+  /templates/:
+    post:
+      summary: Create Template
+      description: Create a new marketing template
+      operationId: create_template_templates__post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateCreateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Templates
+    get:
+      summary: List Templates
+      description: List templates with optional filtering
+      operationId: list_templates_templates__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Platform
+      - name: tone
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tone
+      - name: purpose
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Purpose
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TemplateResponse'
+                title: Response List Templates Templates  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Templates
+  /templates/search:
+    post:
+      summary: Search Templates
+      description: Search templates with filters
+      operationId: search_templates_templates_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TemplateResponse'
+                type: array
+                title: Response Search Templates Templates Search Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Templates
+  /templates/{template_id}:
+    get:
+      summary: Get Template
+      description: Get a specific template
+      operationId: get_template_templates__template_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Template Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Templates
+    put:
+      summary: Update Template
+      description: Update a template
+      operationId: update_template_templates__template_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Template Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateCreateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Templates
+    delete:
+      summary: Delete Template
+      description: Delete a template
+      operationId: delete_template_templates__template_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Template Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Templates
+  /templates/health:
+    get:
+      summary: Templates Health
+      description: Health check for templates API - explicitly no auth required
+      operationId: templates_health_templates_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Templates
+  /templates/test-auth:
+    get:
+      summary: Test Templates Auth
+      description: Test authentication for templates API
+      operationId: test_templates_auth_templates_test_auth_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Templates
+components:
+  schemas:
+    TemplateResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        template_text:
+          type: string
+          title: Template Text
+        platform:
+          type: string
+          title: Platform
+        tone:
+          type: string
+          title: Tone
+        purpose:
+          type: string
+          title: Purpose
+        parameters:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Parameters
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        created_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created By
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - template_text
+      - platform
+      - tone
+      - purpose
+      - parameters
+      - created_at
+      - created_by
+      title: TemplateResponse
+      description: Response model for templates
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TemplateSearchRequest:
+      properties:
+        platform:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Platform
+        tone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tone
+        purpose:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Purpose
+        limit:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Limit
+          default: 10
+        offset:
+          type: integer
+          minimum: 0.0
+          title: Offset
+          default: 0
+      type: object
+      title: TemplateSearchRequest
+      description: Request model for searching templates
+    TemplateCreateRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Template name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Template description
+        template_text:
+          type: string
+          title: Template Text
+          description: Template content
+        platform:
+          type: string
+          title: Platform
+          description: Platform (email, twitter, linkedin, etc.)
+        tone:
+          type: string
+          title: Tone
+          description: Tone (professional, casual, friendly, etc.)
+        purpose:
+          type: string
+          title: Purpose
+          description: Purpose (outreach, follow_up, etc.)
+        parameters:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Parameters
+          description: Template parameters
+          default: []
+      type: object
+      required:
+      - name
+      - template_text
+      - platform
+      - tone
+      - purpose
+      title: TemplateCreateRequest
+      description: Request model for creating templates
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

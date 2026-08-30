@@ -1,0 +1,354 @@
+openapi: 3.2.0
+info:
+  title: Gypsum Context Icp API
+  description: '## Brand Context Management API
+
+
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
+
+
+    ### Core Capabilities
+
+
+    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
+
+    - **ICP Management** - Ideal Customer Profile CRUD operations
+
+    - **Campaign Management** - Marketing campaign tracking
+
+    - **AI Chat** - Brand-aware conversational AI
+
+
+    ### Authentication
+
+
+    Most endpoints require `user_id` query parameter (Clerk organization ID).
+
+    Demo access is available for testing.
+
+
+    ### Base URL
+
+
+    Production: `https://gypsum.voyant.io`
+
+    Local: `http://localhost:3001`'
+  version: 1.0.0
+  contact:
+    name: VoyantIO
+    url: https://voyant.io
+servers:
+- url: https://gypsum.voyant.io
+  description: Production
+- url: http://localhost:3001
+  description: Local development
+tags:
+- name: icp
+  description: Ideal Customer Profile management
+paths:
+  /api/icp/context:
+    get:
+      tags:
+      - icp
+      summary: Get ICP Context
+      description: Retrieve the Ideal Customer Profile with referenced personas and industries.
+      operationId: getICPContext
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: ICP with references
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ICPContext'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/icps:
+    get:
+      tags:
+      - icp
+      summary: List All ICPs
+      description: Retrieve all Ideal Customer Profiles for the organization.
+      operationId: listICPs
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: List of ICPs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  icps:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ICP'
+    post:
+      tags:
+      - icp
+      summary: Create ICP
+      description: Create a new Ideal Customer Profile.
+      operationId: createICP
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICPCreate'
+      responses:
+        '201':
+          description: ICP created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ICP'
+  /api/icps/{id}:
+    put:
+      tags:
+      - icp
+      summary: Update ICP
+      description: Update an existing Ideal Customer Profile.
+      operationId: updateICP
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICPUpdate'
+      responses:
+        '200':
+          description: ICP updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ICP'
+    delete:
+      tags:
+      - icp
+      summary: Delete ICP
+      description: Delete an Ideal Customer Profile.
+      operationId: deleteICP
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ICP deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+components:
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    userId:
+      name: user_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Clerk organization ID (e.g., org_abc123)
+  schemas:
+    Industry:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        key_challenges:
+          type: array
+          items:
+            type: string
+        technology_trends:
+          type: array
+          items:
+            type: string
+        regulatory_considerations:
+          type: array
+          items:
+            type: string
+        market_size:
+          type: string
+        growth_rate:
+          type: string
+    ICP:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        discovery_query:
+          type: object
+        discovery_service:
+          type: string
+        persona_references:
+          type: object
+          properties:
+            primary_personas:
+              type: array
+              items:
+                type: string
+            secondary_personas:
+              type: array
+              items:
+                type: string
+        industry_references:
+          type: object
+          properties:
+            target_industries:
+              type: array
+              items:
+                type: string
+            excluded_industries:
+              type: array
+              items:
+                type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ICPCreate:
+      type: object
+      required:
+      - name
+      - discovery_query
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        discovery_query:
+          type: object
+        discovery_service:
+          type: string
+          default: clearbit
+        persona_references:
+          type: object
+        industry_references:
+          type: object
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    ICPContext:
+      allOf:
+      - $ref: '#/components/schemas/ICP'
+      - type: object
+        properties:
+          referenced_personas:
+            type: array
+            items:
+              $ref: '#/components/schemas/Persona'
+          referenced_industries:
+            type: array
+            items:
+              $ref: '#/components/schemas/Industry'
+    Persona:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        role:
+          type: string
+        job_titles:
+          type: array
+          items:
+            type: string
+        seniority_level:
+          type: string
+        pain_points:
+          type: array
+          items:
+            type: string
+        goals:
+          type: array
+          items:
+            type: string
+        communication_style:
+          type: string
+        tech_stack:
+          type: array
+          items:
+            type: string
+        company_size:
+          type: string
+        industry:
+          type: string
+        budget_authority:
+          type: string
+        challenges:
+          type: array
+          items:
+            type: string
+        success_metrics:
+          type: array
+          items:
+            type: string
+        buying_criteria:
+          type: array
+          items:
+            type: string
+        content_preferences:
+          type: array
+          items:
+            type: string
+        decision_making_process:
+          type: string
+        demographics:
+          type: object
+    ICPUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        discovery_query:
+          type: object
+        discovery_service:
+          type: string
+        persona_references:
+          type: object
+        industry_references:
+          type: object

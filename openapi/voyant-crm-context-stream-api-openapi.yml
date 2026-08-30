@@ -1,0 +1,270 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO CRM Context Stream API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: CRM Context Stream
+  description: CRM data as a context stream. Query deal history, contact info, and account context.
+paths:
+  /api/crm-context/status:
+    get:
+      tags:
+      - CRM Context Stream
+      summary: Get Crm Context Status
+      description: 'Get the status of the CRM Intelligence context stream for the current org.
+
+
+        Returns information about:
+
+        - Whether the stream exists
+
+        - What context types are present (MQLs, campaigns, etc.)
+
+        - Chunk count and last access time
+
+        - CRM configuration status'
+      operationId: get_crm_context_status_api_crm_context_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/crm-context/sources:
+    get:
+      tags:
+      - CRM Context Stream
+      summary: Get Available Sources
+      description: Get available CRM sources and their configuration status for this org.
+      operationId: get_available_sources_api_crm_context_sources_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/crm-context/sync/hubspot:
+    post:
+      tags:
+      - CRM Context Stream
+      summary: Sync Hubspot To Context
+      description: 'Sync HubSpot data into the CRM Intelligence context stream.
+
+
+        This endpoint:
+
+        1. Fetches MQL, campaign, and gated content data from HubSpot
+
+        2. Transforms it into context-ready format
+
+        3. Ingests it into the CRM Intelligence stream for RAG
+
+
+        Uses org-level HubSpot credentials from Settings > CRM Integration.
+
+        Falls back to demo data if HubSpot is not configured.'
+      operationId: sync_hubspot_to_context_api_crm_context_sync_hubspot_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Days of data to sync
+          default: 30
+          title: Days
+        description: Days of data to sync
+      - name: include_mqls
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Include Mqls
+      - name: include_campaigns
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Include Campaigns
+      - name: include_gated_content
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Include Gated Content
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crm-context/sync/demo:
+    post:
+      tags:
+      - CRM Context Stream
+      summary: Sync Demo Data
+      description: 'Sync demo CRM data into the context stream.
+
+
+        Useful for testing and demonstrations when no CRM is connected.'
+      operationId: sync_demo_data_api_crm_context_sync_demo_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Days of data to generate
+          default: 30
+          title: Days
+        description: Days of data to generate
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crm-context/context/{context_type}:
+    get:
+      tags:
+      - CRM Context Stream
+      summary: Get Context By Type
+      description: 'Get specific context type content from the CRM stream.
+
+
+        Valid context_types:
+
+        - mql_intelligence
+
+        - campaign_performance
+
+        - gated_content
+
+        - pipeline_signals'
+      operationId: get_context_by_type_api_crm_context_context__context_type__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: context_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Context Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

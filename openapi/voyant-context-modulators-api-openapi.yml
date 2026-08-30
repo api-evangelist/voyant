@@ -1,0 +1,540 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Context Modulators API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: context-modulators
+  description: Shape context output by persona, funnel stage, or use case. Dynamically adjust messaging for different audiences.
+paths:
+  /api/context-modulators:
+    get:
+      tags:
+      - context-modulators
+      summary: List Modulators
+      operationId: list_modulators_api_context_modulators_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  additionalProperties: true
+                  type: object
+                type: array
+                title: Response List Modulators Api Context Modulators Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - context-modulators
+      summary: Create Modulator
+      operationId: create_modulator_api_context_modulators_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModulatorCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Modulator Api Context Modulators Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-modulators/{modulator_id}:
+    get:
+      tags:
+      - context-modulators
+      summary: Get Modulator
+      operationId: get_modulator_api_context_modulators__modulator_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: modulator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Modulator Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Modulator Api Context Modulators  Modulator Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - context-modulators
+      summary: Update Modulator
+      operationId: update_modulator_api_context_modulators__modulator_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: modulator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Modulator Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModulatorUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Update Modulator Api Context Modulators  Modulator Id  Patch
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - context-modulators
+      summary: Delete Modulator
+      operationId: delete_modulator_api_context_modulators__modulator_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: modulator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Modulator Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-modulators/canonical/streams:
+    get:
+      tags:
+      - context-modulators
+      summary: List Canonical Streams
+      description: Return explicit canonical context streams for ontology/UI.
+      operationId: list_canonical_streams_api_context_modulators_canonical_streams_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Canonical Streams Api Context Modulators Canonical Streams Get
+  /api/context-modulators/canonical/modulators:
+    get:
+      tags:
+      - context-modulators
+      summary: List Canonical Modulators
+      description: Return explicit canonical modulators (epistemic shapers).
+      operationId: list_canonical_modulators_api_context_modulators_canonical_modulators_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Canonical Modulators Api Context Modulators Canonical Modulators Get
+  /api/context-modulators/{modulator_id}/ontology:
+    get:
+      tags:
+      - context-modulators
+      summary: Export Modulator Ontology
+      description: Export a single modulator and its linked streams/targets as JSON-LD for ontology ingestion.
+      operationId: export_modulator_ontology_api_context_modulators__modulator_id__ontology_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: modulator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Modulator Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Export Modulator Ontology Api Context Modulators  Modulator Id  Ontology Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/context-modulators/{modulator_id}/context:
+    get:
+      tags:
+      - context-modulators
+      summary: Get Modulator Context
+      description: 'Return a structured bundle with core_context + modulated_context derived from RAG.
+
+        - Retrieves evidence from vector embeddings (search_chunks)
+
+        - Generates a shaped summary via LLM (generate_content)
+
+        - Emits JSON-LD so ontology services can ingest the context view'
+      operationId: get_modulator_context_api_context_modulators__modulator_id__context_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: modulator_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Modulator Id
+      - name: target_node_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Ontology node to modulate (e.g., persona:head_of_product_marketing)
+          title: Target Node Id
+        description: Ontology node to modulate (e.g., persona:head_of_product_marketing)
+      - name: funnel_stage
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Funnel stage shaping hint
+          title: Funnel Stage
+        description: Funnel stage shaping hint
+      - name: risk_tolerance
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Risk tolerance shaping hint
+          title: Risk Tolerance
+        description: Risk tolerance shaping hint
+      - name: regulatory_sensitivity
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Regulatory sensitivity shaping hint
+          title: Regulatory Sensitivity
+        description: Regulatory sensitivity shaping hint
+      - name: stream_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Canonical stream id (e.g., CompanyIdentityStream)
+          title: Stream Type
+        description: Canonical stream id (e.g., CompanyIdentityStream)
+      - name: max_chunks
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          description: How many RAG evidence chunks to return
+          default: 5
+          title: Max Chunks
+        description: How many RAG evidence chunks to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Modulator Context Api Context Modulators  Modulator Id  Context Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ModulatorUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+        product_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Product Id
+        use_case_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Use Case Id
+        funnel_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Funnel Stage
+        intent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intent
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+        source_types:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Source Types
+        context_stream_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Context Stream Ids
+        token_budget:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Token Budget
+        version_preference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Preference
+        is_public:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Public
+        allowed_users:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Allowed Users
+      type: object
+      title: ModulatorUpdate
+    ModulatorCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Friendly name for the modulator
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: What this modulator is for
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+        product_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Product Id
+        use_case_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Use Case Id
+        funnel_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Funnel Stage
+        intent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intent
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+          description: Content voice ID for tone/style modulation
+        source_types:
+          items:
+            type: string
+          type: array
+          title: Source Types
+        context_stream_ids:
+          items:
+            type: string
+          type: array
+          title: Context Stream Ids
+        token_budget:
+          type: integer
+          title: Token Budget
+          default: 8192
+        version_preference:
+          type: string
+          title: Version Preference
+          default: standard
+        is_public:
+          type: boolean
+          title: Is Public
+          default: false
+        allowed_users:
+          items:
+            type: string
+          type: array
+          title: Allowed Users
+      type: object
+      required:
+      - name
+      title: ModulatorCreate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

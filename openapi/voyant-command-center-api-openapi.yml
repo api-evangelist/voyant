@@ -1,0 +1,801 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Command Center API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Command Center
+  description: Real-time dashboard with live visitor feed and signal alerts.
+paths:
+  /api/command-center/activity/stream:
+    get:
+      tags:
+      - Command Center
+      summary: Stream Activity
+      description: 'SSE endpoint for real-time activity stream.
+
+
+        Connect to this endpoint to receive live updates.'
+      operationId: stream_activity_api_command_center_activity_stream_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/command-center/activity:
+    get:
+      tags:
+      - Command Center
+      summary: Get Recent Activity
+      description: Get recent activity from the stream
+      operationId: get_recent_activity_api_command_center_activity_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: activity_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Activity Type
+      - name: source
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source
+      - name: unread_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Unread Only
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityResponse'
+                title: Response Get Recent Activity Api Command Center Activity Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/activity/read:
+    post:
+      tags:
+      - Command Center
+      summary: Mark Activity Read
+      description: Mark activities as read
+      operationId: mark_activity_read_api_command_center_activity_read_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                type: string
+              type: array
+              title: Activity Ids
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/command-center/agents:
+    get:
+      tags:
+      - Command Center
+      summary: List Agents
+      description: List all registered agents
+      operationId: list_agents_api_command_center_agents_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgentResponse'
+                title: Response List Agents Api Command Center Agents Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Command Center
+      summary: Register Agent
+      description: Register a new agent
+      operationId: register_agent_api_command_center_agents_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterAgentRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/agents/{agent_id}/pause:
+    post:
+      tags:
+      - Command Center
+      summary: Pause Agent
+      description: Pause an agent
+      operationId: pause_agent_api_command_center_agents__agent_id__pause_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: agent_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Agent Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/agents/{agent_id}/resume:
+    post:
+      tags:
+      - Command Center
+      summary: Resume Agent
+      description: Resume a paused agent
+      operationId: resume_agent_api_command_center_agents__agent_id__resume_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: agent_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Agent Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/agents/{agent_id}/run:
+    post:
+      tags:
+      - Command Center
+      summary: Trigger Agent Run
+      description: Manually trigger an agent run
+      operationId: trigger_agent_run_api_command_center_agents__agent_id__run_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: agent_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Agent Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/agents/types:
+    get:
+      tags:
+      - Command Center
+      summary: Get Agent Types
+      description: Get available agent types
+      operationId: get_agent_types_api_command_center_agents_types_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/command-center/integrations/health:
+    get:
+      tags:
+      - Command Center
+      summary: Get Integration Health
+      description: Get health status of all integrations
+      operationId: get_integration_health_api_command_center_integrations_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthSummaryResponse'
+      security:
+      - HTTPBearer: []
+  /api/command-center/integrations/{integration_type}/status:
+    get:
+      tags:
+      - Command Center
+      summary: Get Integration Status
+      description: Get detailed status of a specific integration
+      operationId: get_integration_status_api_command_center_integrations__integration_type__status_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: integration_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Integration Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/visibility/latest:
+    get:
+      tags:
+      - Command Center
+      summary: Get Latest Visibility
+      description: Get most recent visibility snapshot
+      operationId: get_latest_visibility_api_command_center_visibility_latest_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/VisibilitySnapshotResponse'
+                - type: 'null'
+                title: Response Get Latest Visibility Api Command Center Visibility Latest Get
+      security:
+      - HTTPBearer: []
+  /api/command-center/visibility/history:
+    get:
+      tags:
+      - Command Center
+      summary: Get Visibility History
+      description: Get visibility history over time
+      operationId: get_visibility_history_api_command_center_visibility_history_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 1
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/command-center/dashboard:
+    get:
+      tags:
+      - Command Center
+      summary: Get Dashboard Summary
+      description: 'Get complete dashboard summary for initial page load.
+
+
+        Returns all widgets data in one request for fast initial render.'
+      operationId: get_dashboard_summary_api_command_center_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/command-center/geo-prompts:
+    get:
+      tags:
+      - Command Center
+      summary: Get Geo Prompts Status
+      description: 'Get GEO prompts status and recent test results.
+
+        Shows which prompts are being used for visibility tracking.'
+      operationId: get_geo_prompts_status_api_command_center_geo_prompts_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    ActivityResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        activity_type:
+          type: string
+          title: Activity Type
+        source:
+          type: string
+          title: Source
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        icon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Icon
+        importance:
+          type: string
+          title: Importance
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+        entity_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+        entity_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Id
+        action_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action Url
+        action_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action Label
+        is_read:
+          type: boolean
+          title: Is Read
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - id
+      - activity_type
+      - source
+      - title
+      - description
+      - icon
+      - importance
+      - metadata
+      - entity_type
+      - entity_id
+      - action_url
+      - action_label
+      - is_read
+      - created_at
+      title: ActivityResponse
+    RegisterAgentRequest:
+      properties:
+        agent_type:
+          type: string
+          title: Agent Type
+        agent_name:
+          type: string
+          title: Agent Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        config:
+          additionalProperties: true
+          type: object
+          title: Config
+        schedule_interval_minutes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Schedule Interval Minutes
+        schedule_cron:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Schedule Cron
+      type: object
+      required:
+      - agent_type
+      - agent_name
+      title: RegisterAgentRequest
+    HealthSummaryResponse:
+      properties:
+        total:
+          type: integer
+          title: Total
+        connected:
+          type: integer
+          title: Connected
+        errors:
+          type: integer
+          title: Errors
+        connected_integrations:
+          items:
+            $ref: '#/components/schemas/IntegrationResponse'
+          type: array
+          title: Connected Integrations
+        disconnected_integrations:
+          items:
+            $ref: '#/components/schemas/IntegrationResponse'
+          type: array
+          title: Disconnected Integrations
+        error_integrations:
+          items:
+            $ref: '#/components/schemas/IntegrationResponse'
+          type: array
+          title: Error Integrations
+      type: object
+      required:
+      - total
+      - connected
+      - errors
+      - connected_integrations
+      - disconnected_integrations
+      - error_integrations
+      title: HealthSummaryResponse
+    IntegrationResponse:
+      properties:
+        integration_type:
+          type: string
+          title: Integration Type
+        name:
+          type: string
+          title: Name
+        icon:
+          type: string
+          title: Icon
+        category:
+          type: string
+          title: Category
+        is_connected:
+          type: boolean
+          title: Is Connected
+        connection_status:
+          type: string
+          title: Connection Status
+        last_sync_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Sync At
+        last_sync_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Sync Status
+        last_error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Error
+        error_count_24h:
+          type: integer
+          title: Error Count 24H
+        items_synced_today:
+          type: integer
+          title: Items Synced Today
+      type: object
+      required:
+      - integration_type
+      - name
+      - icon
+      - category
+      - is_connected
+      - connection_status
+      - last_sync_at
+      - last_sync_status
+      - last_error
+      - error_count_24h
+      - items_synced_today
+      title: IntegrationResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AgentResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        agent_type:
+          type: string
+          title: Agent Type
+        agent_name:
+          type: string
+          title: Agent Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        status:
+          type: string
+          title: Status
+        is_running:
+          type: boolean
+          title: Is Running
+        last_run_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Run At
+        last_run_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Run Status
+        last_error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Error
+        next_run_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Run At
+        total_runs:
+          type: integer
+          title: Total Runs
+        success_count:
+          type: integer
+          title: Success Count
+        error_count:
+          type: integer
+          title: Error Count
+        items_processed:
+          type: integer
+          title: Items Processed
+        schedule_interval_minutes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Schedule Interval Minutes
+      type: object
+      required:
+      - id
+      - agent_type
+      - agent_name
+      - description
+      - status
+      - is_running
+      - last_run_at
+      - last_run_status
+      - last_error
+      - next_run_at
+      - total_runs
+      - success_count
+      - error_count
+      - items_processed
+      - schedule_interval_minutes
+      title: AgentResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    VisibilitySnapshotResponse:
+      properties:
+        snapshot_at:
+          type: string
+          title: Snapshot At
+        overall_visibility:
+          type: number
+          title: Overall Visibility
+        brand_mentions:
+          type: integer
+          title: Brand Mentions
+        competitor_mentions:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Competitor Mentions
+        model_scores:
+          additionalProperties:
+            type: number
+          type: object
+          title: Model Scores
+        change_vs_yesterday:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Vs Yesterday
+        change_vs_last_week:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Vs Last Week
+        prompts_tested:
+          type: integer
+          title: Prompts Tested
+      type: object
+      required:
+      - snapshot_at
+      - overall_visibility
+      - brand_mentions
+      - competitor_mentions
+      - model_scores
+      - change_vs_yesterday
+      - change_vs_last_week
+      - prompts_tested
+      title: VisibilitySnapshotResponse
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

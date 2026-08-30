@@ -1,0 +1,409 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Government Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: government-signals
+  description: Government contract signals from SAM.gov, FERC filings, and federal opportunity tracking.
+paths:
+  /api/signals/gov/keywords:
+    get:
+      tags:
+      - government-signals
+      summary: Get Gov Keywords
+      description: 'Get signal discovery keywords DERIVED FROM PLAYBOOKS.
+
+
+        This is the core of "programmable GTM" - keywords come from:
+
+        - Playbook technographics (buying signals)
+
+        - Entry point use cases
+
+        - Firmographic indicators
+
+        - Key pains (RFP language)
+
+
+        Change your playbooks → change your signals.'
+      operationId: get_gov_keywords_api_signals_gov_keywords_get
+      parameters:
+      - name: verticals
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated vertical slugs to filter
+          title: Verticals
+        description: Comma-separated vertical slugs to filter
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/gov/discover/sam:
+    post:
+      tags:
+      - government-signals
+      summary: Discover Sam Gov Signals
+      description: 'Discover federal contract signals from USASpending.gov
+
+
+        Keywords are DERIVED FROM PLAYBOOKS - not hardcoded.
+
+        This implements "programmable GTM":
+
+        - Playbook defines ICP, use cases, buying signals
+
+        - Those become search keywords
+
+        - Signals match your actual GTM strategy
+
+
+        Contract awards via USASpending.gov (NO API KEY REQUIRED).
+
+        RFP opportunities via SAM.gov (requires SAM.gov profile API key).'
+      operationId: discover_sam_gov_signals_api_signals_gov_discover_sam_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovDiscoveryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/gov/discover/ferc:
+    post:
+      tags:
+      - government-signals
+      summary: Discover Ferc Signals
+      description: 'Discover signals from FERC eLibrary
+
+
+        Searches regulatory filings related to grid modernization,
+
+        SCADA upgrades, and utility real-time systems.
+
+
+        Good for energy/utilities vertical targeting.'
+      operationId: discover_ferc_signals_api_signals_gov_discover_ferc_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovDiscoveryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/gov/discover/all:
+    post:
+      tags:
+      - government-signals
+      summary: Discover All Gov Signals
+      description: 'Discover signals from all government sources
+
+
+        Runs SAM.gov and FERC discovery in parallel for comprehensive coverage.'
+      operationId: discover_all_gov_signals_api_signals_gov_discover_all_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovDiscoveryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/signals/gov/status:
+    get:
+      tags:
+      - government-signals
+      summary: Get Gov Signals Status
+      description: Check status of government signal sources
+      operationId: get_gov_signals_status_api_signals_gov_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/signals/gov/health:
+    get:
+      tags:
+      - government-signals
+      summary: Health Check
+      description: Health check for government signals API
+      operationId: health_check_api_signals_gov_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/signals/gov/buyer-algorithm:
+    get:
+      tags:
+      - government-signals
+      summary: Get Buyer Algorithm
+      description: 'Get the GTM Buyer Algorithm configuration.
+
+
+        This algorithm defines:
+
+        - Buyer models by vertical (direct vs partner)
+
+        - Signal interpretation rules
+
+        - Signal value scoring
+
+        - Recommended actions per signal type
+
+
+        Use this to understand HOW to interpret discovered signals.'
+      operationId: get_buyer_algorithm_api_signals_gov_buyer_algorithm_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/signals/gov/buyer-algorithm/{vertical}:
+    get:
+      tags:
+      - government-signals
+      summary: Get Vertical Algorithm
+      description: 'Get the GTM Buyer Algorithm for a specific vertical.
+
+
+        Returns interpretation rules, priority signals, and recommended
+
+        actions for the specified vertical.'
+      operationId: get_vertical_algorithm_api_signals_gov_buyer_algorithm__vertical__get
+      parameters:
+      - name: vertical
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Vertical
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/signals/gov/interpret:
+    post:
+      tags:
+      - government-signals
+      summary: Interpret Signals
+      description: 'Interpret a list of signals using the GTM Buyer Algorithm.
+
+
+        Takes raw signals and adds:
+
+        - Meaning (what this signal indicates)
+
+        - Recommended action
+
+        - Value score
+
+        - Buyer model classification'
+      operationId: interpret_signals_api_signals_gov_interpret_post
+      parameters:
+      - name: vertical
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Vertical context for interpretation
+          default: defense
+          title: Vertical
+        description: Vertical context for interpretation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+              title: Signals
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GovDiscoveryRequest:
+      properties:
+        keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Keywords
+        verticals:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Verticals
+        naics_codes:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Naics Codes
+        days_back:
+          type: integer
+          title: Days Back
+          default: 30
+        max_results:
+          type: integer
+          title: Max Results
+          default: 50
+      type: object
+      title: GovDiscoveryRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

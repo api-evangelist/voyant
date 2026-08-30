@@ -1,0 +1,350 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Webflow API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Webflow
+  description: Webflow site management and content publishing.
+paths:
+  /api/webflow/collections/{collection_id}/items:
+    get:
+      tags:
+      - Webflow
+      summary: List Items
+      operationId: list_items_api_webflow_collections__collection_id__items_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: collection_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Collection Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Items Api Webflow Collections  Collection Id  Items Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Webflow
+      summary: Create Item
+      operationId: create_item_api_webflow_collections__collection_id__items_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: collection_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Collection Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebflowItemCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Item Api Webflow Collections  Collection Id  Items Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/webflow/health:
+    get:
+      tags:
+      - Webflow
+      summary: Webflow Health
+      operationId: webflow_health_api_webflow_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Webflow Health Api Webflow Health Get
+      security:
+      - HTTPBearer: []
+  /api/webflow/collections:
+    get:
+      tags:
+      - Webflow
+      summary: List Collections
+      operationId: list_collections_api_webflow_collections_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: site_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Webflow site ID
+          title: Site Id
+        description: Webflow site ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Collections Api Webflow Collections Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/webflow/collections/{collection_id}:
+    get:
+      tags:
+      - Webflow
+      summary: Get Collection
+      operationId: get_collection_api_webflow_collections__collection_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: collection_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Collection Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Collection Api Webflow Collections  Collection Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/webflow/status:
+    get:
+      tags:
+      - Webflow
+      summary: Get Webflow Status
+      description: Get Webflow connection status
+      operationId: get_webflow_status_api_webflow_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/webflow/config:
+    put:
+      tags:
+      - Webflow
+      summary: Update Webflow Config
+      description: Update Webflow configuration (selected sites)
+      operationId: update_webflow_config_api_webflow_config_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebflowConfig'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/webflow/sites:
+    get:
+      tags:
+      - Webflow
+      summary: List Webflow Sites
+      description: List all accessible Webflow sites
+      operationId: list_webflow_sites_api_webflow_sites_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/webflow/sites/{site_id}/collections:
+    get:
+      tags:
+      - Webflow
+      summary: List Site Collections
+      description: List CMS collections for a specific site
+      operationId: list_site_collections_api_webflow_sites__site_id__collections_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: site_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Site Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    WebflowItemCreate:
+      properties:
+        fields:
+          additionalProperties: true
+          type: object
+          title: Fields
+          description: Fields payload for Webflow CMS item
+      type: object
+      required:
+      - fields
+      title: WebflowItemCreate
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    WebflowConfig:
+      properties:
+        selected_sites:
+          items:
+            type: string
+          type: array
+          title: Selected Sites
+          default: []
+      type: object
+      title: WebflowConfig
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

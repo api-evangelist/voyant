@@ -1,0 +1,597 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Messaging Framework API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: messaging-framework
+  description: 'Core GTM messaging assets: personas, products, use cases, positioning, and value propositions.'
+paths:
+  /api/messaging-framework/health:
+    get:
+      tags:
+      - messaging-framework
+      summary: Gypsum Health
+      description: Check Gypsum API health and connection status.
+      operationId: gypsum_health_api_messaging_framework_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/messaging-framework/connection-status:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Connection Status
+      description: Get Gypsum connection status for the frontend.
+      operationId: get_connection_status_api_messaging_framework_connection_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/full-context:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Full Context
+      description: 'Get all context needed for content generation.
+
+        Pulls from ALL Context Streams for the organization.
+
+        This is the single endpoint the frontend should use.'
+      operationId: get_full_context_api_messaging_framework_full_context_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/personas:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Personas
+      description: Get all personas for the current organization from Gypsum API.
+      operationId: get_personas_api_messaging_framework_personas_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  additionalProperties: true
+                  type: object
+                type: array
+                title: Response Get Personas Api Messaging Framework Personas Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - messaging-framework
+      summary: Create Persona
+      description: 'Create a new persona via Gypsum API.
+
+        TODO: Implement persona creation via Gypsum API.'
+      operationId: create_persona_api_messaging_framework_personas_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Persona Data
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Persona Api Messaging Framework Personas Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/personas/{persona_id}:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Persona
+      description: Get a specific persona by ID from Gypsum API.
+      operationId: get_persona_api_messaging_framework_personas__persona_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: persona_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Persona Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Persona Api Messaging Framework Personas  Persona Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - messaging-framework
+      summary: Update Persona
+      description: 'Update a persona via Gypsum API.
+
+        TODO: Implement persona updates via Gypsum API.'
+      operationId: update_persona_api_messaging_framework_personas__persona_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: persona_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Persona Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Persona Data
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Update Persona Api Messaging Framework Personas  Persona Id  Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - messaging-framework
+      summary: Delete Persona
+      description: 'Delete a persona via Gypsum API.
+
+        TODO: Implement persona deletion via Gypsum API.'
+      operationId: delete_persona_api_messaging_framework_personas__persona_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: persona_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Persona Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Delete Persona Api Messaging Framework Personas  Persona Id  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/messaging-framework/products:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Products
+      description: Get all products for the current organization from Gypsum API.
+      operationId: get_products_api_messaging_framework_products_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Products Api Messaging Framework Products Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/products/{product_id}:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Product
+      description: Get a specific product by ID from Gypsum API.
+      operationId: get_product_api_messaging_framework_products__product_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Product Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Product Api Messaging Framework Products  Product Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/messaging-framework/use-cases:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Use Cases
+      description: Get all use cases for the current organization from Gypsum API.
+      operationId: get_use_cases_api_messaging_framework_use_cases_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Use Cases Api Messaging Framework Use Cases Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/use-cases/{use_case_id}:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Use Case
+      description: Get a specific use case by ID from Gypsum API.
+      operationId: get_use_case_api_messaging_framework_use_cases__use_case_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: use_case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Use Case Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Use Case Api Messaging Framework Use Cases  Use Case Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/messaging-framework/industries:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Industries
+      description: Get all industries for the current organization from Gypsum API.
+      operationId: get_industries_api_messaging_framework_industries_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Industries Api Messaging Framework Industries Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/industries/{industry_id}:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Industry
+      description: Get a specific industry by ID from Gypsum API.
+      operationId: get_industry_api_messaging_framework_industries__industry_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: industry_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Industry Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Industry Api Messaging Framework Industries  Industry Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/messaging-framework/messaging:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Messaging
+      description: Get messaging framework for the current organization from Gypsum API.
+      operationId: get_messaging_api_messaging_framework_messaging_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Messaging Api Messaging Framework Messaging Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/positioning:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Positioning
+      description: Get positioning framework for the current organization from Gypsum API.
+      operationId: get_positioning_api_messaging_framework_positioning_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Positioning Api Messaging Framework Positioning Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/testimonials:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Testimonials
+      description: Get testimonials for the current organization from Gypsum API.
+      operationId: get_testimonials_api_messaging_framework_testimonials_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Testimonials Api Messaging Framework Testimonials Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/testimonials/featured:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Featured Testimonials
+      description: Get featured testimonials for the current organization from Gypsum API.
+      operationId: get_featured_testimonials_api_messaging_framework_testimonials_featured_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  additionalProperties: true
+                  type: object
+                type: array
+                title: Response Get Featured Testimonials Api Messaging Framework Testimonials Featured Get
+      security:
+      - HTTPBearer: []
+  /api/messaging-framework/testimonials/{testimonial_id}:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Testimonial
+      description: Get a specific testimonial by ID from Gypsum API.
+      operationId: get_testimonial_api_messaging_framework_testimonials__testimonial_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: testimonial_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Testimonial Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Testimonial Api Messaging Framework Testimonials  Testimonial Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/messaging-framework/campaigns/{campaign_id}/context:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Campaign Context
+      description: Get campaign context from Gypsum API for content generation.
+      operationId: get_campaign_context_api_messaging_framework_campaigns__campaign_id__context_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Campaign Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Campaign Context Api Messaging Framework Campaigns  Campaign Id  Context Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/messaging-framework/marketing-context:
+    get:
+      tags:
+      - messaging-framework
+      summary: Get Complete Marketing Context
+      description: 'Get complete marketing context (all data) for the current organization from Gypsum API.
+
+        This is the most efficient way to get all Gypsum data in one call.'
+      operationId: get_complete_marketing_context_api_messaging_framework_marketing_context_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Complete Marketing Context Api Messaging Framework Marketing Context Get
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,274 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Playbooks API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: playbooks
+  description: 'GTM playbooks: sequences, triggers, and automated workflows.'
+paths:
+  /api/playbooks:
+    get:
+      tags:
+      - playbooks
+      summary: List Playbooks
+      description: List all available playbooks.
+      operationId: list_playbooks_api_playbooks_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  additionalProperties: true
+                  type: object
+                type: array
+                title: Response List Playbooks Api Playbooks Get
+  /api/playbooks/{slug}:
+    get:
+      tags:
+      - playbooks
+      summary: Get Playbook By Slug
+      description: Get a specific playbook by slug.
+      operationId: get_playbook_by_slug_api_playbooks__slug__get
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Slug
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Playbook By Slug Api Playbooks  Slug  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/playbooks/{slug}/campaign-context:
+    get:
+      tags:
+      - playbooks
+      summary: Get Campaign Context
+      description: 'Get campaign execution context for a LangGraph agent.
+
+
+        Returns structured context that an AI agent can use to:
+
+        - Generate personalized outreach emails
+
+        - Prepare discovery call scripts
+
+        - Handle objections
+
+        - Select relevant content assets'
+      operationId: get_campaign_context_api_playbooks__slug__campaign_context_get
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Slug
+      - name: target_company
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Target company name for personalization
+          title: Target Company
+        description: Target company name for personalization
+      - name: target_persona
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Target persona/role
+          title: Target Persona
+        description: Target persona/role
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Campaign Context Api Playbooks  Slug  Campaign Context Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/playbooks/{slug}/email-sequence:
+    get:
+      tags:
+      - playbooks
+      summary: Get Email Sequence
+      description: Get email sequence templates for a playbook.
+      operationId: get_email_sequence_api_playbooks__slug__email_sequence_get
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Slug
+      - name: sequence_type
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Type of sequence
+          default: cold_outreach
+          title: Sequence Type
+        description: Type of sequence
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Email Sequence Api Playbooks  Slug  Email Sequence Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/playbooks/{slug}/objection-handler:
+    get:
+      tags:
+      - playbooks
+      summary: Get Objection Handler
+      description: Get objection handling guidance for a playbook.
+      operationId: get_objection_handler_api_playbooks__slug__objection_handler_get
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Slug
+      - name: objection
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Specific objection to handle
+          title: Objection
+        description: Specific objection to handle
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Objection Handler Api Playbooks  Slug  Objection Handler Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,2460 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO GEO/AEO API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: GEO/AEO
+  description: Generative Engine Optimization - monitor your visibility in AI search engines (ChatGPT, Claude, Perplexity).
+paths:
+  /api/geo-aeo/generate-prompts:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Generate Prompts
+      description: 'Generate GEO/AEO prompts based on company context.
+
+
+        Uses the content generator with GEO_PROMPT format to create
+
+        relevant search prompts that potential customers might ask AI assistants.
+
+
+        When multi_source=True (default), generates prompts from three context sources:
+
+        - Messaging Framework (40%): positioning, use cases, personas
+
+        - Competitive Intelligence (30%): tracked competitors, differentiation
+
+        - Social Signals (30%): trending topics, pain points from discussions
+
+
+        If competitors not provided, automatically fetches from Competitive Intelligence.'
+      operationId: generate_prompts_api_geo_aeo_generate_prompts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePromptsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/generate-prompts/stream:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Generate Prompts Stream
+      description: 'Generate GEO prompts with SSE streaming - returns prompts as each category completes.
+
+
+        Events:
+
+        - status: Progress updates (e.g., "Syncing Messaging Framework...")
+
+        - prompts: Array of prompts for a completed category
+
+        - complete: Final summary
+
+        - error: Error messages'
+      operationId: generate_prompts_stream_api_geo_aeo_generate_prompts_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePromptsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/test-prompt:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Test Single Prompt
+      description: 'Test a single prompt across AI models to check brand visibility.
+
+
+        Returns visibility score and individual model responses.'
+      operationId: test_single_prompt_api_geo_aeo_test_prompt_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SinglePromptTestRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisibilityResultResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/run-scan:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Run Visibility Scan
+      description: 'Run a full visibility scan across multiple prompts and AI models.
+
+
+        Returns a comprehensive visibility report with scores,
+
+        recommendations, and areas for improvement.
+
+
+        If save_to_library=True, prompts are saved to the target_prompts table
+
+        with their visibility scores.'
+      operationId: run_visibility_scan_api_geo_aeo_run_scan_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestPromptsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisibilityReportResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/run-scan/stream:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Run Visibility Scan Stream
+      description: 'Run visibility scan with SSE streaming - returns results as each prompt completes.
+
+
+        Events:
+
+        - status: Progress updates
+
+        - result: Individual prompt result as it completes
+
+        - summary: Final summary with overall scores
+
+        - error: Error messages'
+      operationId: run_visibility_scan_stream_api_geo_aeo_run_scan_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestPromptsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/models:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Available Models
+      description: Get list of available AI models for visibility testing.
+      operationId: get_available_models_api_geo_aeo_models_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/geo-aeo/prompt-categories:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Prompt Categories
+      description: Get list of prompt categories for organization.
+      operationId: get_prompt_categories_api_geo_aeo_prompt_categories_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/geo-aeo/sessions:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Session Status
+      description: 'Check session status for all AI platforms.
+
+        Returns which platforms have valid sessions for web-based queries.'
+      operationId: get_session_status_api_geo_aeo_sessions_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/geo-aeo/sessions/{platform}:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Save Session
+      description: 'Save session cookies for an AI platform.
+
+
+        Use browser dev tools to export cookies:
+
+        1. Open the AI platform and log in
+
+        2. Open DevTools > Application > Cookies
+
+        3. Export all cookies as JSON'
+      operationId: save_session_api_geo_aeo_sessions__platform__post
+      parameters:
+      - name: platform
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveSessionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/query-mode:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Query Mode
+      description: Get the current query mode (API or Web).
+      operationId: get_query_mode_api_geo_aeo_query_mode_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/geo-aeo/query-mode/{mode}:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Set Query Mode
+      description: Set the query mode (api or web).
+      operationId: set_query_mode_api_geo_aeo_query_mode__mode__post
+      parameters:
+      - name: mode
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/prompts:
+    get:
+      tags:
+      - GEO/AEO
+      summary: List Prompts
+      description: List all target prompts for the org.
+      operationId: list_prompts_api_geo_aeo_prompts_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Prompts Api Geo Aeo Prompts Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - GEO/AEO
+      summary: Create Prompt
+      description: Create a new target prompt.
+      operationId: create_prompt_api_geo_aeo_prompts_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TargetPromptCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetPromptResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/prompts/bulk:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Bulk Create Prompts
+      description: Bulk create target prompts.
+      operationId: bulk_create_prompts_api_geo_aeo_prompts_bulk_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkPromptCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Bulk Create Prompts Api Geo Aeo Prompts Bulk Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/prompts/{prompt_id}:
+    patch:
+      tags:
+      - GEO/AEO
+      summary: Update Prompt
+      description: Update a target prompt.
+      operationId: update_prompt_api_geo_aeo_prompts__prompt_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: prompt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Prompt Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TargetPromptUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetPromptResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - GEO/AEO
+      summary: Delete Prompt
+      description: Delete a target prompt.
+      operationId: delete_prompt_api_geo_aeo_prompts__prompt_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: prompt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Prompt Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Delete Prompt Api Geo Aeo Prompts  Prompt Id  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/topics:
+    get:
+      tags:
+      - GEO/AEO
+      summary: List Topics
+      description: List all topics for the org.
+      operationId: list_topics_api_geo_aeo_topics_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TopicResponse'
+                type: array
+                title: Response List Topics Api Geo Aeo Topics Get
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - GEO/AEO
+      summary: Create Topic
+      description: Create a new topic.
+      operationId: create_topic_api_geo_aeo_topics_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopicCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/topics/{topic_name}:
+    delete:
+      tags:
+      - GEO/AEO
+      summary: Delete Topic
+      description: Delete a topic (prompts with this topic will have topic set to 'Uncategorized').
+      operationId: delete_topic_api_geo_aeo_topics__topic_name__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Topic Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Delete Topic Api Geo Aeo Topics  Topic Name  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/prompts/{prompt_id}/continuous-testing:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Toggle Continuous Testing
+      description: 'Mark a prompt for continuous testing.
+
+        These prompts will be tested on every hourly scan.'
+      operationId: toggle_continuous_testing_api_geo_aeo_prompts__prompt_id__continuous_testing_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: prompt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Prompt Id
+      - name: enabled
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Enabled
+      - name: frequency_minutes
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 60
+          title: Frequency Minutes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Toggle Continuous Testing Api Geo Aeo Prompts  Prompt Id  Continuous Testing Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/prompts/bulk-schedule:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Bulk Update Schedule
+      description: Bulk enable/disable continuous testing for multiple prompts.
+      operationId: bulk_update_schedule_api_geo_aeo_prompts_bulk_schedule_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkScheduleRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Bulk Update Schedule Api Geo Aeo Prompts Bulk Schedule Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/prompts/continuous:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Continuous Testing Prompts
+      description: Get all prompts marked for continuous testing.
+      operationId: get_continuous_testing_prompts_api_geo_aeo_prompts_continuous_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Continuous Testing Prompts Api Geo Aeo Prompts Continuous Get
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/results/latest:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Latest Visibility Results
+      description: 'Get the latest visibility scan results.
+
+        Returns the most recent snapshot plus top/bottom performing prompts.'
+      operationId: get_latest_visibility_results_api_geo_aeo_results_latest_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Latest Visibility Results Api Geo Aeo Results Latest Get
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/prompts/{prompt_id}/responses:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Prompt Responses
+      description: 'Get the last AI responses for a specific prompt.
+
+        Shows what each AI model said when tested.'
+      operationId: get_prompt_responses_api_geo_aeo_prompts__prompt_id__responses_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: prompt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Prompt Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Prompt Responses Api Geo Aeo Prompts  Prompt Id  Responses Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/prompts/scan:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Scan Saved Prompts
+      description: 'Run visibility scan on saved prompts.
+
+        Either provide prompt_ids or topic to select prompts.'
+      operationId: scan_saved_prompts_api_geo_aeo_prompts_scan_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Scan Saved Prompts Api Geo Aeo Prompts Scan Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/prompts/generate-and-save:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Generate And Save Prompts
+      description: 'Generate prompts from context and save them to the library.
+
+        Fetches context from org''s Messaging Framework if not provided.'
+      operationId: generate_and_save_prompts_api_geo_aeo_prompts_generate_and_save_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: default_topic
+        in: query
+        required: false
+        schema:
+          type: string
+          default: Generated
+          title: Default Topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePromptsRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Generate And Save Prompts Api Geo Aeo Prompts Generate And Save Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/scan/start:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Start Visibility Scan
+      description: 'Start an async visibility scan job.
+
+
+        Returns a job_id that can be used to check progress and retrieve results.
+
+        The scan runs in a Celery worker and tests prompts against multiple LLMs.'
+      operationId: start_visibility_scan_api_geo_aeo_scan_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartScanRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanJobResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/scan/{job_id}/status:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Scan Status
+      description: 'Check the status of an async visibility scan job.
+
+
+        Returns progress, current state, and results when complete.'
+      operationId: get_scan_status_api_geo_aeo_scan__job_id__status_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/guidance/stream:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Stream Visibility Guidance
+      description: 'Stream AI-generated guidance for a visibility gap.
+
+
+        Analyzes the visibility result and streams actionable advice
+
+        on what the gap means and how to address it through content.'
+      operationId: stream_visibility_guidance_api_geo_aeo_guidance_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuidanceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/content-topics:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Save Content Topic
+      description: 'Save a visibility gap as a content topic for the content strategist.
+
+
+        Creates a backlog item that content teams can review, prioritize, and schedule.
+
+        Also pushes to AirOps vector store for use in content workflows.'
+      operationId: save_content_topic_api_geo_aeo_content_topics_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveContentTopicRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentTopicResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - GEO/AEO
+      summary: List Content Topics
+      description: 'List content topics for the content strategist.
+
+
+        Optionally filter by source (manual, signal, geo_visibility, competitor_gap)
+
+        or category (use_case, persona, competitive, technical, integration, pricing, general).'
+      operationId: list_content_topics_api_geo_aeo_content_topics_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: source
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentTopicResponse'
+                title: Response List Content Topics Api Geo Aeo Content Topics Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/airops/sync:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Sync To Airops
+      description: 'Sync the Messaging Framework context stream to AirOps vector store.
+
+
+        Pushes personas, use cases, products, and positioning for use in
+
+        AirOps AI workflows and content generation.'
+      operationId: sync_to_airops_api_geo_aeo_airops_sync_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/airops/context:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Context For Airops
+      description: "Get context data formatted for AirOps workflow consumption.\n\nThis endpoint can be called by AirOps workflows to fetch fresh\nGTM context for content generation.\n\nArgs:\n    context_type: Type of context (use_cases, personas, products, content_topics, all)\n    limit: Max items to return\n\nReturns:\n    JSON array of items ready for AirOps workflow processing"
+      operationId: get_context_for_airops_api_geo_aeo_airops_context_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: context_type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Context Type
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/airops/search:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Search Airops
+      description: "Search the AirOps vector store for relevant context.\n\nArgs:\n    query: Semantic search query\n    context_type: Optional filter (persona, use_case, product, positioning, content_topic)\n    top_k: Number of results (default 5)"
+      operationId: search_airops_api_geo_aeo_airops_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Query
+      - name: context_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Type
+      - name: top_k
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 5
+          title: Top K
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/airops/export/content-topics.csv:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Export Content Topics Csv
+      description: 'Export content topics as CSV for AirOps Grid import.
+
+
+        The CSV includes columns optimized for content generation workflows:
+
+        - topic_id, prompt, visibility_score, brand_mentioned, competitors
+
+        - priority, category, suggested_action'
+      operationId: export_content_topics_csv_api_geo_aeo_airops_export_content_topics_csv_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/airops/export/use-cases.csv:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Export Use Cases Csv
+      description: 'Export use cases as CSV for AirOps Grid import.
+
+
+        Fetches use cases from Gypsum and formats for content generation workflows.'
+      operationId: export_use_cases_csv_api_geo_aeo_airops_export_use_cases_csv_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/airops/export/personas.csv:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Export Personas Csv
+      description: 'Export personas as CSV for AirOps Grid import.
+
+
+        Fetches personas from Gypsum and formats for targeted content workflows.'
+      operationId: export_personas_csv_api_geo_aeo_airops_export_personas_csv_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/airops/export/geo-prompts.csv:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Export Geo Prompts Csv
+      description: 'Export generated GEO prompts as CSV for AirOps Grid import.
+
+
+        Useful for batch visibility testing workflows in AirOps.'
+      operationId: export_geo_prompts_csv_api_geo_aeo_airops_export_geo_prompts_csv_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/content-topics/{topic_id}:
+    patch:
+      tags:
+      - GEO/AEO
+      summary: Update Content Topic
+      description: Update a content topic's prompt, category, source, or notes.
+      operationId: update_content_topic_api_geo_aeo_content_topics__topic_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Topic Id
+      - name: prompt
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: source
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source
+      - name: notes
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - GEO/AEO
+      summary: Delete Content Topic
+      description: Delete a content topic (prune from the topic library).
+      operationId: delete_content_topic_api_geo_aeo_content_topics__topic_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Topic Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/content-topics/from-signals:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Create Topics From Signals
+      description: 'Create content topics from one or more signals.
+
+
+        This allows users to convert discovered signals (from Reddit, LinkedIn, GitHub, etc.)
+
+        into content topics for the content strategist to work on.'
+      operationId: create_topics_from_signals_api_geo_aeo_content_topics_from_signals_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTopicsFromSignalsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/content-topics/from-competitor/{competitor_id}:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Create Topics From Competitor
+      description: 'Generate content topics from a competitor''s recent activities.
+
+
+        Converts competitor blog posts, releases, news, etc. into content topics
+
+        for the content strategist to work on.'
+      operationId: create_topics_from_competitor_api_geo_aeo_content_topics_from_competitor__competitor_id__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Competitor Id
+      - name: activity_types
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+          description: Filter by activity types
+          title: Activity Types
+        description: Filter by activity types
+      - name: only_significant
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Only significant activities
+          default: false
+          title: Only Significant
+        description: Only significant activities
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Max activities to process
+          default: 10
+          title: Limit
+        description: Max activities to process
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/content-topics/from-all-competitors:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Create Topics From All Competitors
+      description: 'Generate content topics from all competitors'' recent activities.
+
+
+        Scans all active competitors for significant activities and creates
+
+        content topics for the backlog.'
+      operationId: create_topics_from_all_competitors_api_geo_aeo_content_topics_from_all_competitors_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: only_significant
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Only significant activities
+          default: true
+          title: Only Significant
+        description: Only significant activities
+      - name: days_back
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Days to look back
+          default: 7
+          title: Days Back
+        description: Days to look back
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/brand-snapshots/daily:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Daily Brand Snapshots
+      description: 'Get daily brand snapshots - AI responses to "What can you tell me about {company}?"
+
+
+        Returns recent daily snapshots with:
+
+        - Responses from each AI model
+
+        - Daily analysis comparing models
+
+        - Changes detected from previous day'
+      operationId: get_daily_brand_snapshots_api_geo_aeo_brand_snapshots_daily_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/brand-snapshots/weekly:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Weekly Brand Insights
+      description: 'Get weekly brand insights - meta-analysis of daily snapshots.
+
+
+        Returns weekly summaries with:
+
+        - Weekly analysis of trends
+
+        - Identified opportunities
+
+        - Visibility score averages'
+      operationId: get_weekly_brand_insights_api_geo_aeo_brand_snapshots_weekly_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 4
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/brand-snapshots/run:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Run Brand Snapshot
+      description: 'Manually trigger a brand snapshot for demo/testing.
+
+
+        Queries all AI models about the company and generates analysis.
+
+        Use force=true to delete existing snapshot for today and re-run.'
+      operationId: run_brand_snapshot_api_geo_aeo_brand_snapshots_run_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: company_name
+        in: query
+        required: false
+        schema:
+          type: string
+          default: Vantiq
+          title: Company Name
+      - name: force
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Force
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/baseline-probe/run:
+    post:
+      tags:
+      - GEO/AEO
+      summary: Run Baseline Probe
+      description: 'Run a baseline probe: "What do you know about {company} and how do
+
+        they compare to their closest competition?"
+
+
+        This is designed to run daily to track AI awareness and accuracy over time.
+
+        Results can be charted to show trends.'
+      operationId: run_baseline_probe_api_geo_aeo_baseline_probe_run_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaselineProbeRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Run Baseline Probe Api Geo Aeo Baseline Probe Run Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/geo-aeo/baseline-probe/history:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Baseline Probe History
+      description: 'Get baseline probe history for charting.
+
+        Returns daily snapshots showing awareness and accuracy trends over time.'
+      operationId: get_baseline_probe_history_api_geo_aeo_baseline_probe_history_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Days
+      - name: company_name
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Baseline Probe History Api Geo Aeo Baseline Probe History Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-aeo/baseline-probe/latest:
+    get:
+      tags:
+      - GEO/AEO
+      summary: Get Latest Baseline Probe
+      description: 'Get the most recent baseline probe results.
+
+        Returns the latest snapshot plus individual model responses.'
+      operationId: get_latest_baseline_probe_api_geo_aeo_baseline_probe_latest_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: company_name
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Latest Baseline Probe Api Geo Aeo Baseline Probe Latest Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    TestPromptsRequest:
+      properties:
+        prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Prompts
+          description: Prompts to test
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+          description: Models to test (chatgpt, claude, gemini, grok)
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          description: Brand names to look for in responses
+        save_to_library:
+          type: boolean
+          title: Save To Library
+          description: Save prompts to the topic library after scanning
+          default: false
+        default_topic:
+          type: string
+          title: Default Topic
+          description: Topic name for saved prompts
+          default: Scanned
+      type: object
+      required:
+      - prompts
+      - brand_names
+      title: TestPromptsRequest
+      description: Request to test prompts for visibility.
+    SinglePromptTestRequest:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt to test
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+          description: Models to test
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          description: Brand names to look for
+      type: object
+      required:
+      - prompt
+      - brand_names
+      title: SinglePromptTestRequest
+      description: Request to test a single prompt.
+    TopicCreate:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+        color:
+          type: string
+          title: Color
+          default: '#6366f1'
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      required:
+      - name
+      title: TopicCreate
+      description: Create a new topic.
+    ContentTopicResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        prompt:
+          type: string
+          title: Prompt
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source
+          default: manual
+        visibility_score:
+          type: number
+          title: Visibility Score
+        brand_mentioned:
+          type: boolean
+          title: Brand Mentioned
+        competitors_mentioned:
+          items:
+            type: string
+          type: array
+          title: Competitors Mentioned
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        guidance:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Guidance
+        suggested_at:
+          type: string
+          title: Suggested At
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+          default: suggested
+        priority:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Priority
+          default: medium
+      type: object
+      required:
+      - id
+      - prompt
+      - category
+      - visibility_score
+      - brand_mentioned
+      - competitors_mentioned
+      - guidance
+      - suggested_at
+      title: ContentTopicResponse
+      description: Response for a content topic.
+    Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post:
+      properties:
+        prompt_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Prompt Ids
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          default: []
+      type: object
+      title: Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post
+    TargetPromptCreate:
+      properties:
+        prompt_text:
+          type: string
+          minLength: 5
+          title: Prompt Text
+        topic:
+          type: string
+          minLength: 1
+          title: Topic
+        category:
+          type: string
+          title: Category
+          default: category_based
+        priority:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Priority
+          default: 5
+        intent:
+          type: string
+          title: Intent
+          default: informational
+        target_keywords:
+          items:
+            type: string
+          type: array
+          title: Target Keywords
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      type: object
+      required:
+      - prompt_text
+      - topic
+      title: TargetPromptCreate
+      description: Create a new target prompt.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SaveSessionRequest:
+      properties:
+        platform:
+          type: string
+          title: Platform
+          description: 'Platform: chatgpt, claude, or gemini'
+        cookies:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Cookies
+          description: Browser cookies
+      type: object
+      required:
+      - platform
+      - cookies
+      title: SaveSessionRequest
+      description: Request to save session cookies for an AI platform.
+    VisibilityReportResponse:
+      properties:
+        brand_name:
+          type: string
+          title: Brand Name
+        total_prompts_tested:
+          type: integer
+          title: Total Prompts Tested
+        overall_visibility_score:
+          type: number
+          title: Overall Visibility Score
+        model_breakdown:
+          additionalProperties:
+            type: number
+          type: object
+          title: Model Breakdown
+        top_performing_prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Top Performing Prompts
+        needs_improvement:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Needs Improvement
+        content_recommendations:
+          items:
+            type: string
+          type: array
+          title: Content Recommendations
+        generated_at:
+          type: string
+          title: Generated At
+      type: object
+      required:
+      - brand_name
+      - total_prompts_tested
+      - overall_visibility_score
+      - model_breakdown
+      - top_performing_prompts
+      - needs_improvement
+      - content_recommendations
+      - generated_at
+      title: VisibilityReportResponse
+      description: Full visibility report response.
+    TopicResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        color:
+          type: string
+          title: Color
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        prompt_count:
+          type: integer
+          title: Prompt Count
+      type: object
+      required:
+      - id
+      - name
+      - color
+      - description
+      - prompt_count
+      title: TopicResponse
+      description: Response for a topic.
+    PromptResponse:
+      properties:
+        prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Prompts
+        generated_at:
+          type: string
+          title: Generated At
+      type: object
+      required:
+      - prompts
+      - generated_at
+      title: PromptResponse
+      description: Response with generated prompts.
+    CreateTopicsFromSignalsRequest:
+      properties:
+        signal_ids:
+          items:
+            type: string
+          type: array
+          title: Signal Ids
+          description: List of signal IDs to convert to topics
+        category:
+          type: string
+          title: Category
+          description: Default category for created topics
+          default: general
+      type: object
+      required:
+      - signal_ids
+      title: CreateTopicsFromSignalsRequest
+      description: Request to create content topics from signals.
+    ScanJobResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - job_id
+      - status
+      - message
+      title: ScanJobResponse
+      description: Response when starting an async scan job.
+    BulkScheduleRequest:
+      properties:
+        prompt_ids:
+          items:
+            type: string
+          type: array
+          title: Prompt Ids
+        enabled:
+          type: boolean
+          title: Enabled
+        frequency_minutes:
+          type: integer
+          title: Frequency Minutes
+          default: 60
+      type: object
+      required:
+      - prompt_ids
+      - enabled
+      title: BulkScheduleRequest
+      description: Bulk update scheduling for multiple prompts.
+    TargetPromptUpdate:
+      properties:
+        prompt_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Text
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+        priority:
+          anyOf:
+          - type: integer
+            maximum: 10.0
+            minimum: 1.0
+          - type: 'null'
+          title: Priority
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      type: object
+      title: TargetPromptUpdate
+      description: Update a target prompt.
+    VisibilityResultResponse:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+        visibility_score:
+          type: number
+          title: Visibility Score
+        models_mentioned:
+          type: integer
+          title: Models Mentioned
+        total_models:
+          type: integer
+          title: Total Models
+        responses:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Responses
+        tested_at:
+          type: string
+          title: Tested At
+      type: object
+      required:
+      - prompt
+      - visibility_score
+      - models_mentioned
+      - total_models
+      - responses
+      - tested_at
+      title: VisibilityResultResponse
+      description: Response for a single prompt visibility test.
+    TargetPromptResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        prompt_text:
+          type: string
+          title: Prompt Text
+        topic:
+          type: string
+          title: Topic
+        category:
+          type: string
+          title: Category
+        status:
+          type: string
+          title: Status
+        priority:
+          type: integer
+          title: Priority
+        visibility_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Visibility Score
+        last_tested_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Tested At
+        intent:
+          type: string
+          title: Intent
+        target_keywords:
+          items:
+            type: string
+          type: array
+          title: Target Keywords
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        created_at:
+          type: string
+          title: Created At
+        continuous_testing:
+          type: boolean
+          title: Continuous Testing
+          default: false
+        test_frequency_minutes:
+          type: integer
+          title: Test Frequency Minutes
+          default: 60
+      type: object
+      required:
+      - id
+      - prompt_text
+      - topic
+      - category
+      - status
+      - priority
+      - visibility_score
+      - last_tested_at
+      - intent
+      - target_keywords
+      - notes
+      - created_at
+      title: TargetPromptResponse
+      description: Response for a target prompt.
+    BaselineProbeRequest:
+      properties:
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Company name (defaults to org's company)
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+          description: Models to probe (chatgpt, claude, gemini, perplexity)
+      type: object
+      title: BaselineProbeRequest
+      description: Request to run a baseline probe.
+    BulkPromptCreate:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/TargetPromptCreate'
+          type: array
+          title: Prompts
+      type: object
+      required:
+      - prompts
+      title: BulkPromptCreate
+      description: Bulk create prompts.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GuidanceRequest:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt that was tested
+        brand_mentioned:
+          type: boolean
+          title: Brand Mentioned
+          description: Whether the brand was mentioned
+        competitors_mentioned:
+          items:
+            type: string
+          type: array
+          title: Competitors Mentioned
+          description: Competitors mentioned in response
+          default: []
+        ai_response:
+          type: string
+          title: Ai Response
+          description: The AI response text
+        visibility_score:
+          type: number
+          title: Visibility Score
+          description: Visibility score
+          default: 0.0
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Prompt category
+      type: object
+      required:
+      - prompt
+      - brand_mentioned
+      - ai_response
+      title: GuidanceRequest
+      description: Request for visibility gap guidance.
+    SaveContentTopicRequest:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt/query that revealed the gap
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Prompt category
+        source:
+          type: string
+          title: Source
+          description: 'Source: manual, signal, geo_visibility, competitor_gap'
+          default: manual
+        visibility_score:
+          type: number
+          title: Visibility Score
+          default: 0.0
+        brand_mentioned:
+          type: boolean
+          title: Brand Mentioned
+          default: false
+        competitors_mentioned:
+          items:
+            type: string
+          type: array
+          title: Competitors Mentioned
+          default: []
+        ai_response_summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ai Response Summary
+          description: Summary of AI response
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+          description: Additional notes
+        priority:
+          type: string
+          title: Priority
+          description: 'Priority: high, medium, low'
+          default: medium
+      type: object
+      required:
+      - prompt
+      title: SaveContentTopicRequest
+      description: Request to save a visibility gap as a content topic.
+    GeneratePromptsRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+          description: Company name to monitor
+        products:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Products
+          description: Product names
+        competitors:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitors
+          description: Competitor names
+        use_cases:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Use Cases
+          description: Use cases
+        industries:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Industries
+          description: Target industries
+        value_proposition:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value Proposition
+          description: Value proposition
+        num_prompts:
+          type: integer
+          maximum: 30.0
+          minimum: 1.0
+          title: Num Prompts
+          description: Number of prompts to generate
+          default: 15
+        categories:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Categories
+          description: 'Categories to generate prompts for: messaging, competitive, use_case, industry, community'
+      type: object
+      required:
+      - company_name
+      title: GeneratePromptsRequest
+      description: Request to generate GEO prompts from context.
+    StartScanRequest:
+      properties:
+        prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Prompts
+          description: Prompts to test
+        models:
+          items:
+            type: string
+          type: array
+          title: Models
+          description: Models to test
+          default:
+          - claude
+          - gemini
+          - perplexity
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          description: Brand names to look for
+      type: object
+      required:
+      - prompts
+      - brand_names
+      title: StartScanRequest
+      description: Request to start an async visibility scan.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

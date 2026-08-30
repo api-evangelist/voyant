@@ -1,0 +1,263 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Companies API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Companies
+paths:
+  /api/companies:
+    get:
+      summary: List Companies
+      description: Get all companies detected from GitHub signals
+      operationId: list_companies_api_companies_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Companies
+  /api/companies/{company_id}:
+    get:
+      summary: Get Company Details
+      description: Get detailed information about a specific company
+      operationId: get_company_details_api_companies__company_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Company Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Companies
+  /api/companies/analyze:
+    post:
+      summary: Analyze Github Signals For Companies
+      description: Analyze GitHub signals to detect companies and tech stacks
+      operationId: analyze_github_signals_for_companies_api_companies_analyze_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: force_refresh
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Force Refresh
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Companies
+  /api/companies/tech-stack/summary:
+    get:
+      summary: Get Tech Stack Summary
+      description: Get a summary of tech stacks across all companies
+      operationId: get_tech_stack_summary_api_companies_tech_stack_summary_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Companies
+  /api/companies/{company_id}/interests:
+    get:
+      summary: Get Company Interests
+      description: Get detailed analysis of a company's interests based on starred repositories
+      operationId: get_company_interests_api_companies__company_id__interests_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Company Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Companies
+  /api/companies/search:
+    get:
+      summary: Search Companies
+      description: Search companies by name, tech stack, or other criteria
+      operationId: search_companies_api_companies_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Query
+      - name: tech_filter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tech Filter
+      - name: min_team_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Min Team Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Companies
+  /api/companies/health:
+    get:
+      summary: Companies Health Check
+      description: Health check for company detection features
+      operationId: companies_health_check_api_companies_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+      tags:
+      - Companies
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

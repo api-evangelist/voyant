@@ -1,0 +1,110 @@
+openapi: 3.2.0
+info:
+  title: Gypsum Context Sync API
+  description: '## Brand Context Management API
+
+
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
+
+
+    ### Core Capabilities
+
+
+    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
+
+    - **ICP Management** - Ideal Customer Profile CRUD operations
+
+    - **Campaign Management** - Marketing campaign tracking
+
+    - **AI Chat** - Brand-aware conversational AI
+
+
+    ### Authentication
+
+
+    Most endpoints require `user_id` query parameter (Clerk organization ID).
+
+    Demo access is available for testing.
+
+
+    ### Base URL
+
+
+    Production: `https://gypsum.voyant.io`
+
+    Local: `http://localhost:3001`'
+  version: 1.0.0
+  contact:
+    name: VoyantIO
+    url: https://voyant.io
+servers:
+- url: https://gypsum.voyant.io
+  description: Production
+- url: http://localhost:3001
+  description: Local development
+tags:
+- name: sync
+  description: Organization data synchronization
+paths:
+  /api/sync/organization:
+    post:
+      tags:
+      - sync
+      summary: Sync Organization
+      description: Trigger a sync of organization data from Clerk.
+      operationId: syncOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - organization_id
+              properties:
+                organization_id:
+                  type: string
+      responses:
+        '200':
+          description: Sync initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/sync/organization/{orgId}/status:
+    get:
+      tags:
+      - sync
+      summary: Get Sync Status
+      description: Check the sync status for an organization.
+      operationId: getSyncStatus
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Sync status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organization_id:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                    - synced
+                    - pending
+                    - error
+                  last_synced:
+                    type: string
+                    format: date-time

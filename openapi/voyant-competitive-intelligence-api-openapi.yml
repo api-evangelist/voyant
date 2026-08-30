@@ -1,0 +1,1205 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Competitive Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: competitive-intelligence
+  description: Automated competitor monitoring. Track positioning, messaging, and market moves.
+paths:
+  /api/competitive-intel/scan:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Scan Competitor
+      description: 'Run a full competitive intelligence scan on a competitor.
+
+        Persists results to the competitor record if it exists.'
+      operationId: scan_competitor_api_competitive_intel_scan_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompetitorScanRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorIntelReport'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/competitive-intel/scan-batch:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Scan Competitors Batch
+      description: 'Scan multiple competitors and return comparison.
+
+        Persists results to competitor records.'
+      operationId: scan_competitors_batch_api_competitive_intel_scan_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/CompetitorScanRequest'
+              type: array
+              title: Competitors
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/competitive-intel/quick-scan/{domain}:
+    get:
+      tags:
+      - competitive-intelligence
+      summary: Quick Scan Domain
+      description: Quick agent-readiness scan of a domain (no Reddit/GitHub).
+      operationId: quick_scan_domain_api_competitive_intel_quick_scan__domain__get
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Domain
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/monitor/messaging/{domain}:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Monitor Competitor Messaging
+      description: 'Monitor a competitor''s messaging by extracting their positioning framework using Claude.
+
+        This is the core of marketing observability - understanding how competitors position themselves.'
+      operationId: monitor_competitor_messaging_api_competitive_intel_monitor_messaging__domain__post
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Domain
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractedMessagingFramework'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/monitor/compare:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Compare Positioning
+      description: 'Compare your messaging framework against a competitor''s.
+
+        Provides strategic insights for differentiation.'
+      operationId: compare_positioning_api_competitive_intel_monitor_compare_post
+      parameters:
+      - name: competitor_domain
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Competitor domain to compare against
+          title: Competitor Domain
+        description: Competitor domain to compare against
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Your Framework
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/monitor/full-report:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Generate Observability Report
+      description: 'Generate a complete marketing observability report for a competitor.
+
+        Combines: messaging extraction, agent readiness, market signals, and positioning comparison.'
+      operationId: generate_observability_report_api_competitive_intel_monitor_full_report_post
+      parameters:
+      - name: include_messaging
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Extract messaging framework
+          default: true
+          title: Include Messaging
+        description: Extract messaging framework
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_generate_observability_report_api_competitive_intel_monitor_full_report_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketObservabilityReport'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/monitor/analyst-context/{domain}:
+    get:
+      tags:
+      - competitive-intelligence
+      summary: Get Analyst Context
+      description: 'Get analyst report context for a competitor (if available).
+
+        Searches stored analyst reports for mentions and insights.'
+      operationId: get_analyst_context_api_competitive_intel_monitor_analyst_context__domain__get
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Domain
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/analyst-reports:
+    get:
+      tags:
+      - competitive-intelligence
+      summary: List Analyst Reports
+      description: List all available analyst reports in the system.
+      operationId: list_analyst_reports_api_competitive_intel_analyst_reports_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/competitive-intel/analyst-reports/{filename}/extract:
+    get:
+      tags:
+      - competitive-intelligence
+      summary: Extract Analyst Report
+      description: Extract competitive intelligence from a specific analyst report using Claude.
+      operationId: extract_analyst_report_api_competitive_intel_analyst_reports__filename__extract_get
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      - name: competitors
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated list of competitors to focus on
+          title: Competitors
+        description: Comma-separated list of competitors to focus on
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalystReportExtraction'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/analyst-reports/briefing:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Generate Analyst Briefing
+      description: 'Generate a competitive briefing based on all available analyst reports.
+
+        Aggregates insights about you and your competitors across all reports.'
+      operationId: generate_analyst_briefing_api_competitive_intel_analyst_reports_briefing_post
+      parameters:
+      - name: your_company
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Your company name
+          title: Your Company
+        description: Your company name
+      - name: competitors
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Comma-separated list of competitors
+          title: Competitors
+        description: Comma-separated list of competitors
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/cadence/{domain}:
+    get:
+      tags:
+      - competitive-intelligence
+      summary: Get Cadence Score
+      description: 'Get content marketing cadence score for a competitor.
+
+        Measures blog freshness, LinkedIn activity, and overall content velocity.'
+      operationId: get_cadence_score_api_competitive_intel_cadence__domain__get
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Domain
+      - name: company_name
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Company name for LinkedIn lookup
+          title: Company Name
+        description: Company name for LinkedIn lookup
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CadenceScore'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/competitive-intel/cadence/compare:
+    post:
+      tags:
+      - competitive-intelligence
+      summary: Compare Cadence Scores
+      description: 'Compare cadence scores across multiple competitors.
+
+        Returns ranked list by content marketing velocity.'
+      operationId: compare_cadence_scores_api_competitive_intel_cadence_compare_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/CompetitorScanRequest'
+              type: array
+              title: Competitors
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    CareersCadence:
+      properties:
+        total_jobs_found:
+          type: integer
+          title: Total Jobs Found
+          default: 0
+        engineering_jobs:
+          type: integer
+          title: Engineering Jobs
+          default: 0
+        sales_marketing_jobs:
+          type: integer
+          title: Sales Marketing Jobs
+          default: 0
+        other_jobs:
+          type: integer
+          title: Other Jobs
+          default: 0
+        careers_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Careers Url
+        sample_jobs:
+          items:
+            $ref: '#/components/schemas/JobPosting'
+          type: array
+          title: Sample Jobs
+        hiring_signal:
+          type: string
+          title: Hiring Signal
+          default: unknown
+        departments_hiring:
+          items:
+            type: string
+          type: array
+          title: Departments Hiring
+      type: object
+      title: CareersCadence
+      description: Careers/hiring activity metrics
+    ContentCadence:
+      properties:
+        blog_posts_last_30_days:
+          type: integer
+          title: Blog Posts Last 30 Days
+          default: 0
+        blog_posts_last_90_days:
+          type: integer
+          title: Blog Posts Last 90 Days
+          default: 0
+        most_recent_post_days_ago:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Most Recent Post Days Ago
+        recent_posts:
+          items:
+            $ref: '#/components/schemas/BlogPost'
+          type: array
+          title: Recent Posts
+        rss_available:
+          type: boolean
+          title: Rss Available
+          default: false
+        blog_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Blog Url
+      type: object
+      title: ContentCadence
+      description: Content publishing cadence metrics
+    MarketTrend:
+      properties:
+        trend:
+          type: string
+          title: Trend
+        impact:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Impact
+        timeframe:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timeframe
+      type: object
+      required:
+      - trend
+      title: MarketTrend
+      description: A market trend identified in the report
+    RedditMention:
+      properties:
+        subreddit:
+          type: string
+          title: Subreddit
+        title:
+          type: string
+          title: Title
+        url:
+          type: string
+          title: Url
+        score:
+          type: integer
+          title: Score
+        num_comments:
+          type: integer
+          title: Num Comments
+        created_utc:
+          type: number
+          title: Created Utc
+        sentiment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sentiment
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Snippet
+      type: object
+      required:
+      - subreddit
+      - title
+      - url
+      - score
+      - num_comments
+      - created_utc
+      title: RedditMention
+      description: A Reddit mention of a competitor
+    ExtractedMessagingFramework:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        value_proposition:
+          type: string
+          title: Value Proposition
+        positioning_statement:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Statement
+        target_audience:
+          type: string
+          title: Target Audience
+        key_differentiators:
+          items:
+            type: string
+          type: array
+          title: Key Differentiators
+        personas:
+          items:
+            $ref: '#/components/schemas/ExtractedPersona'
+          type: array
+          title: Personas
+        products:
+          items:
+            $ref: '#/components/schemas/ExtractedProduct'
+          type: array
+          title: Products
+        proof_points:
+          items:
+            type: string
+          type: array
+          title: Proof Points
+        competitive_claims:
+          items:
+            type: string
+          type: array
+          title: Competitive Claims
+        messaging_tone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Messaging Tone
+        extracted_at:
+          type: string
+          title: Extracted At
+        confidence_score:
+          type: number
+          title: Confidence Score
+          default: 0.0
+      type: object
+      required:
+      - company_name
+      - value_proposition
+      - target_audience
+      title: ExtractedMessagingFramework
+      description: Complete messaging framework extracted via Claude
+    CompetitorIntelReport:
+      properties:
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        scanned_at:
+          type: string
+          title: Scanned At
+        agent_readiness:
+          $ref: '#/components/schemas/AgentReadinessScore'
+        reddit_mentions:
+          items:
+            $ref: '#/components/schemas/RedditMention'
+          type: array
+          title: Reddit Mentions
+          default: []
+        reddit_summary:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Reddit Summary
+        github_health:
+          items:
+            $ref: '#/components/schemas/GitHubRepoHealth'
+          type: array
+          title: Github Health
+          default: []
+        overall_threat_level:
+          type: string
+          title: Overall Threat Level
+          default: unknown
+        insights:
+          items:
+            type: string
+          type: array
+          title: Insights
+          default: []
+      type: object
+      required:
+      - name
+      - domain
+      - scanned_at
+      - agent_readiness
+      title: CompetitorIntelReport
+      description: Full competitive intelligence report for a competitor
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AnalystReportExtraction:
+      properties:
+        report_name:
+          type: string
+          title: Report Name
+        analyst_firm:
+          type: string
+          title: Analyst Firm
+        report_type:
+          type: string
+          title: Report Type
+        publication_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Publication Date
+        market_category:
+          type: string
+          title: Market Category
+        vendor_mentions:
+          items:
+            $ref: '#/components/schemas/VendorMention'
+          type: array
+          title: Vendor Mentions
+        market_trends:
+          items:
+            $ref: '#/components/schemas/MarketTrend'
+          type: array
+          title: Market Trends
+        key_findings:
+          items:
+            type: string
+          type: array
+          title: Key Findings
+        recommendations:
+          items:
+            type: string
+          type: array
+          title: Recommendations
+        competitive_insights:
+          items:
+            type: string
+          type: array
+          title: Competitive Insights
+        extracted_at:
+          type: string
+          title: Extracted At
+      type: object
+      required:
+      - report_name
+      - analyst_firm
+      - report_type
+      - market_category
+      title: AnalystReportExtraction
+      description: Extracted insights from an analyst report
+    VendorMention:
+      properties:
+        vendor_name:
+          type: string
+          title: Vendor Name
+        ranking:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ranking
+        strengths:
+          items:
+            type: string
+          type: array
+          title: Strengths
+        weaknesses:
+          items:
+            type: string
+          type: array
+          title: Weaknesses
+        quote:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quote
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+      type: object
+      required:
+      - vendor_name
+      title: VendorMention
+      description: A vendor mentioned in an analyst report
+    PositioningComparison:
+      properties:
+        your_framework:
+          additionalProperties: true
+          type: object
+          title: Your Framework
+        competitor_framework:
+          $ref: '#/components/schemas/ExtractedMessagingFramework'
+        comparison_insights:
+          items:
+            type: string
+          type: array
+          title: Comparison Insights
+        differentiation_opportunities:
+          items:
+            type: string
+          type: array
+          title: Differentiation Opportunities
+        messaging_gaps:
+          items:
+            type: string
+          type: array
+          title: Messaging Gaps
+        competitive_advantages:
+          items:
+            type: string
+          type: array
+          title: Competitive Advantages
+        recommended_counter_positioning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recommended Counter Positioning
+      type: object
+      required:
+      - your_framework
+      - competitor_framework
+      title: PositioningComparison
+      description: Side-by-side positioning comparison
+    JobPosting:
+      properties:
+        title:
+          type: string
+          title: Title
+        department:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Department
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+      type: object
+      required:
+      - title
+      title: JobPosting
+      description: A detected job posting
+    GitHubRepoHealth:
+      properties:
+        repo:
+          type: string
+          title: Repo
+        stars:
+          type: integer
+          title: Stars
+          default: 0
+        open_issues:
+          type: integer
+          title: Open Issues
+          default: 0
+        recent_commits:
+          type: integer
+          title: Recent Commits
+          default: 0
+        contributors:
+          type: integer
+          title: Contributors
+          default: 0
+        last_commit_days_ago:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Last Commit Days Ago
+        top_issue_themes:
+          items:
+            type: string
+          type: array
+          title: Top Issue Themes
+          default: []
+        health_score:
+          type: integer
+          title: Health Score
+          default: 0
+      type: object
+      required:
+      - repo
+      title: GitHubRepoHealth
+      description: Health metrics for a GitHub repo
+    MarketObservabilityReport:
+      properties:
+        competitor_name:
+          type: string
+          title: Competitor Name
+        domain:
+          type: string
+          title: Domain
+        monitored_at:
+          type: string
+          title: Monitored At
+        messaging_framework:
+          anyOf:
+          - $ref: '#/components/schemas/ExtractedMessagingFramework'
+          - type: 'null'
+        agent_readiness:
+          anyOf:
+          - $ref: '#/components/schemas/AgentReadinessScore'
+          - type: 'null'
+        market_signals:
+          additionalProperties: true
+          type: object
+          title: Market Signals
+        positioning_comparison:
+          anyOf:
+          - $ref: '#/components/schemas/PositioningComparison'
+          - type: 'null'
+        strategic_recommendations:
+          items:
+            type: string
+          type: array
+          title: Strategic Recommendations
+      type: object
+      required:
+      - competitor_name
+      - domain
+      - monitored_at
+      title: MarketObservabilityReport
+      description: Complete marketing observability report
+    ExtractedProduct:
+      properties:
+        name:
+          type: string
+          title: Name
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        description:
+          type: string
+          title: Description
+        key_features:
+          items:
+            type: string
+          type: array
+          title: Key Features
+        differentiators:
+          items:
+            type: string
+          type: array
+          title: Differentiators
+      type: object
+      required:
+      - name
+      - description
+      title: ExtractedProduct
+      description: Product/offering extracted from competitor
+    AgentReadinessScore:
+      properties:
+        overall_score:
+          type: integer
+          title: Overall Score
+          description: 0-100 score
+        has_llms_txt:
+          type: boolean
+          title: Has Llms Txt
+          default: false
+        has_context_txt:
+          type: boolean
+          title: Has Context Txt
+          default: false
+        has_trust_txt:
+          type: boolean
+          title: Has Trust Txt
+          default: false
+        has_sitemap:
+          type: boolean
+          title: Has Sitemap
+          default: false
+        js_heavy:
+          type: boolean
+          title: Js Heavy
+          default: false
+        content_structure_score:
+          type: integer
+          title: Content Structure Score
+          default: 0
+        positioning_clarity:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Clarity
+        headline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Headline
+        issues:
+          items:
+            type: string
+          type: array
+          title: Issues
+          default: []
+        advantages:
+          items:
+            type: string
+          type: array
+          title: Advantages
+          default: []
+      type: object
+      required:
+      - overall_score
+      title: AgentReadinessScore
+      description: How AI-agent-friendly is this site?
+    CadenceScore:
+      properties:
+        overall_score:
+          type: integer
+          title: Overall Score
+          description: 0-100 cadence score
+        grade:
+          type: string
+          title: Grade
+          description: A, B, C, D, F grade
+        content_cadence:
+          $ref: '#/components/schemas/ContentCadence'
+        linkedin_cadence:
+          $ref: '#/components/schemas/LinkedInCadence'
+        careers_cadence:
+          anyOf:
+          - $ref: '#/components/schemas/CareersCadence'
+          - type: 'null'
+        insights:
+          items:
+            type: string
+          type: array
+          title: Insights
+        competitive_assessment:
+          type: string
+          title: Competitive Assessment
+          default: ''
+        scanned_at:
+          type: string
+          title: Scanned At
+      type: object
+      required:
+      - overall_score
+      - grade
+      - content_cadence
+      - linkedin_cadence
+      title: CadenceScore
+      description: Overall content marketing cadence score
+    ExtractedPersona:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Job title or role
+        description:
+          type: string
+          title: Description
+          description: Brief description
+        pain_points:
+          items:
+            type: string
+          type: array
+          title: Pain Points
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords
+      type: object
+      required:
+      - title
+      - description
+      title: ExtractedPersona
+      description: Persona extracted from competitor messaging
+    LinkedInCadence:
+      properties:
+        estimated_posts_per_month:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Estimated Posts Per Month
+        follower_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Follower Count
+        company_page_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Page Url
+        last_activity_detected:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Activity Detected
+        activity_level:
+          type: string
+          title: Activity Level
+          default: unknown
+      type: object
+      title: LinkedInCadence
+      description: LinkedIn activity metrics
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    BlogPost:
+      properties:
+        title:
+          type: string
+          title: Title
+        url:
+          type: string
+          title: Url
+        published_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Published Date
+        days_ago:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Days Ago
+        author:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author
+        author_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author Title
+      type: object
+      required:
+      - title
+      title: BlogPost
+      description: A detected blog post
+    Body_generate_observability_report_api_competitive_intel_monitor_full_report_post:
+      properties:
+        request:
+          $ref: '#/components/schemas/CompetitorScanRequest'
+        your_framework:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Your Framework
+      type: object
+      required:
+      - request
+      title: Body_generate_observability_report_api_competitive_intel_monitor_full_report_post
+    CompetitorScanRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Competitor name
+        domain:
+          type: string
+          title: Domain
+          description: Competitor domain (e.g., confluent.io)
+        github_repos:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Github Repos
+          description: GitHub repos to monitor (e.g., ['confluentinc/ksql'])
+        reddit_keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Reddit Keywords
+          description: Keywords to search on Reddit
+      type: object
+      required:
+      - name
+      - domain
+      title: CompetitorScanRequest
+      description: Request to scan a competitor
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

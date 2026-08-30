@@ -1,0 +1,775 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Attribution Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: attribution-intelligence
+  description: Connect signals to pipeline. Track which content and channels drive deals.
+paths:
+  /api/attribution/narratives:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: List Narratives
+      description: 'List all narratives for the organization.
+
+
+        Narratives are the different positioning/messaging tracks your company
+
+        is pursuing (e.g., "Kafka Alternative" vs "Agentic Data Plane").'
+      operationId: list_narratives_api_attribution_narratives_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: active_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Only return active narratives
+          default: true
+          title: Active Only
+        description: Only return active narratives
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Create Narrative
+      description: 'Create a new narrative to track.
+
+
+        Keywords are used to automatically classify signals and content
+
+        that belong to this narrative.'
+      operationId: create_narrative_api_attribution_narratives_post
+      security:
+      - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNarrativeRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/narratives/{narrative_id}:
+    delete:
+      tags:
+      - attribution-intelligence
+      summary: Delete Narrative
+      description: Soft-delete a narrative (sets is_active=False)
+      operationId: delete_narrative_api_attribution_narratives__narrative_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: narrative_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Narrative Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/reports/narrative:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Narrative Attribution Report
+      description: 'Get attribution metrics grouped by narrative.
+
+
+        Shows which narrative is driving the most:
+
+        - Signals (external mentions)
+
+        - Traffic (sessions)
+
+        - Conversions (MQLs)
+
+        - Pipeline ($)
+
+
+        This is the "which narrative should we invest in?" view.'
+      operationId: get_narrative_attribution_report_api_attribution_reports_narrative_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Number of days to analyze
+          default: 30
+          title: Days
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/reports/campaigns:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Campaign Performance Report
+      description: 'Get campaign performance with narrative attribution.
+
+
+        Shows for each campaign:
+
+        - Email metrics (sent, opened, clicked)
+
+        - Conversion metrics (MQLs, pipeline)
+
+        - Which narrative it supports'
+      operationId: get_campaign_performance_report_api_attribution_reports_campaigns_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/reports/gated-content:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Gated Content Report
+      description: 'Get gated content performance grouped by content group.
+
+
+        Shows for each piece of gated content:
+
+        - Views and downloads
+
+        - Conversion rate
+
+        - MQLs and attributed pipeline
+
+        - Which narrative it supports'
+      operationId: get_gated_content_report_api_attribution_reports_gated_content_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/attribution/reports/traffic-sources:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Traffic Attribution Report
+      description: 'Get traffic attribution showing which sources drive conversions.
+
+
+        Includes:
+
+        - Traffic by source/medium
+
+        - Conversion rates per source
+
+        - Attributed signals (e.g., "This HN post drove 500 visits")'
+      operationId: get_traffic_attribution_report_api_attribution_reports_traffic_sources_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/anomalies:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Traffic Anomalies
+      description: 'Get detected traffic anomalies (spikes, drops, new sources).
+
+
+        Returns unusual traffic patterns that may indicate:
+
+        - A post going viral
+
+        - Unexpected referral traffic
+
+        - Competitor mention driving traffic'
+      operationId: get_traffic_anomalies_api_attribution_anomalies_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/anomalies/{anomaly_id}/acknowledge:
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Acknowledge Anomaly
+      description: Mark a traffic anomaly as acknowledged
+      operationId: acknowledge_anomaly_api_attribution_anomalies__anomaly_id__acknowledge_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: anomaly_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Anomaly Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/sync/traffic:
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Sync Traffic Attribution
+      description: 'Sync traffic attribution from Google Analytics.
+
+
+        Pulls traffic sources and matches them to known signals.
+
+        Detects anomalies (unexpected spikes).'
+      operationId: sync_traffic_attribution_api_attribution_sync_traffic_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/sync/campaigns:
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Sync Campaign Performance
+      description: 'Sync campaign performance from HubSpot.
+
+
+        Pulls campaign metrics and attributes them to narratives.'
+      operationId: sync_campaign_performance_api_attribution_sync_campaigns_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/attribution/sync/gated-content:
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Sync Gated Content
+      description: 'Sync gated content performance from HubSpot.
+
+
+        Pulls content downloads, views, and conversion metrics.'
+      operationId: sync_gated_content_api_attribution_sync_gated_content_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/attribution/sync/snapshots:
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Generate Narrative Snapshots
+      description: 'Generate daily snapshots for all narratives.
+
+
+        This aggregates signals, traffic, and conversions by narrative.
+
+        Typically run once daily by a scheduled job.'
+      operationId: generate_narrative_snapshots_api_attribution_sync_snapshots_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/attribution/briefing:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Latest Briefing
+      description: 'Get the latest intelligence briefing.
+
+
+        Returns LLM-generated executive summary with:
+
+        - Narrative performance updates
+
+        - Competitor intelligence
+
+        - Campaign highlights
+
+        - Action items'
+      operationId: get_latest_briefing_api_attribution_briefing_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: briefing_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - daily
+          - weekly
+          default: daily
+          title: Briefing Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Generate Intelligence Briefing
+      description: 'Generate a new intelligence briefing using LLM.
+
+
+        Analyzes recent signals, campaigns, and traffic to produce
+
+        an executive summary with actionable insights.'
+      operationId: generate_intelligence_briefing_api_attribution_briefing_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: briefing_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - daily
+          - weekly
+          default: daily
+          title: Briefing Type
+      - name: use_llm
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Use LLM for intelligent briefing generation
+          default: true
+          title: Use Llm
+        description: Use LLM for intelligent briefing generation
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/briefing/community-digest:
+    get:
+      tags:
+      - attribution-intelligence
+      summary: Get Community Digest
+      description: 'Get the latest community digest for Reddit/HN discussions.
+
+
+        Returns AI-generated summary of community threads, content opportunities,
+
+        and posts from watched users.'
+      operationId: get_community_digest_api_attribution_briefing_community_digest_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: narrative_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter to specific narrative
+          title: Narrative Id
+        description: Filter to specific narrative
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Generate Community Digest
+      description: 'Generate a new community digest for Reddit/HN discussions.
+
+
+        For Content Strategists - surfaces discussion threads, themes, and
+
+        content opportunities from community platforms.
+
+
+        The digest includes:
+
+        - AI-generated summary of key discussions
+
+        - Thread highlights grouped by topic
+
+        - Posts from watched users (if configured on narrative)
+
+        - Content opportunities identified from discussions'
+      operationId: generate_community_digest_api_attribution_briefing_community_digest_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: narrative_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Scope to specific narrative
+          title: Narrative Id
+        description: Scope to specific narrative
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          description: Days to look back (default 7)
+          default: 7
+          title: Days
+        description: Days to look back (default 7)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attribution/signals/tag-narratives:
+    post:
+      tags:
+      - attribution-intelligence
+      summary: Tag Signals With Narratives
+      description: 'Bulk-tag existing signals with narrative IDs.
+
+
+        Run this after creating narratives to backfill narrative_id
+
+        on existing signals based on keyword matching.'
+      operationId: tag_signals_with_narratives_api_attribution_signals_tag_narratives_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          description: Days of signals to tag
+          default: 30
+          title: Days
+        description: Days of signals to tag
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CreateNarrativeRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords
+        competitor_keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitor Keywords
+          default: []
+        is_primary:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Primary
+          default: false
+        narrative_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Narrative Type
+          default: product
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        watched_reddit_users:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Watched Reddit Users
+          default: []
+        watched_hn_users:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Watched Hn Users
+          default: []
+      type: object
+      required:
+      - name
+      - keywords
+      title: CreateNarrativeRequest
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

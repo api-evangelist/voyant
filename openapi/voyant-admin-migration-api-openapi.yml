@@ -1,0 +1,222 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Admin Migration API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: admin-migration
+  description: Data migration and import tools.
+paths:
+  /api/admin/migration/import-json:
+    post:
+      tags:
+      - admin-migration
+      summary: Import Json Data
+      description: 'Import data from a JSON or gzipped JSON file.
+
+
+        Upload the scylladb_export.json.gz file to import all data.'
+      operationId: import_json_data_api_admin_migration_import_json_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_import_json_data_api_admin_migration_import_json_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/admin/migration/import-status/{import_id}:
+    get:
+      tags:
+      - admin-migration
+      summary: Get Import Status
+      description: Get status of a background import.
+      operationId: get_import_status_api_admin_migration_import_status__import_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: import_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Import Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/admin/migration/health:
+    get:
+      tags:
+      - admin-migration
+      summary: Migration Health
+      description: Health check for migration API.
+      operationId: migration_health_api_admin_migration_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/admin/migration/fix-embedding-dimension:
+    post:
+      tags:
+      - admin-migration
+      summary: Fix Embedding Dimension
+      description: 'Fix embedding dimension from 1536 to 512 for Voyage AI compatibility.
+
+
+        Production was set up with 1536-dim (OpenAI) but we use Voyage AI (512-dim).'
+      operationId: fix_embedding_dimension_api_admin_migration_fix_embedding_dimension_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/admin/migration/regenerate-embeddings/{org_id}:
+    post:
+      tags:
+      - admin-migration
+      summary: Regenerate Embeddings
+      description: 'Regenerate embeddings for content chunks that have NULL embeddings.
+
+
+        This is useful after importing data that was created with different
+
+        embedding dimensions (e.g., 512-dim Voyage AI vs 1536-dim OpenAI).'
+      operationId: regenerate_embeddings_api_admin_migration_regenerate_embeddings__org_id__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Body_import_json_data_api_admin_migration_import_json_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_import_json_data_api_admin_migration_import_json_post
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

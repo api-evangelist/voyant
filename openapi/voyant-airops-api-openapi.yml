@@ -1,0 +1,311 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Airops API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: airops
+  description: AirOps integration for workflow automation.
+paths:
+  /api/airops/status:
+    get:
+      tags:
+      - airops
+      summary: Get Airops Status
+      description: Check AirOps integration status.
+      operationId: get_airops_status_api_airops_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/airops/sync/messaging-framework:
+    post:
+      tags:
+      - airops
+      summary: Sync Messaging Framework
+      description: 'Sync the Messaging Framework context stream to AirOps vector store.
+
+
+        Pushes personas, use cases, products, and positioning documents.'
+      operationId: sync_messaging_framework_api_airops_sync_messaging_framework_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+      security:
+      - HTTPBearer: []
+  /api/airops/sync/all-streams:
+    post:
+      tags:
+      - airops
+      summary: Sync All Streams
+      description: 'Sync all context streams to AirOps vector store.
+
+
+        Pushes:
+
+        - Messaging Framework (personas, use cases, products, positioning)
+
+        - Competitor Intelligence
+
+        - Social Signals'
+      operationId: sync_all_streams_api_airops_sync_all_streams_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+      security:
+      - HTTPBearer: []
+  /api/airops/push-chunks:
+    post:
+      tags:
+      - airops
+      summary: Push Chunks To Airops
+      description: 'Push specific context stream chunks to AirOps.
+
+
+        This gives fine-grained control over what gets synced.'
+      operationId: push_chunks_to_airops_api_airops_push_chunks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushChunksRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/airops/search:
+    post:
+      tags:
+      - airops
+      summary: Search Airops
+      description: 'Search the AirOps vector store.
+
+
+        Returns semantically similar documents to the query.'
+      operationId: search_airops_api_airops_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/airops/export/content-topics:
+    get:
+      tags:
+      - airops
+      summary: Export Content Topics Csv
+      description: Export content topics as CSV for AirOps Grid import.
+      operationId: export_content_topics_csv_api_airops_export_content_topics_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/airops/export/geo-prompts:
+    get:
+      tags:
+      - airops
+      summary: Export Geo Prompts Csv
+      description: Export GEO prompts as CSV for AirOps Grid import.
+      operationId: export_geo_prompts_csv_api_airops_export_geo_prompts_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/airops/export/full-grid:
+    get:
+      tags:
+      - airops
+      summary: Export Full Content Grid Csv
+      description: 'Export comprehensive content grid CSV for AirOps.
+
+
+        Creates a Persona × Use Case × Product matrix with all workflow columns.'
+      operationId: export_full_content_grid_csv_api_airops_export_full_grid_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    PushChunksRequest:
+      properties:
+        stream_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stream Name
+          default: Messaging Framework
+        limit:
+          type: integer
+          title: Limit
+          default: 50
+      type: object
+      title: PushChunksRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        top_k:
+          type: integer
+          title: Top K
+          default: 5
+        context_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Type
+      type: object
+      required:
+      - query
+      title: SearchRequest
+    SyncResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        message:
+          type: string
+          title: Message
+        documents_synced:
+          type: integer
+          title: Documents Synced
+          default: 0
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+          default: {}
+      type: object
+      required:
+      - success
+      - message
+      title: SyncResponse
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

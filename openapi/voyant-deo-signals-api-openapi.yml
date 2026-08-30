@@ -1,0 +1,964 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO DEO Signals API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: DEO Signals
+  description: Developer Experience Optimization - track AI agent interactions, RAG queries, and tool integrations with your content.
+paths:
+  /api/deo/ingest:
+    post:
+      tags:
+      - DEO Signals
+      summary: Ingest Deo Events
+      description: 'Ingest DEO events from an instrumented source.
+
+
+        This is the primary endpoint for MCP servers, APIs, SDKs, etc.
+
+        to report their interactions.
+
+
+        Multi-tenancy: org_id is resolved in this order:
+
+        1. From request.org_id if provided directly
+
+        2. From DEOSource lookup using request.source_id
+
+        3. Falls back to "default" for unregistered sources
+
+
+        Privacy: All data is sanitized to remove PII, secrets, and sensitive information.
+
+        Session IDs are anonymized via hashing.'
+      operationId: ingest_deo_events_api_deo_ingest_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DEOIngestRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DEOIngestResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/agents:
+    get:
+      tags:
+      - DEO Signals
+      summary: List Agents
+      description: List AI agents that have interacted with your product
+      operationId: list_agents_api_deo_agents_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: agent_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Type
+      - name: journey_stage
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Journey Stage
+      - name: converted_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Converted Only
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgentSummary'
+                title: Response List Agents Api Deo Agents Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/stats:
+    get:
+      tags:
+      - DEO Signals
+      summary: Get Dashboard Stats
+      description: Get DEO dashboard statistics
+      operationId: get_dashboard_stats_api_deo_stats_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DEODashboardStats'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/interactions:
+    get:
+      tags:
+      - DEO Signals
+      summary: List Interactions
+      description: List DEO interactions
+      operationId: list_interactions_api_deo_interactions_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: agent_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Id
+      - name: touchpoint
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Touchpoint
+      - name: success_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Success Only
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/sources/register:
+    post:
+      tags:
+      - DEO Signals
+      summary: Register Deo Source
+      description: Register a new DEO source (MCP server, API, SDK, etc.)
+      operationId: register_deo_source_api_deo_sources_register_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: source_name
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Source Name
+      - name: touchpoint
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Touchpoint
+      - name: telemetry_endpoint
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Telemetry Endpoint
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/sources:
+    get:
+      tags:
+      - DEO Signals
+      summary: List Deo Sources
+      description: List registered DEO sources
+      operationId: list_deo_sources_api_deo_sources_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/deo/v1/traces:
+    post:
+      tags:
+      - DEO Signals
+      summary: Ingest Otlp Traces
+      description: 'OTLP/JSON trace ingestion endpoint.
+
+
+        Accepts standard OpenTelemetry Protocol JSON format.
+
+        Maps OTel spans to DEO interactions.
+
+
+        Semantic conventions used:
+
+        - service.name → source_name
+
+        - mcp.tool.name → tool_name
+
+        - rpc.method → action
+
+        - mcp.server.id → mcp_server_id'
+      operationId: ingest_otlp_traces_api_deo_v1_traces_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTLPTraceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/mcp-telemetry:
+    post:
+      tags:
+      - DEO Signals
+      summary: Ingest Mcp Telemetry
+      description: "General-purpose MCP telemetry ingestion endpoint.\n\nThis endpoint accepts the standard MCP telemetry format used by\nany instrumented MCP server. It translates the events to DEO format\nand processes them through the DEO pipeline.\n\nFormat:\n```json\n{\n  \"events\": [\n    {\n      \"eventType\": \"query|connection|schema_discovery|optimization\",\n      \"eventData\": {\n        \"tool\": \"tool-name\",\n        \"action\": \"action-name\",\n        \"duration_ms\": 100,\n        \"result\": \"success|failure\",\n        \"metadata\": {...}\n      },\n      \"context\": {\n        \"sessionId\": \"session_xxx\",\n        \"mcpServerId\": \"mcp_xxx\",\n        \"environment\": \"production\",\n        \"timestamp\": \"2026-02-07T...\"\n      }\n    }\n  ]\n}\n```\n\nMulti-tenancy:\n- If source_id is provided, org_id is resolved from DEOSource\n- Otherwise, uses \"default\" org (useful for open-source MCP servers)"
+      operationId: ingest_mcp_telemetry_api_deo_mcp_telemetry_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCPTelemetryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/v1/telemetry/events:
+    post:
+      tags:
+      - DEO Signals
+      summary: Ingest Mcp Telemetry
+      description: "General-purpose MCP telemetry ingestion endpoint.\n\nThis endpoint accepts the standard MCP telemetry format used by\nany instrumented MCP server. It translates the events to DEO format\nand processes them through the DEO pipeline.\n\nFormat:\n```json\n{\n  \"events\": [\n    {\n      \"eventType\": \"query|connection|schema_discovery|optimization\",\n      \"eventData\": {\n        \"tool\": \"tool-name\",\n        \"action\": \"action-name\",\n        \"duration_ms\": 100,\n        \"result\": \"success|failure\",\n        \"metadata\": {...}\n      },\n      \"context\": {\n        \"sessionId\": \"session_xxx\",\n        \"mcpServerId\": \"mcp_xxx\",\n        \"environment\": \"production\",\n        \"timestamp\": \"2026-02-07T...\"\n      }\n    }\n  ]\n}\n```\n\nMulti-tenancy:\n- If source_id is provided, org_id is resolved from DEOSource\n- Otherwise, uses \"default\" org (useful for open-source MCP servers)"
+      operationId: ingest_mcp_telemetry_api_deo_v1_telemetry_events_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCPTelemetryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/deo/funnel:
+    get:
+      tags:
+      - DEO Signals
+      summary: Get Journey Funnel
+      description: Get the DEO journey funnel with conversion rates between stages
+      operationId: get_journey_funnel_api_deo_funnel_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    MCPEventContext:
+      properties:
+        sessionId:
+          type: string
+          title: Sessionid
+        mcpServerId:
+          type: string
+          title: Mcpserverid
+        environment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Environment
+        timestamp:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timestamp
+      type: object
+      required:
+      - sessionId
+      - mcpServerId
+      title: MCPEventContext
+      description: Context from standard MCP telemetry format
+    AgentSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        agent_type:
+          type: string
+          title: Agent Type
+        journey_stage:
+          type: string
+          title: Journey Stage
+        total_interactions:
+          type: integer
+          title: Total Interactions
+        successful_interactions:
+          type: integer
+          title: Successful Interactions
+        tools_used:
+          items:
+            type: string
+          type: array
+          title: Tools Used
+        first_seen_at:
+          type: string
+          title: First Seen At
+        last_seen_at:
+          type: string
+          title: Last Seen At
+        converted_to_human:
+          type: boolean
+          title: Converted To Human
+        time_to_first_value_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Time To First Value Seconds
+      type: object
+      required:
+      - id
+      - agent_type
+      - journey_stage
+      - total_interactions
+      - successful_interactions
+      - tools_used
+      - first_seen_at
+      - last_seen_at
+      - converted_to_human
+      title: AgentSummary
+      description: Summary of an AI agent
+    DEOIngestRequest:
+      properties:
+        source_id:
+          type: string
+          title: Source Id
+        source_name:
+          type: string
+          title: Source Name
+        touchpoint:
+          type: string
+          title: Touchpoint
+        org_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Org Id
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+        user_agent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: User Agent
+        agent_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Type
+        agent_confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Agent Confidence
+        events:
+          items:
+            $ref: '#/components/schemas/DEOEventPayload'
+          type: array
+          title: Events
+        mcp_server_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mcp Server Version
+        sdk_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sdk Version
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+      type: object
+      required:
+      - source_id
+      - source_name
+      - touchpoint
+      - events
+      title: DEOIngestRequest
+      description: Batch ingest request from an instrumented source
+    MCPTelemetryEvent:
+      properties:
+        eventType:
+          type: string
+          title: Eventtype
+        eventData:
+          $ref: '#/components/schemas/MCPEventData'
+        context:
+          $ref: '#/components/schemas/MCPEventContext'
+      type: object
+      required:
+      - eventType
+      - eventData
+      - context
+      title: MCPTelemetryEvent
+      description: Single event in standard MCP telemetry format
+    DEODashboardStats:
+      properties:
+        total_agents:
+          type: integer
+          title: Total Agents
+        total_interactions:
+          type: integer
+          title: Total Interactions
+        agent_breakdown:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Agent Breakdown
+        touchpoint_breakdown:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Touchpoint Breakdown
+        journey_funnel:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Journey Funnel
+        success_rate:
+          type: number
+          title: Success Rate
+        avg_response_time_ms:
+          type: number
+          title: Avg Response Time Ms
+        conversion_rate:
+          type: number
+          title: Conversion Rate
+        competitive_win_rate:
+          type: number
+          title: Competitive Win Rate
+      type: object
+      required:
+      - total_agents
+      - total_interactions
+      - agent_breakdown
+      - touchpoint_breakdown
+      - journey_funnel
+      - success_rate
+      - avg_response_time_ms
+      - conversion_rate
+      - competitive_win_rate
+      title: DEODashboardStats
+      description: Dashboard statistics
+    MCPEventData:
+      properties:
+        tool:
+          type: string
+          title: Tool
+        action:
+          type: string
+          title: Action
+        duration_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Ms
+          default: 0
+        result:
+          type: string
+          title: Result
+          default: success
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+      type: object
+      required:
+      - tool
+      - action
+      title: MCPEventData
+      description: Event data from standard MCP telemetry format
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    OTLPTraceRequest:
+      properties:
+        resourceSpans:
+          items:
+            $ref: '#/components/schemas/OTLPResourceSpans'
+          type: array
+          title: Resourcespans
+          default: []
+      type: object
+      title: OTLPTraceRequest
+      description: OTLP/JSON trace export request
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DEOIngestResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        events_processed:
+          type: integer
+          title: Events Processed
+        agent_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Id
+        session_id:
+          type: string
+          title: Session Id
+        journey_stage:
+          type: string
+          title: Journey Stage
+        milestones_reached:
+          items:
+            type: string
+          type: array
+          title: Milestones Reached
+          default: []
+      type: object
+      required:
+      - success
+      - events_processed
+      - session_id
+      - journey_stage
+      title: DEOIngestResponse
+      description: Response from ingest endpoint
+    OTLPResourceSpans:
+      properties:
+        resource:
+          anyOf:
+          - $ref: '#/components/schemas/OTLPResource'
+          - type: 'null'
+        scopeSpans:
+          items:
+            $ref: '#/components/schemas/OTLPScopeSpans'
+          type: array
+          title: Scopespans
+          default: []
+      type: object
+      title: OTLPResourceSpans
+      description: OTLP resource with scope spans
+    OTLPSpan:
+      properties:
+        traceId:
+          type: string
+          title: Traceid
+        spanId:
+          type: string
+          title: Spanid
+        parentSpanId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parentspanid
+        name:
+          type: string
+          title: Name
+        kind:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Kind
+          default: 1
+        startTimeUnixNano:
+          type: string
+          title: Starttimeunixnano
+        endTimeUnixNano:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Endtimeunixnano
+        attributes:
+          items:
+            $ref: '#/components/schemas/OTLPAttribute'
+          type: array
+          title: Attributes
+          default: []
+        status:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Status
+      type: object
+      required:
+      - traceId
+      - spanId
+      - name
+      - startTimeUnixNano
+      title: OTLPSpan
+      description: OTLP span
+    MCPTelemetryRequest:
+      properties:
+        events:
+          items:
+            $ref: '#/components/schemas/MCPTelemetryEvent'
+          type: array
+          title: Events
+        source_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Id
+        source_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Name
+        user_agent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: User Agent
+      type: object
+      required:
+      - events
+      title: MCPTelemetryRequest
+      description: 'Standard MCP telemetry batch request.
+
+
+        This is the format used by instrumented MCP servers.
+
+        Any MCP server can use this format to report telemetry.'
+    OTLPScope:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
+      type: object
+      title: OTLPScope
+      description: OTLP instrumentation scope
+    OTLPScopeSpans:
+      properties:
+        scope:
+          anyOf:
+          - $ref: '#/components/schemas/OTLPScope'
+          - type: 'null'
+        spans:
+          items:
+            $ref: '#/components/schemas/OTLPSpan'
+          type: array
+          title: Spans
+          default: []
+      type: object
+      title: OTLPScopeSpans
+      description: OTLP scope with spans
+    OTLPResource:
+      properties:
+        attributes:
+          items:
+            $ref: '#/components/schemas/OTLPAttribute'
+          type: array
+          title: Attributes
+          default: []
+      type: object
+      title: OTLPResource
+      description: OTLP resource
+    OTLPAttribute:
+      properties:
+        key:
+          type: string
+          title: Key
+        value:
+          additionalProperties: true
+          type: object
+          title: Value
+      type: object
+      required:
+      - key
+      - value
+      title: OTLPAttribute
+      description: OTLP attribute value wrapper
+    DEOEventPayload:
+      properties:
+        event_type:
+          type: string
+          title: Event Type
+        touchpoint:
+          type: string
+          title: Touchpoint
+        action:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action
+        tool_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tool Name
+        endpoint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Endpoint
+        method:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Method
+        duration_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Ms
+        success:
+          type: boolean
+          title: Success
+          default: true
+        error_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Type
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+        journey_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Journey Stage
+        is_milestone:
+          type: boolean
+          title: Is Milestone
+          default: false
+        milestone_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Name
+        competitors_evaluated:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitors Evaluated
+        properties:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Properties
+        timestamp:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timestamp
+      type: object
+      required:
+      - event_type
+      - touchpoint
+      title: DEOEventPayload
+      description: Single DEO event from an instrumented touchpoint
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

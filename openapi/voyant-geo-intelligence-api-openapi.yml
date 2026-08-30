@@ -1,0 +1,638 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO GEO Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: GEO Intelligence
+  description: Advanced GEO analytics with Google Search Console integration.
+paths:
+  /api/geo-intelligence/dashboard:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Intelligence Dashboard
+      description: 'Get the complete GEO Intelligence dashboard.
+
+
+        Returns:
+
+        - Summary stats (prompts, visibility, monitoring)
+
+        - Visibility trend over time
+
+        - Hot topics from GSC + GEO
+
+        - Visibility gaps (opportunities)
+
+        - Content recommendations
+
+        - Top performing prompts
+
+        - Prompts needing improvement'
+      operationId: get_intelligence_dashboard_api_geo_intelligence_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Intelligence Dashboard Api Geo Intelligence Dashboard Get
+      security:
+      - HTTPBearer: []
+  /api/geo-intelligence/hot-topics:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Hot Topics
+      description: 'Get hot topics based on GSC data + GEO visibility.
+
+
+        Hot topics are high-impression queries where AI visibility
+
+        is low or unknown - your biggest opportunities.'
+      operationId: get_hot_topics_api_geo_intelligence_hot_topics_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 7
+          default: 30
+          title: Days
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 5
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HotTopicResponse'
+                title: Response Get Hot Topics Api Geo Intelligence Hot Topics Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/visibility-gaps:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Visibility Gaps
+      description: 'Get visibility gaps - topics with high search demand but low AI visibility.
+
+
+        These are your biggest opportunities to improve AI presence.'
+      operationId: get_visibility_gaps_api_geo_intelligence_visibility_gaps_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/InsightResponse'
+                type: array
+                title: Response Get Visibility Gaps Api Geo Intelligence Visibility Gaps Get
+      security:
+      - HTTPBearer: []
+  /api/geo-intelligence/competitor-insights:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Competitor Insights
+      description: 'Get insights on where competitors are being mentioned by AI instead of you.
+
+
+        If competitors not provided, automatically fetches from your tracked competitors
+
+        in the Competitive Intelligence system.'
+      operationId: get_competitor_insights_api_geo_intelligence_competitor_insights_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: competitors
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+          description: Competitor names (auto-fetched if not provided)
+          title: Competitors
+        description: Competitor names (auto-fetched if not provided)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsightResponse'
+                title: Response Get Competitor Insights Api Geo Intelligence Competitor Insights Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/recommendations:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Recommendations
+      description: 'Get actionable content recommendations based on GEO + GSC intelligence.
+
+
+        Returns prioritized list of:
+
+        - Content to create (visibility gaps)
+
+        - Prompts to add (untested topics)
+
+        - Content to optimize (low visibility)'
+      operationId: get_recommendations_api_geo_intelligence_recommendations_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 25
+          minimum: 5
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecommendationResponse'
+                title: Response Get Recommendations Api Geo Intelligence Recommendations Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/prompts/generate-from-gsc:
+    post:
+      tags:
+      - GEO Intelligence
+      summary: Generate Prompts From Gsc
+      description: 'Generate GEO prompts from GSC search queries.
+
+
+        This creates prompts from your actual search traffic,
+
+        ensuring you''re testing what people actually search for.'
+      operationId: generate_prompts_from_gsc_api_geo_intelligence_prompts_generate_from_gsc_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: topic_filter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic Filter
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 5
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Generate Prompts From Gsc Api Geo Intelligence Prompts Generate From Gsc Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/stream:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Geo Activity Stream
+      description: 'Get the GEO activity stream - recent test results, visibility changes, insights.
+
+
+        This is the real-time feed of GEO intelligence activity.'
+      operationId: get_geo_activity_stream_api_geo_intelligence_stream_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 10
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Geo Activity Stream Api Geo Intelligence Stream Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/gsc/sync:
+    post:
+      tags:
+      - GEO Intelligence
+      summary: Sync Gsc Queries
+      description: 'Sync search queries from Google Search Console.
+
+
+        This pulls your top search queries and stores them for
+
+        hot topic analysis and prompt generation.'
+      operationId: sync_gsc_queries_api_geo_intelligence_gsc_sync_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 7
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Sync Gsc Queries Api Geo Intelligence Gsc Sync Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/gsc/status:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Gsc Status
+      description: Check GSC connection status and query stats.
+      operationId: get_gsc_status_api_geo_intelligence_gsc_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Gsc Status Api Geo Intelligence Gsc Status Get
+      security:
+      - HTTPBearer: []
+  /api/geo-intelligence/daily-report:
+    get:
+      tags:
+      - GEO Intelligence
+      summary: Get Daily Report
+      description: 'Generate a daily GEO intelligence report.
+
+
+        - format=json: Returns structured report data
+
+        - format=slack: Returns Slack Block Kit formatted message'
+      operationId: get_daily_report_api_geo_intelligence_daily_report_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - json
+          - slack
+          default: json
+          title: Format
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Daily Report Api Geo Intelligence Daily Report Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/geo-intelligence/send-slack-report:
+    post:
+      tags:
+      - GEO Intelligence
+      summary: Send Slack Report
+      description: 'Generate and send the daily GEO report to Slack.
+
+
+        Requires a Slack incoming webhook URL.'
+      operationId: send_slack_report_api_geo_intelligence_send_slack_report_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: webhook_url
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Webhook Url
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Send Slack Report Api Geo Intelligence Send Slack Report Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    InsightResponse:
+      properties:
+        insight_type:
+          type: string
+          title: Insight Type
+        priority:
+          type: string
+          title: Priority
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        topic:
+          type: string
+          title: Topic
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+        recommendations:
+          items:
+            type: string
+          type: array
+          title: Recommendations
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - insight_type
+      - priority
+      - title
+      - description
+      - topic
+      - data
+      - recommendations
+      - created_at
+      title: InsightResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RecommendationResponse:
+      properties:
+        type:
+          type: string
+          title: Type
+        priority:
+          type: string
+          title: Priority
+        title:
+          type: string
+          title: Title
+        reason:
+          type: string
+          title: Reason
+        suggested_format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Format
+        target_keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Keywords
+        suggested_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Prompt
+        suggested_actions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Suggested Actions
+      type: object
+      required:
+      - type
+      - priority
+      - title
+      - reason
+      title: RecommendationResponse
+    HotTopicResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        topic_cluster:
+          type: string
+          title: Topic Cluster
+        impressions:
+          type: integer
+          title: Impressions
+        clicks:
+          type: integer
+          title: Clicks
+        ctr:
+          type: number
+          title: Ctr
+        position:
+          type: number
+          title: Position
+        trend:
+          type: string
+          title: Trend
+        visibility_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Visibility Score
+        ai_mentions:
+          type: integer
+          title: Ai Mentions
+        competitor_mentions:
+          items:
+            type: string
+          type: array
+          title: Competitor Mentions
+        last_tested:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Tested
+      type: object
+      required:
+      - query
+      - topic_cluster
+      - impressions
+      - clicks
+      - ctr
+      - position
+      - trend
+      - visibility_score
+      - ai_mentions
+      - competitor_mentions
+      - last_tested
+      title: HotTopicResponse
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

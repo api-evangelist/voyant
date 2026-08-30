@@ -1,0 +1,642 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Video Script Management API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Video Script Management
+  description: Manage and version video scripts.
+paths:
+  /api/video-script-management/save:
+    post:
+      tags:
+      - Video Script Management
+      summary: Save Video Script
+      description: 'Save a generated video script for review and editing.
+
+
+        This allows users to review AI-generated scripts before creating videos.'
+      operationId: save_video_script_api_video_script_management_save_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveVideoScriptRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedVideoScriptDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/video-script-management/scripts:
+    get:
+      tags:
+      - Video Script Management
+      summary: Get Saved Scripts
+      description: 'Get user''s saved video scripts.
+
+
+        Optionally filter by status: draft, under_review, approved, rejected'
+      operationId: get_saved_scripts_api_video_script_management_scripts_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VideoScriptSummary'
+                title: Response Get Saved Scripts Api Video Script Management Scripts Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/video-script-management/scripts/{script_id}:
+    get:
+      tags:
+      - Video Script Management
+      summary: Get Script Detail
+      description: Get detailed view of a specific saved script.
+      operationId: get_script_detail_api_video_script_management_scripts__script_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: script_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Script Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedVideoScriptDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - Video Script Management
+      summary: Edit Video Script
+      description: 'Edit a saved video script.
+
+
+        This resets the script status to ''draft'' after editing.'
+      operationId: edit_video_script_api_video_script_management_scripts__script_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: script_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Script Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditVideoScriptRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedVideoScriptDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/video-script-management/scripts/{script_id}/review:
+    post:
+      tags:
+      - Video Script Management
+      summary: Review Video Script
+      description: 'Review a video script (approve, reject, or request revision).
+
+
+        Available statuses: approved, rejected, needs_revision'
+      operationId: review_video_script_api_video_script_management_scripts__script_id__review_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: script_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Script Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewVideoScriptRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedVideoScriptDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/video-script-management/scripts/{script_id}/generate-video:
+    post:
+      tags:
+      - Video Script Management
+      summary: Generate Video From Script
+      description: 'Generate video from an approved script.
+
+
+        This endpoint creates a video using the saved script content.'
+      operationId: generate_video_from_script_api_video_script_management_scripts__script_id__generate_video_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: script_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Script Id
+      - name: avatar_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: default_presenter
+          title: Avatar Id
+      - name: voice_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: professional_male
+          title: Voice Id
+      - name: background_style
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: office
+          title: Background Style
+      - name: template_style
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: dynamic
+          title: Template Style
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/video-script-management/health:
+    get:
+      tags:
+      - Video Script Management
+      summary: Video Script Management Health
+      description: Health check for video script management service
+      operationId: video_script_management_health_api_video_script_management_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    EditVideoScriptRequest:
+      properties:
+        script_text:
+          type: string
+          title: Script Text
+          description: Updated script text
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Updated title
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+          description: Edit notes
+      type: object
+      required:
+      - script_text
+      title: EditVideoScriptRequest
+      description: Request to edit a saved video script
+    VideoScriptResponse:
+      properties:
+        script_id:
+          type: string
+          title: Script Id
+        company_name:
+          type: string
+          title: Company Name
+        company_domain:
+          type: string
+          title: Company Domain
+        total_duration:
+          type: integer
+          title: Total Duration
+        script_text:
+          type: string
+          title: Script Text
+        scenes:
+          items:
+            $ref: '#/components/schemas/VideoScene'
+          type: array
+          title: Scenes
+        generated_at:
+          type: string
+          title: Generated At
+        content_sources:
+          items:
+            type: string
+          type: array
+          title: Content Sources
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - script_id
+      - company_name
+      - company_domain
+      - total_duration
+      - script_text
+      - scenes
+      - generated_at
+      - content_sources
+      - metadata
+      title: VideoScriptResponse
+      description: Generated video script response
+    ReviewVideoScriptRequest:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: 'Review status: approved, rejected, needs_revision'
+        review_notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Review Notes
+          description: Review feedback
+        rating:
+          anyOf:
+          - type: number
+            maximum: 5.0
+            minimum: 1.0
+          - type: 'null'
+          title: Rating
+          description: Quality rating 1-5
+      type: object
+      required:
+      - status
+      title: ReviewVideoScriptRequest
+      description: Request to review a video script
+    VideoScene:
+      properties:
+        scene_id:
+          type: string
+          title: Scene Id
+        duration:
+          type: integer
+          title: Duration
+        scene_type:
+          type: string
+          title: Scene Type
+        script_text:
+          type: string
+          title: Script Text
+        visual_notes:
+          type: string
+          title: Visual Notes
+        timestamp_start:
+          type: integer
+          title: Timestamp Start
+        timestamp_end:
+          type: integer
+          title: Timestamp End
+      type: object
+      required:
+      - scene_id
+      - duration
+      - scene_type
+      - script_text
+      - visual_notes
+      - timestamp_start
+      - timestamp_end
+      title: VideoScene
+      description: Individual video scene
+    SaveVideoScriptRequest:
+      properties:
+        script_response:
+          $ref: '#/components/schemas/VideoScriptResponse'
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Custom title for the script
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+          description: User notes about the script
+      type: object
+      required:
+      - script_response
+      title: SaveVideoScriptRequest
+      description: Request to save a video script
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    VideoScriptSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        script_id:
+          type: string
+          title: Script Id
+        title:
+          type: string
+          title: Title
+        company_name:
+          type: string
+          title: Company Name
+        status:
+          type: string
+          title: Status
+        funnel_stage:
+          type: string
+          title: Funnel Stage
+        duration:
+          type: integer
+          title: Duration
+        created_at:
+          type: string
+          title: Created At
+        updated_at:
+          type: string
+          title: Updated At
+        video_generated:
+          type: boolean
+          title: Video Generated
+        user_rating:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: User Rating
+      type: object
+      required:
+      - id
+      - script_id
+      - title
+      - company_name
+      - status
+      - funnel_stage
+      - duration
+      - created_at
+      - updated_at
+      - video_generated
+      - user_rating
+      title: VideoScriptSummary
+      description: Summary of a saved video script
+    SavedVideoScriptDetail:
+      properties:
+        id:
+          type: string
+          title: Id
+        script_id:
+          type: string
+          title: Script Id
+        title:
+          type: string
+          title: Title
+        company_name:
+          type: string
+          title: Company Name
+        company_domain:
+          type: string
+          title: Company Domain
+        script_text:
+          type: string
+          title: Script Text
+        original_script:
+          type: string
+          title: Original Script
+        total_duration:
+          type: integer
+          title: Total Duration
+        funnel_stage:
+          type: string
+          title: Funnel Stage
+        tone:
+          type: string
+          title: Tone
+        status:
+          type: string
+          title: Status
+        review_notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Review Notes
+        user_rating:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: User Rating
+        user_feedback:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: User Feedback
+        content_sources:
+          items:
+            type: string
+          type: array
+          title: Content Sources
+        video_generated:
+          type: boolean
+          title: Video Generated
+        video_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Video Id
+        created_at:
+          type: string
+          title: Created At
+        updated_at:
+          type: string
+          title: Updated At
+        last_edited_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Edited At
+      type: object
+      required:
+      - id
+      - script_id
+      - title
+      - company_name
+      - company_domain
+      - script_text
+      - original_script
+      - total_duration
+      - funnel_stage
+      - tone
+      - status
+      - review_notes
+      - user_rating
+      - user_feedback
+      - content_sources
+      - video_generated
+      - video_id
+      - created_at
+      - updated_at
+      - last_edited_at
+      title: SavedVideoScriptDetail
+      description: Detailed view of a saved video script
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

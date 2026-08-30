@@ -1,0 +1,194 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Analytics API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: analytics
+  description: Platform analytics and usage metrics.
+paths:
+  /api/analytics/config:
+    get:
+      tags:
+      - analytics
+      summary: Get Google Analytics Config
+      description: Return the GA4 configuration saved for the current org.
+      operationId: get_google_analytics_config_api_analytics_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GAConfigResponse'
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - analytics
+      summary: Save Google Analytics Config
+      description: Persist the GA4 property and credentials for this organization.
+      operationId: save_google_analytics_config_api_analytics_config_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GAConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: boolean
+                type: object
+                title: Response Save Google Analytics Config Api Analytics Config Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/analytics/config/test:
+    get:
+      tags:
+      - analytics
+      summary: Test Google Analytics Connection
+      description: Run a minimal GA4 query to verify this org's credentials + property ID.
+      operationId: test_google_analytics_connection_api_analytics_config_test_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GAConfigResponse:
+      properties:
+        property_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Property Id
+        credentials_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Credentials Path
+        has_service_account:
+          type: boolean
+          title: Has Service Account
+          default: false
+      type: object
+      required:
+      - property_id
+      - credentials_path
+      title: GAConfigResponse
+    GAConfigRequest:
+      properties:
+        property_id:
+          type: string
+          title: Property Id
+          description: GA4 Property ID (numeric value)
+        credentials_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Credentials Path
+          description: Local filesystem path to a Google service account JSON file (optional)
+        service_account_json:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Service Account Json
+          description: Service account JSON payload for authentication (optional)
+      type: object
+      required:
+      - property_id
+      title: GAConfigRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

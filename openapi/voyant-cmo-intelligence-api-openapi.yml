@@ -1,0 +1,425 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Cmo Intelligence API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: cmo-intelligence
+  description: 'Executive-level metrics: AI readiness score, signal pulse, pipeline attribution.'
+paths:
+  /api/cmo/ai-readiness:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Ai Readiness Score
+      description: 'Get AI Readiness Score (0-100).
+
+
+        Measures how prepared your organization is for the agentic web:
+
+        - llms.txt presence and quality
+
+        - MCP server traffic
+
+        - AI agent visits
+
+        - Markdown coverage
+
+        - Context stream freshness'
+      operationId: get_ai_readiness_score_api_cmo_ai_readiness_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/cmo/signal-pulse:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Signal Pulse
+      description: 'Get high-level signal pulse.
+
+
+        Executive summary of signal activity:
+
+        - Total signals and velocity (up/down vs previous period)
+
+        - Platform breakdown (GitHub, Reddit, LinkedIn, etc.)
+
+        - Sentiment percentage
+
+        - Trending topics
+
+        - Top signals by priority'
+      operationId: get_signal_pulse_api_cmo_signal_pulse_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          description: Number of days to analyze
+          default: 7
+          title: Days
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/cmo/pipeline-progress:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Pipeline Progress
+      description: 'Get pipeline progress vs goals.
+
+
+        Shows:
+
+        - Current pipeline value
+
+        - Goal and progress percentage
+
+        - Projected end-of-quarter based on velocity
+
+        - Whether on track to hit goal'
+      operationId: get_pipeline_progress_api_cmo_pipeline_progress_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/cmo/mql-hvt:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Mql Hvt Conversion
+      description: 'Get MQL to High-Value Target conversion metrics.
+
+
+        Shows:
+
+        - Total MQLs generated
+
+        - Number of HVTs
+
+        - Conversion rate
+
+        - Recent HVTs with details'
+      operationId: get_mql_hvt_conversion_api_cmo_mql_hvt_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 1
+          description: Number of days to analyze
+          default: 30
+          title: Days
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/cmo/dashboard:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Cmo Dashboard
+      description: 'Get all CMO dashboard data in one call.
+
+
+        Returns:
+
+        - AI Readiness Score
+
+        - Signal Pulse
+
+        - Pipeline Progress
+
+        - MQL → HVT Conversion
+
+        - Traffic Anomalies
+
+        - Top Campaigns'
+      operationId: get_cmo_dashboard_api_cmo_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/cmo/campaigns:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Campaign Performance
+      description: 'Get campaign performance table data.
+
+
+        Returns table-ready data:
+
+        - Campaign name
+
+        - Emails sent, opened, clicked
+
+        - Open rate, click rate
+
+        - MQLs generated
+
+        - Pipeline influenced'
+      operationId: get_campaign_performance_api_cmo_campaigns_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 90
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/cmo/traffic-sources:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Traffic Sources
+      description: 'Get traffic sources with attribution.
+
+
+        Returns table-ready data:
+
+        - Source
+
+        - Sessions
+
+        - MQLs
+
+        - Pipeline attributed'
+      operationId: get_traffic_sources_api_cmo_traffic_sources_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/cmo/traffic-comparison:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Traffic Comparison
+      description: 'Get agent vs browser traffic comparison with daily trend.
+
+
+        Returns:
+
+        - Total visitors, agent vs browser split
+
+        - Agent percentage and velocity
+
+        - Agent breakdown by type (Claude, GPT, Cursor, etc.)
+
+        - Daily trend for charting'
+      operationId: get_traffic_comparison_api_cmo_traffic_comparison_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 30
+          minimum: 1
+          description: Number of days to analyze
+          default: 7
+          title: Days
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/cmo/anomalies:
+    get:
+      tags:
+      - cmo-intelligence
+      summary: Get Traffic Anomalies
+      description: Get traffic anomalies (spikes to capitalize on).
+      operationId: get_traffic_anomalies_api_cmo_anomalies_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 14
+          minimum: 1
+          default: 7
+          title: Days
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

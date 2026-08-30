@@ -1,0 +1,389 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Context Streams Streaming API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: context-streams-streaming
+  description: Real-time context streaming via Kafka-compatible brokers (Redpanda). Publish and subscribe to context updates.
+paths:
+  /api/context-streams/streaming/config:
+    get:
+      tags:
+      - context-streams-streaming
+      summary: Get Streaming Config
+      description: Get streaming knowledge base configuration for this org.
+      operationId: get_streaming_config_api_context_streams_streaming_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    put:
+      tags:
+      - context-streams-streaming
+      summary: Update Streaming Config
+      description: Configure streaming knowledge base connection for this org (Kafka-compatible).
+      operationId: update_streaming_config_api_context_streams_streaming_config_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StreamingConfigRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+    delete:
+      tags:
+      - context-streams-streaming
+      summary: Disconnect Streaming
+      description: Disconnect/disable streaming knowledge base for this org.
+      operationId: disconnect_streaming_api_context_streams_streaming_config_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/context-streams/streaming/status:
+    get:
+      tags:
+      - context-streams-streaming
+      summary: Get Connection Status
+      description: Get current streaming knowledge base connection status for this org.
+      operationId: get_connection_status_api_context_streams_streaming_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/context-streams/streaming/available-streams:
+    get:
+      tags:
+      - context-streams-streaming
+      summary: Get Available Streams
+      description: 'Get list of context streams available for publishing.
+
+        Returns both built-in and custom streams for this org.'
+      operationId: get_available_streams_api_context_streams_streaming_available_streams_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/context-streams/streaming/publish:
+    post:
+      tags:
+      - context-streams-streaming
+      summary: Publish Knowledge To Stream
+      description: 'Publish curated knowledge to streaming topics (OUT).
+
+
+        This makes curated GTM context available to any AI agent
+
+        connected to the Kafka-compatible broker.'
+      operationId: publish_knowledge_to_stream_api_context_streams_streaming_publish_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-streams/streaming/subscribe:
+    post:
+      tags:
+      - context-streams-streaming
+      summary: Subscribe To Signal Topics
+      description: 'Subscribe to streaming topics for signal ingestion (IN).
+
+
+        Ingest streaming signals (events, telemetry, etc.) as
+
+        context for VoyantIO''s continuous context engine.'
+      operationId: subscribe_to_signal_topics_api_context_streams_streaming_subscribe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/context-streams/streaming/architecture:
+    get:
+      tags:
+      - context-streams-streaming
+      summary: Get Integration Architecture
+      description: 'Return integration architecture documentation for
+
+        VoyantIO + Streaming Knowledge Base (Kafka-compatible).'
+      operationId: get_integration_architecture_api_context_streams_streaming_architecture_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    SubscribeRequest:
+      properties:
+        topics:
+          items:
+            type: string
+          type: array
+          title: Topics
+        consumer_group:
+          type: string
+          title: Consumer Group
+          default: voyant-knowledge-ingestion
+      type: object
+      required:
+      - topics
+      title: SubscribeRequest
+      description: Request to subscribe to topics for signal ingestion
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    StreamingConfigRequest:
+      properties:
+        broker_url:
+          type: string
+          title: Broker Url
+          description: Kafka broker URL (e.g., cluster.redpanda.cloud:9092)
+        sasl_username:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sasl Username
+          description: SASL username for authentication
+        sasl_password:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sasl Password
+          description: SASL password for authentication
+        schema_registry_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Schema Registry Url
+          description: Schema Registry URL
+        enabled:
+          type: boolean
+          title: Enabled
+          description: Whether the integration is active
+          default: true
+        out_enabled:
+          type: boolean
+          title: Out Enabled
+          description: Enable publishing knowledge to topics
+          default: true
+        out_topic_prefix:
+          type: string
+          title: Out Topic Prefix
+          description: Topic prefix for outbound knowledge
+          default: voyant.knowledge
+        out_include_messaging:
+          type: boolean
+          title: Out Include Messaging
+          description: Include messaging framework (legacy)
+          default: true
+        out_include_personas:
+          type: boolean
+          title: Out Include Personas
+          description: Include personas (legacy)
+          default: true
+        out_include_competitive:
+          type: boolean
+          title: Out Include Competitive
+          description: Include competitive intelligence (legacy)
+          default: true
+        out_streams:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Out Streams
+          description: Stream IDs to publish (overrides legacy flags if set)
+        in_enabled:
+          type: boolean
+          title: In Enabled
+          description: Enable ingesting signals from topics
+          default: true
+        in_topics:
+          items:
+            type: string
+          type: array
+          title: In Topics
+          description: Topic patterns to subscribe to
+        in_consumer_group:
+          type: string
+          title: In Consumer Group
+          description: Consumer group ID
+          default: voyant-knowledge-ingestion
+        in_stream_mappings:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: In Stream Mappings
+          description: 'Map topic patterns to stream IDs (e.g., {''events.pricing'': ''pricing-rules''})'
+      type: object
+      required:
+      - broker_url
+      title: StreamingConfigRequest
+      description: 'Configuration for Kafka-compatible streaming connection (per org).
+
+        Works with Redpanda, Confluent, MSK, or any Kafka-protocol broker.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PublishRequest:
+      properties:
+        stream_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Stream Ids
+        include_messaging:
+          type: boolean
+          title: Include Messaging
+          default: true
+        include_personas:
+          type: boolean
+          title: Include Personas
+          default: true
+        include_competitive:
+          type: boolean
+          title: Include Competitive
+          default: true
+      type: object
+      title: PublishRequest
+      description: Request to publish knowledge to streaming topics
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

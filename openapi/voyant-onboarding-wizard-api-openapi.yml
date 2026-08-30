@@ -1,0 +1,858 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Onboarding Wizard API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: onboarding-wizard
+  description: AI-assisted onboarding. Generate messaging framework from your website.
+paths:
+  /api/onboarding/discover:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Discover Company
+      description: 'Quick discovery of company information from their website.
+
+        Fetches homepage and uses AI to extract: company name, tagline, products, what they do.'
+      operationId: discover_company_api_onboarding_discover_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoverDomainRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryResult'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/confirm-discovery:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Confirm Discovery
+      description: Save user-confirmed discovery data to the session/framework.
+      operationId: confirm_discovery_api_onboarding_confirm_discovery_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmDiscoveryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/propose-personas:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Propose Personas
+      description: 'Propose buyer personas based on company and product context.
+
+        Each persona speaks about their pain points and what they''d value.'
+      operationId: propose_personas_api_onboarding_propose_personas_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposePersonasRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposePersonasResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/start:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Start Onboarding
+      description: 'Start a new onboarding session or resume existing one.
+
+        Creates a draft MessagingFramework if none exists.'
+      operationId: start_onboarding_api_onboarding_start_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/session:
+    get:
+      tags:
+      - onboarding-wizard
+      summary: Get Session
+      description: Get current onboarding session state.
+      operationId: get_session_api_onboarding_session_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+    delete:
+      tags:
+      - onboarding-wizard
+      summary: Reset Session
+      description: Reset onboarding session and start fresh.
+      operationId: reset_session_api_onboarding_session_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/session/step:
+    put:
+      tags:
+      - onboarding-wizard
+      summary: Update Session Step
+      description: Update the current step in the session.
+      operationId: update_session_step_api_onboarding_session_step_put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: step
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Step
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/onboarding/crawl:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Start Domain Crawl
+      description: 'Start crawling a domain to build context.
+
+        Uses existing Firecrawl infrastructure.'
+      operationId: start_domain_crawl_api_onboarding_crawl_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrawlDomainRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/crawl/status:
+    get:
+      tags:
+      - onboarding-wizard
+      summary: Get Crawl Status
+      description: Get status of current crawl operation.
+      operationId: get_crawl_status_api_onboarding_crawl_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/documents/upload:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Upload Document
+      description: 'Upload a PDF or text file for context.
+
+        Accepts: .pdf, .txt, .md'
+      operationId: upload_document_api_onboarding_documents_upload_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_document_api_onboarding_documents_upload_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/onboarding/documents:
+    get:
+      tags:
+      - onboarding-wizard
+      summary: List Documents
+      description: List uploaded documents for this session.
+      operationId: list_documents_api_onboarding_documents_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/documents/{document_id}:
+    delete:
+      tags:
+      - onboarding-wizard
+      summary: Delete Document
+      description: Remove an uploaded document.
+      operationId: delete_document_api_onboarding_documents__document_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Document Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/onboarding/generate/{step}:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Generate Framework Step
+      description: 'Generate content for a specific framework step using AI.
+
+
+        Steps: core_messaging, positioning, personas, products, use_cases, competitive, brand_voice'
+      operationId: generate_framework_step_api_onboarding_generate__step__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: step
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Step
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateStepRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/onboarding/generate/{step}/stream:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Generate Framework Step Stream
+      description: 'Stream AI generation for framework step.
+
+        Returns Server-Sent Events for real-time display.'
+      operationId: generate_framework_step_stream_api_onboarding_generate__step__stream_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: step
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Step
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/onboarding/approve/{step}:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Approve Framework Step
+      description: 'Approve and save generated content for a step.
+
+        Marks step as completed and advances wizard.'
+      operationId: approve_framework_step_api_onboarding_approve__step__post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: step
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Step
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveStepRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/onboarding/personas:
+    get:
+      tags:
+      - onboarding-wizard
+      summary: Get Personas
+      description: Get all personas for current framework.
+      operationId: get_personas_api_onboarding_personas_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/personas/{persona_id}:
+    put:
+      tags:
+      - onboarding-wizard
+      summary: Update Persona
+      description: Update a specific persona.
+      operationId: update_persona_api_onboarding_personas__persona_id__put
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: persona_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Persona Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonaRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - onboarding-wizard
+      summary: Delete Persona
+      description: Delete a persona.
+      operationId: delete_persona_api_onboarding_personas__persona_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: persona_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Persona Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/onboarding/framework:
+    get:
+      tags:
+      - onboarding-wizard
+      summary: Get Framework
+      description: Get complete framework with all components.
+      operationId: get_framework_api_onboarding_framework_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/framework/complete:
+    post:
+      tags:
+      - onboarding-wizard
+      summary: Complete Framework
+      description: 'Mark framework as complete.
+
+        Creates Context Stream from framework for use in content generation.'
+      operationId: complete_framework_api_onboarding_framework_complete_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/onboarding/framework/export:
+    get:
+      tags:
+      - onboarding-wizard
+      summary: Export Framework
+      description: Export framework in specified format (json or markdown).
+      operationId: export_framework_api_onboarding_framework_export_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          default: json
+          title: Format
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ConfirmDiscoveryRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        domain:
+          type: string
+          title: Domain
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+          default: []
+        competitors:
+          items:
+            type: string
+          type: array
+          title: Competitors
+          default: []
+        social_links:
+          additionalProperties:
+            type: string
+          type: object
+          title: Social Links
+          default: {}
+      type: object
+      required:
+      - company_name
+      - domain
+      title: ConfirmDiscoveryRequest
+      description: User-confirmed/edited discovery data
+    UpdatePersonaRequest:
+      properties:
+        content:
+          additionalProperties: true
+          type: object
+          title: Content
+        status:
+          type: string
+          title: Status
+          default: edited
+      type: object
+      required:
+      - content
+      title: UpdatePersonaRequest
+      description: Update a specific persona
+    ProposePersonasResponse:
+      properties:
+        personas:
+          items:
+            $ref: '#/components/schemas/ProposedPersona'
+          type: array
+          title: Personas
+        reasoning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reasoning
+      type: object
+      required:
+      - personas
+      title: ProposePersonasResponse
+      description: Response with proposed personas
+    Body_upload_document_api_onboarding_documents_upload_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_upload_document_api_onboarding_documents_upload_post
+    CrawlDomainRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        max_pages:
+          type: integer
+          maximum: 5000.0
+          minimum: 1.0
+          title: Max Pages
+          default: 500
+        max_depth:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Max Depth
+          default: 3
+      type: object
+      required:
+      - domain
+      title: CrawlDomainRequest
+      description: Request to crawl a domain
+    ProposedPersona:
+      properties:
+        name:
+          type: string
+          title: Name
+        role:
+          type: string
+          title: Role
+        company_context:
+          type: string
+          title: Company Context
+        pain_points:
+          items:
+            type: string
+          type: array
+          title: Pain Points
+        product_benefits:
+          items:
+            type: string
+          type: array
+          title: Product Benefits
+        quote:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quote
+      type: object
+      required:
+      - name
+      - role
+      - company_context
+      - pain_points
+      - product_benefits
+      title: ProposedPersona
+      description: A proposed persona with their perspective
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    DiscoveryResult:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        domain:
+          type: string
+          title: Domain
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+          default: []
+        competitors:
+          items:
+            type: string
+          type: array
+          title: Competitors
+          default: []
+        social_links:
+          additionalProperties:
+            type: string
+          type: object
+          title: Social Links
+          default: {}
+      type: object
+      required:
+      - company_name
+      - domain
+      title: DiscoveryResult
+      description: Quick discovery results from a domain
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ProposePersonasRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+      type: object
+      required:
+      - company_name
+      - products
+      title: ProposePersonasRequest
+      description: Request to propose personas based on company/product context
+    GenerateStepRequest:
+      properties:
+        regenerate:
+          type: boolean
+          title: Regenerate
+          default: false
+      type: object
+      title: GenerateStepRequest
+      description: Request to generate content for a framework step
+    ApproveStepRequest:
+      properties:
+        content:
+          additionalProperties: true
+          type: object
+          title: Content
+      type: object
+      required:
+      - content
+      title: ApproveStepRequest
+      description: Approve generated content for a step
+    DiscoverDomainRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+      type: object
+      required:
+      - domain
+      title: DiscoverDomainRequest
+      description: Request to discover company info from domain
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

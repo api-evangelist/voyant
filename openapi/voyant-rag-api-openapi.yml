@@ -1,0 +1,638 @@
+openapi: 3.2.0
+info:
+  title: VoyantIO Rag API
+  description: '
+
+    ## Brand Context Intelligence Platform
+
+
+    VoyantIO provides AI-powered brand context management for GTM teams.
+
+
+    ### Core Capabilities
+
+
+    - **Context Streams** - Centralized brand knowledge that any AI tool can use
+
+    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
+
+    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
+
+    - **Target Graph** - Account and contact intelligence with engagement tracking
+
+    - **RAG** - Retrieval-augmented content generation with brand awareness
+
+
+    ### Authentication
+
+
+    Most endpoints require a Bearer token from Clerk authentication.
+
+    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
+
+
+    ### Rate Limits
+
+
+    - Telemetry ingestion: 100 req/min per IP
+
+    - API endpoints: 1000 req/min per org
+
+    '
+  version: 1.0.0
+servers:
+- url: https://voice-forge-production.up.railway.app
+  description: Production
+tags:
+- name: Rag
+paths:
+  /rag/generate:
+    post:
+      summary: Generate Content
+      description: Generate content using RAG.
+      operationId: generate_content_rag_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedContent'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Rag
+  /rag/chunks/search:
+    post:
+      summary: Search Chunks
+      description: Search for content chunks for RAG.
+      operationId: search_chunks_rag_chunks_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChunkSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ChunkResponse'
+                type: array
+                title: Response Search Chunks Rag Chunks Search Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      tags:
+      - Rag
+  /rag/generate-stream:
+    post:
+      summary: Generate Content Stream
+      description: Generate content using streaming Claude response.
+      operationId: generate_content_stream_rag_generate_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Rag
+  /api/crawl/{crawl_id}/process-rag:
+    post:
+      tags:
+      - Rag
+      summary: Process Rag
+      description: 'Process crawled content for RAG: chunk text and generate embeddings.
+
+
+        This endpoint:
+
+        1. Retrieves crawled content from the contents table
+
+        2. Chunks the text based on configuration
+
+        3. Generates embeddings for each chunk
+
+        4. Saves chunks to content_chunks table
+
+        5. Returns quality metrics'
+      operationId: process_rag_api_crawl__crawl_id__process_rag_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RAGProcessRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RAGProcessResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/rag-status:
+    get:
+      tags:
+      - Rag
+      summary: Get Rag Status
+      description: Get status of RAG processing for a crawl.
+      operationId: get_rag_status_api_crawl__crawl_id__rag_status_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/{crawl_id}/rag-chunks:
+    delete:
+      tags:
+      - Rag
+      summary: Delete Rag Chunks
+      description: Delete all RAG chunks for a crawl to allow reprocessing.
+      operationId: delete_rag_chunks_api_crawl__crawl_id__rag_chunks_delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: crawl_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Crawl Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/crawl/stats/{org_id}:
+    get:
+      tags:
+      - Rag
+      summary: Get Rag Stats
+      description: Get aggregate RAG statistics for the dashboard.
+      operationId: get_rag_stats_api_crawl_stats__org_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Org Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    GenerateContentRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Question or topic for content generation
+        platform:
+          $ref: '#/components/schemas/ContentPlatform'
+          description: Target platform
+        tone:
+          $ref: '#/components/schemas/ContentTone'
+          description: Desired tone
+        personality:
+          $ref: '#/components/schemas/PersonalityType'
+          description: Personality profile to use
+          default: default
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by domain
+        content_type:
+          anyOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: 'null'
+          description: Filter by content type
+        top_k:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Top K
+          description: Number of chunks to retrieve
+          default: 5
+        template_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Template Id
+          description: ID of custom template to use
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Gypsum persona ID for targeting
+        use_persona_context:
+          type: boolean
+          title: Use Persona Context
+          description: Whether to enhance with persona context
+          default: true
+        funnel_stage:
+          anyOf:
+          - $ref: '#/components/schemas/FunnelStage'
+          - type: 'null'
+          description: Sales funnel stage for targeting
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+          description: Additional metadata for generation
+      type: object
+      required:
+      - query
+      - platform
+      - tone
+      title: GenerateContentRequest
+      description: Request to generate content using RAG.
+    ContentPlatform:
+      type: string
+      enum:
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
+    GeneratedContent:
+      properties:
+        text:
+          type: string
+          title: Text
+          description: Generated content text
+        source_chunks:
+          items:
+            $ref: '#/components/schemas/SourceChunk'
+          type: array
+          title: Source Chunks
+          description: Source chunks used for generation
+        personality_used:
+          $ref: '#/components/schemas/PersonalityType'
+          description: Personality profile that was applied
+          default: default
+        template_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Template Id
+          description: ID of the template used
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Gypsum persona ID that was used
+        template_enhanced:
+          type: boolean
+          title: Template Enhanced
+          description: Whether custom template was used
+          default: false
+        persona_enhanced:
+          type: boolean
+          title: Persona Enhanced
+          description: Whether persona context was applied
+          default: false
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Generation metadata including enhancement details
+      type: object
+      required:
+      - text
+      - source_chunks
+      title: GeneratedContent
+      description: Response model for generated content.
+    PersonalityType:
+      type: string
+      enum:
+      - the_architect
+      - human_first_closer
+      - default
+      title: PersonalityType
+      description: Available personality types for content generation.
+    ChunkSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Search query
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by domain
+        content_type:
+          anyOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: 'null'
+          description: Filter by content type
+        top_k:
+          type: integer
+          maximum: 50.0
+          minimum: 1.0
+          title: Top K
+          description: Number of chunks to retrieve
+          default: 5
+      type: object
+      required:
+      - query
+      title: ChunkSearchRequest
+      description: Request to search for content chunks.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    ChunkResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique identifier for the chunk
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+        chunk_index:
+          type: integer
+          title: Chunk Index
+          description: Index of this chunk in the content
+        text:
+          type: string
+          title: Text
+          description: Chunk text
+        start_char:
+          type: integer
+          title: Start Char
+          description: Start position in the original content
+        end_char:
+          type: integer
+          title: End Char
+          description: End position in the original content
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Chunk metadata
+        similarity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Similarity
+          description: Similarity score (if this is a search result)
+      type: object
+      required:
+      - id
+      - content_id
+      - chunk_index
+      - text
+      - start_char
+      - end_char
+      title: ChunkResponse
+      description: Response model for content chunk retrieval.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    SourceChunk:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: ID of the source chunk
+        text:
+          type: string
+          title: Text
+          description: Snippet of the chunk text
+        similarity:
+          type: number
+          title: Similarity
+          description: Similarity score
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+      type: object
+      required:
+      - chunk_id
+      - text
+      - similarity
+      - content_id
+      title: SourceChunk
+      description: Source chunk information for generated content.
+    ContentType:
+      type: string
+      enum:
+      - blog_post
+      - product_description
+      - about_page
+      - landing_page
+      - article
+      - news
+      - press_release
+      - documentation
+      - faq
+      - solutions_page
+      - case_study
+      - pricing_page
+      - product_page
+      - integration_page
+      - other
+      title: ContentType
+      description: Types of content that can be extracted.
+    RAGProcessResponse:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - task_id
+      - status
+      - message
+      title: RAGProcessResponse
+      description: Response model for RAG processing.
+    RAGProcessRequest:
+      properties:
+        chunk_size:
+          type: integer
+          maximum: 2048.0
+          minimum: 128.0
+          title: Chunk Size
+          description: Characters per chunk
+          default: 512
+        chunk_overlap:
+          type: integer
+          maximum: 512.0
+          minimum: 0.0
+          title: Chunk Overlap
+          description: Overlap between chunks
+          default: 50
+        min_chunk_size:
+          type: integer
+          maximum: 512.0
+          minimum: 50.0
+          title: Min Chunk Size
+          description: Minimum chunk size
+          default: 100
+        embedding_model:
+          type: string
+          title: Embedding Model
+          description: OpenAI embedding model
+          default: text-embedding-3-small
+      type: object
+      title: RAGProcessRequest
+      description: Request model for RAG processing.
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
