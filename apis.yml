@@ -43,15 +43,15 @@ specificationVersion: '0.23'
 x-type: company
 x-source: manual:kin
 tags:
-  - Artificial Intelligence
-  - Context Management
-  - Brand Governance
-  - Product Marketing
+  - artificial-intelligence
+  - context-management
+  - brand-governance
+  - product-marketing
   - gtm-operations
-  - Marketing Automation
-  - Content Generation
+  - marketing-automation
+  - content-generation
   - Competitive Intelligence
-  - Semantic Search
+  - semantic-search
   - RAG
   - MCP
   - agent-native
@@ -85,8 +85,8 @@ apis:
   tags:
   - MCP
   - agent-native
-  - Context Management
-  - Artificial Intelligence
+  - context-management
+  - artificial-intelligence
   tags_raw:
   - mcp
   - agent-native
@@ -103,6 +103,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Admin
+  tags_raw:
   - admin
   properties:
   - type: OpenAPI
@@ -152,6 +154,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - AI Assistant
+  tags_raw:
   - ai-assistant
   properties:
   - type: OpenAPI
@@ -200,6 +204,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Analytics
+  tags_raw:
   - analytics
   properties:
   - type: OpenAPI
@@ -224,6 +230,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - APIKeys
+  tags_raw:
   - api-keys
   properties:
   - type: OpenAPI
@@ -296,6 +304,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
@@ -320,6 +330,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Battlecards
+  tags_raw:
   - battlecards
   properties:
   - type: OpenAPI
@@ -344,6 +356,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Bootstrap
+  tags_raw:
   - bootstrap
   properties:
   - type: OpenAPI
@@ -393,6 +407,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Campaigns
+  tags_raw:
   - campaigns
   properties:
   - type: OpenAPI
@@ -441,6 +457,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Chat
+  tags_raw:
   - chat
   properties:
   - type: OpenAPI
@@ -561,6 +579,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Competitive Intelligence
+  tags_raw:
   - competitive-intelligence
   properties:
   - type: OpenAPI
@@ -610,6 +630,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Content Analytics
+  tags_raw:
   - content-analytics
   properties:
   - type: OpenAPI
@@ -658,6 +680,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Content Search
+  tags_raw:
   - content-search
   properties:
   - type: OpenAPI
@@ -682,6 +706,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Content Versions
+  tags_raw:
   - content-versions
   properties:
   - type: OpenAPI
@@ -731,6 +757,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Context
+  tags_raw:
   - context
   properties:
   - type: OpenAPI
@@ -756,6 +784,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Context Graph
+  tags_raw:
   - context-graph
   properties:
   - type: OpenAPI
@@ -883,6 +913,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Crawler
+  tags_raw:
   - crawler
   properties:
   - type: OpenAPI
@@ -907,6 +939,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - CRM
+  tags_raw:
   - crm
   properties:
   - type: OpenAPI
@@ -1005,6 +1039,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Discovery
+  tags_raw:
   - discovery
   properties:
   - type: OpenAPI
@@ -1029,6 +1065,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Domains
+  tags_raw:
   - domains
   properties:
   - type: OpenAPI
@@ -1077,6 +1115,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Export
+  tags_raw:
   - export
   properties:
   - type: OpenAPI
@@ -1273,6 +1313,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Governance
+  tags_raw:
   - governance
   properties:
   - type: OpenAPI
@@ -1347,6 +1389,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Health
+  tags_raw:
   - health
   properties:
   - type: OpenAPI
@@ -1371,6 +1415,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - HubSpot
+  tags_raw:
   - hubspot
   properties:
   - type: OpenAPI
@@ -1419,6 +1465,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - ICP
+  tags_raw:
   - icp
   properties:
   - type: OpenAPI
@@ -1637,6 +1685,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Notion
+  tags_raw:
   - notion
   properties:
   - type: OpenAPI
@@ -1709,6 +1759,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Ontology
+  tags_raw:
   - ontology
   properties:
   - type: OpenAPI
@@ -1781,6 +1833,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Pipeline
+  tags_raw:
   - pipeline
   properties:
   - type: OpenAPI
@@ -1829,6 +1883,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Playbooks
+  tags_raw:
   - playbooks
   properties:
   - type: OpenAPI
@@ -1853,6 +1909,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - RAG
+  tags_raw:
   - Rag
   properties:
   - type: OpenAPI
@@ -1902,6 +1960,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Resources
+  tags_raw:
   - resources
   properties:
   - type: OpenAPI
@@ -1952,6 +2012,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Signals
+  tags_raw:
   - signals
   properties:
   - type: OpenAPI
@@ -2049,6 +2111,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Stream
+  tags_raw:
   - stream
   properties:
   - type: OpenAPI
@@ -2073,6 +2137,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Sync
+  tags_raw:
   - sync
   properties:
   - type: OpenAPI
@@ -2121,6 +2187,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - target-graph
+  tags_raw:
   - targetgraph
   properties:
   - type: OpenAPI
@@ -2170,6 +2238,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Telemetry
+  tags_raw:
   - telemetry
   properties:
   - type: OpenAPI
@@ -2434,6 +2504,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - .well Known
+  tags_raw:
   - well-known
   properties:
   - type: OpenAPI
