@@ -1806,30 +1806,6 @@ apis:
     url: data-model/voyant-data-model.yml
   - type: AgenticAccess
     url: agentic-access/voyant-agentic-access.yml
-- aid: voyant:voyant-pdfs-api
-  name: Voyant.io PD Fs API
-  description: PDF upload and processing. Extract text and structure from documents.
-  humanURL: https://voice-forge-production.up.railway.app/docs
-  baseURL: https://voice-forge-production.up.railway.app
-  tags:
-  - PDFs
-  properties:
-  - type: OpenAPI
-    url: openapi/voyant-pdfs-api-openapi.yml
-  - type: Documentation
-    url: https://voice-forge-production.up.railway.app/docs
-  - type: APIReference
-    url: https://voice-forge-production.up.railway.app/redoc
-  - type: Authentication
-    url: authentication/voyant-authentication.yml
-  - type: ErrorCatalog
-    url: errors/voyant-problem-types.yml
-  - type: Conventions
-    url: conventions/voyant-conventions.yml
-  - type: DataModel
-    url: data-model/voyant-data-model.yml
-  - type: AgenticAccess
-    url: agentic-access/voyant-agentic-access.yml
 - aid: voyant:voyant-pipeline-api
   name: Voyant.io Pipeline API
   description: Pipeline framework for multi-step agent workflows (Blueprints).
@@ -2184,32 +2160,6 @@ apis:
     url: data-model/voyant-data-model.yml
   - type: AgenticAccess
     url: agentic-access/voyant-agentic-access.yml
-- aid: voyant:voyant-targetgraph-api
-  name: Voyant.io Targetgraph API
-  description: Target graph queries and relationship mapping.
-  humanURL: https://voice-forge-production.up.railway.app/docs
-  baseURL: https://voice-forge-production.up.railway.app
-  tags:
-  - target-graph
-  tags_raw:
-  - targetgraph
-  properties:
-  - type: OpenAPI
-    url: openapi/voyant-targetgraph-api-openapi.yml
-  - type: Documentation
-    url: https://voice-forge-production.up.railway.app/docs
-  - type: APIReference
-    url: https://voice-forge-production.up.railway.app/redoc
-  - type: Authentication
-    url: authentication/voyant-authentication.yml
-  - type: ErrorCatalog
-    url: errors/voyant-problem-types.yml
-  - type: Conventions
-    url: conventions/voyant-conventions.yml
-  - type: DataModel
-    url: data-model/voyant-data-model.yml
-  - type: AgenticAccess
-    url: agentic-access/voyant-agentic-access.yml
 - aid: voyant:voyant-targets-api
   name: Voyant.io Targets API
   description: The Targets API from Voyant.io — 1 operation(s) for targets.
@@ -2538,6 +2488,30 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/voyant-youtube-signals-api-openapi.yml
+  - type: Documentation
+    url: https://voice-forge-production.up.railway.app/docs
+  - type: APIReference
+    url: https://voice-forge-production.up.railway.app/redoc
+  - type: Authentication
+    url: authentication/voyant-authentication.yml
+  - type: ErrorCatalog
+    url: errors/voyant-problem-types.yml
+  - type: Conventions
+    url: conventions/voyant-conventions.yml
+  - type: DataModel
+    url: data-model/voyant-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/voyant-agentic-access.yml
+- aid: voyant:voyant-pd-fs-api
+  name: Voyant.io PD Fs API
+  description: PDF upload and processing. Extract text and structure from documents.
+  humanURL: https://voice-forge-production.up.railway.app/mcp/tools
+  baseURL: https://voice-forge-production.up.railway.app/mcp
+  tags:
+  - PD Fs
+  properties:
+  - type: OpenAPI
+    url: openapi/voyant-pd-fs-api-openapi.yml
   - type: Documentation
     url: https://voice-forge-production.up.railway.app/docs
   - type: APIReference
