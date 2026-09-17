@@ -2502,16 +2502,16 @@ apis:
     url: data-model/voyant-data-model.yml
   - type: AgenticAccess
     url: agentic-access/voyant-agentic-access.yml
-- aid: voyant:voyant-pd-fs-api
+- aid: voyant:voyant-pdfs-api
   name: Voyant.io PD Fs API
   description: PDF upload and processing. Extract text and structure from documents.
   humanURL: https://voice-forge-production.up.railway.app/mcp/tools
   baseURL: https://voice-forge-production.up.railway.app/mcp
   tags:
-  - PD Fs
+  - PDFs
   properties:
   - type: OpenAPI
-    url: openapi/voyant-pd-fs-api-openapi.yml
+    url: openapi/voyant-pdfs-api-openapi.yml
   - type: Documentation
     url: https://voice-forge-production.up.railway.app/docs
   - type: APIReference
