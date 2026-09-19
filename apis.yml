@@ -992,6 +992,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - Dashboards
+  tags_raw:
   - Dashboard
   properties:
   - type: OpenAPI
@@ -1812,7 +1814,7 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
-  - Pipeline
+  - Pipelines
   tags_raw:
   - pipeline
   properties:
