@@ -1,0 +1,213 @@
+slug: voyant
+provider: Voyant.io
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 19
+edges:
+- tag: competitive-intelligence
+  spec_file: voyant-competitive-intelligence-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.92
+  evidence: '"Scan Competitor", "Monitor Competitor Messaging", "Compare Positioning", "List Analyst Reports",
+    schemas CompetitorIntelReport, PositioningComparison, MarketTrend'
+  reason: Operations scan and monitor competitors, compare positioning and extract analyst reports — textbook
+    competitive/market intelligence within Marketing Management.
+- tag: Competitor Intelligence
+  spec_file: voyant-competitor-intelligence-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.9
+  evidence: POST /api/competitors/discover Discover Competitors Simple; POST /api/competitors/landscape-analysis
+    Save Landscape Analysis; POST /api/competitors/strategy-analysis/{competitor_id}
+  reason: Explicit competitor discovery, landscape and strategy analysis with G2 theme analysis — competitive
+    intelligence under Market Intelligence Management.
+- tag: G2
+  spec_file: voyant-g2-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.8
+  evidence: '''Get Competitors'', ''Get Competitive Comparison'', ''Get Market Signals'', ''Get Reviews'',
+    ''Get Buyer Intent'''
+  reason: Operations pull competitor listings, review content, market signals and buyer-intent data from
+    the G2 marketplace — competitive and market intelligence gathering, not marketplace listing management
+    of the vendor's own product.
+- tag: brand-standards
+  spec_file: voyant-brand-standards-api-openapi.yml
+  capability_id: BC-400.20
+  capability_id_l1: BC-400
+  capability_name: Brand Management
+  confidence: 0.8
+  evidence: POST /api/brand-standards/rules create_terminology_rule; POST /api/brand-standards/validate
+    Validate Content
+  reason: CRUD over brand terminology rules plus validation of content against those rules and export
+    of rules for prompts — brand identity and brand governance enforcement.
+- tag: reddit-lite-signals
+  spec_file: voyant-reddit-lite-signals-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.8
+  evidence: GET /api/reddit-lite/mentions  get_competitor_reddit_mentions  Get Competitor Reddit Mentions;
+    POST /api/reddit-lite/signals/discover  Discover Reddit Signals
+  reason: Social listening on Reddit including competitor mention tracking and signal summarisation —
+    competitive intelligence and customer insight gathering, i.e. market intelligence.
+- tag: signals
+  spec_file: voyant-signals-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.78
+  evidence: GET /api/signals/competitor-trends  Get Competitor Trends; GET /api/signals/publishing-comparison;
+    POST /api/signals/discover  Discover Signals
+  reason: Aggregated social-listening signal discovery, trend and competitor-trend analytics across external
+    platforms — competitive and market intelligence. A few operations are system alerts/plumbing but the
+    dominant surface is market intelligence.
+- tag: GEO/AEO
+  spec_file: voyant-geo-aeo-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: '''Run Visibility Scan'', ''Generate Prompts'', ''Get Available Models'', schemas VisibilityReportResponse,
+    VisibilityResultResponse, ScanJobResponse'
+  reason: 'Generative/answer engine optimisation: running prompt scans across AI models to measure and
+    improve brand visibility in AI search results — a digital marketing (SEO-analogue) capability.'
+- tag: Google Search Console
+  spec_file: voyant-google-search-console-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: '''Get Search Queries'', ''Get Query Opportunities'', ''List Gsc Sites'', ''Import Queries
+    To Prompts'', schema GSCQueryResponse'
+  reason: Retrieves organic search query performance and opportunity data per site from Google Search
+    Console — SEO/web analytics within digital marketing management. Some risk it is judged mere third-party
+    integration plumbing, hence 0.75.
+- tag: api-keys
+  spec_file: voyant-api-keys-api-openapi.yml
+  capability_id: BC-4270.40
+  capability_id_l1: BC-4270
+  capability_name: Developer Identity & Credential Management
+  confidence: 0.75
+  evidence: POST /api/api-keys create_api_key; DELETE /api/api-keys/{key_id} Revoke Api Key
+  reason: Issuance, retrieval and revocation of API keys used by developers/integrations against the platform
+    API — developer credential stewardship for the API ecosystem.
+- tag: campaigns
+  spec_file: voyant-campaigns-api-openapi.yml
+  capability_id: BC-400
+  capability_id_l1: BC-400
+  capability_name: Marketing Management
+  confidence: 0.75
+  evidence: '"**Campaign Management** - Marketing campaign tracking"; operations "List Campaigns", "Create
+    Campaign", "Get Campaign Generation Context"'
+  reason: CRUD over marketing campaigns plus campaign generation context — clearly Marketing Management,
+    but the surface does not distinguish demand-generation campaign execution from marketing operations,
+    so only the L1 is asserted.
+- tag: signals-discord
+  spec_file: voyant-signals-discord-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.72
+  evidence: POST /api/signals/discord/discover  discover_discord_signals  Discover Discord Signals; GET
+    /api/signals/discord/sources
+  reason: 'Discord-channel social listening: configure sources, discover and retrieve signals, view stats
+    — external market/customer signal gathering. Source CRUD is configuration plumbing, so slightly lower
+    confidence.'
+- tag: Attribution
+  spec_file: voyant-attribution-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: POST /api/attribution/generate Generate Attribution Link; GET /api/attribution/funnel/{signal_id}
+    Get Attribution Funnel; schema TrackingEvent
+  reason: Marketing attribution links, funnel and attribution reporting for GTM teams — digital marketing
+    measurement rather than product telemetry, though the boundary with usage analytics is somewhat blurred.
+- tag: GEO Intelligence
+  spec_file: voyant-geo-intelligence-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: '''Get Visibility Gaps'', ''Get Hot Topics'', ''Get Competitor Insights'', ''Sync Gsc Queries'',
+    ''Generate Prompts From Gsc'''
+  reason: Search-Console-driven visibility gap and topic analysis with recommendations is search/answer-engine
+    optimisation work, i.e. digital marketing management. 0.7 because the competitor-insight endpoints
+    overlap with market intelligence.
+- tag: attribution-intelligence
+  spec_file: voyant-attribution-intelligence-api-openapi.yml
+  capability_id: BC-400.50
+  capability_id_l1: BC-400
+  capability_name: Marketing Operations Management
+  confidence: 0.7
+  evidence: GET /api/attribution/reports/campaigns Get Campaign Performance Report; GET /api/attribution/reports/traffic-sources
+    Get Traffic Attribution Report
+  reason: Campaign performance, traffic-source attribution, gated-content and anomaly reporting is marketing
+    measurement and attribution, i.e. marketing operations. Some overlap with digital marketing analytics
+    keeps confidence moderate.
+- tag: battlecards
+  spec_file: voyant-battlecards-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: GET /battlecards/competitor/{competitor_id} Get Battlecard For Competitor; POST /battlecards/generate
+    Generate Battlecard
+  reason: Generates, refreshes and exports competitor battlecards — codified competitive intelligence
+    artefacts. Could alternatively be framed as sales enablement, which tempers confidence.
+- tag: context
+  spec_file: voyant-context-api-openapi.yml
+  capability_id: BC-400.10
+  capability_id_l1: BC-400
+  capability_name: Marketing Strategy Management
+  confidence: 0.7
+  evidence: '"Get Messaging Context", "Get Positioning Context", "Get All Personas", "Get Full Marketing
+    Context", schemas PositioningContext, MessagingContext, Persona'
+  reason: Exposes the messaging framework, positioning and personas — marketing strategy/positioning artefacts.
+    L2 chosen because 'positioning' is named explicitly, though brand and segmentation readings are also
+    defensible.
+- tag: hackernews-signals
+  spec_file: voyant-hackernews-signals-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.7
+  evidence: 'POST /api/hackernews/signals/discover  Discover Hackernews Signals; POST /api/hackernews/scan-with-keywords  Scan
+    Top Stories With Keywords; description: "Signals - Social listening across 10+ platforms"'
+  reason: Keyword-driven scanning of HackerNews stories to discover and store signals is social listening
+    — external market/competitive/customer insight capture. Maps to Market Intelligence Management.
+- tag: icp
+  spec_file: voyant-icp-api-openapi.yml
+  capability_id: BC-420.20
+  capability_id_l1: BC-420
+  capability_name: Customer Segmentation Management
+  confidence: 0.7
+  evidence: 'POST /api/icps  createICP  Create ICP; schemas: ICP, ICPContext, Persona, Industry; description:
+    "ICP Management - Ideal Customer Profile CRUD operations"'
+  reason: CRUD over Ideal Customer Profiles with Persona and Industry schemas is definition and maintenance
+    of target customer segments and personas — Customer Segmentation Management.
+- tag: target-graph
+  spec_file: voyant-target-graph-api-openapi.yml
+  capability_id: BC-410
+  capability_id_l1: BC-410
+  capability_name: Sales Management
+  confidence: 0.7
+  evidence: '"**Target Graph** - Account and contact intelligence with engagement tracking"; operations
+    "Discover Decision Makers", "Get High Value Targets", "Log Interaction"'
+  reason: Operations manage target organisations/people, decision-maker discovery, high-value targets
+    and logged interactions — prospect/account intelligence supporting the sales motion. Ambiguous between
+    account management and lead/opportunity pipeline, so only L1 is asserted.
