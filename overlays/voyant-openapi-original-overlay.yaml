@@ -2,7 +2,7 @@ overlay: 1.0.0
 info:
   title: API Evangelist enrichment overlay — VoyantIO API
   version: 1.0.0
-  description: >-
+  x-description: >-
     Applies the enrichment findings for the VoyantIO API back onto the provider's own
     783-operation OpenAPI without mutating it. Every value below is sourced from an artifact in
     this repo or from a probe recorded in one; nothing is invented. Apply with an Overlay 1.0.0

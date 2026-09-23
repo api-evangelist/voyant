@@ -2,7 +2,7 @@ overlay: 1.0.0
 info:
   title: API Evangelist enrichment overlay — Gypsum Context API
   version: 1.0.0
-  description: >-
+  x-description: >-
     Enrichment overlay for the Gypsum Context API, the second OpenAPI Voyant.io publishes
     (https://www.voyant.io/openapi-gypsum.json). Its single job is to record, on the contract
     itself, that the production host the spec declares does not exist — every other action is

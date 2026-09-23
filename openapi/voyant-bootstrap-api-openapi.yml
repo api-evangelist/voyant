@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Bootstrap API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: bootstrap
+- name: Bootstrap
   description: Initialize a new organization with default context streams.
 paths:
   /api/bootstrap/start:
     post:
       tags:
-      - bootstrap
+      - Bootstrap
       summary: Start Bootstrap
       description: 'Start the organization bootstrap process.
 
@@ -80,7 +46,7 @@ paths:
   /api/bootstrap/generate-element:
     post:
       tags:
-      - bootstrap
+      - Bootstrap
       summary: Generate Element
       description: 'Generate a single element of the messaging framework.
 
@@ -123,7 +89,7 @@ paths:
   /api/bootstrap/status/{org_id}:
     get:
       tags:
-      - bootstrap
+      - Bootstrap
       summary: Get Bootstrap Status
       description: 'Get the current bootstrap status for an organization.
 
@@ -162,6 +128,42 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    GenerateElementRequest:
+      properties:
+        element_type:
+          type: string
+          title: Element Type
+          description: 'Type: product, persona, use_case, positioning, icp'
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Company domain for context
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Company name
+        existing_data:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Existing Data
+          description: Existing framework data
+        additional_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additional Context
+          description: Additional instructions
+      type: object
+      required:
+      - element_type
+      title: GenerateElementRequest
+      description: Request to generate a single element with AI.
     BootstrapRequest:
       properties:
         domain:
@@ -212,42 +214,6 @@ components:
       - msg
       - type
       title: ValidationError
-    GenerateElementRequest:
-      properties:
-        element_type:
-          type: string
-          title: Element Type
-          description: 'Type: product, persona, use_case, positioning, icp'
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Company domain for context
-        company_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Name
-          description: Company name
-        existing_data:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Existing Data
-          description: Existing framework data
-        additional_context:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Additional Context
-          description: Additional instructions
-      type: object
-      required:
-      - element_type
-      title: GenerateElementRequest
-      description: Request to generate a single element with AI.
   securitySchemes:
     HTTPBearer:
       type: http

@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Lusha Intelligence API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -358,37 +324,6 @@ components:
       - company
       - prospecting
       title: EnrichmentType
-    PersonEnrichmentRequest:
-      properties:
-        identifier:
-          type: string
-          title: Identifier
-          description: Email or LinkedIn URL
-        identifier_type:
-          type: string
-          title: Identifier Type
-          description: 'Type of identifier: email or linkedin'
-          default: email
-        enable_ai_insights:
-          type: boolean
-          title: Enable Ai Insights
-          description: Generate AI-powered insights
-          default: true
-        detect_buying_signals:
-          type: boolean
-          title: Detect Buying Signals
-          description: Detect buying signals
-          default: true
-        generate_outreach:
-          type: boolean
-          title: Generate Outreach
-          description: Generate personalized outreach strategy
-          default: true
-      type: object
-      required:
-      - identifier
-      title: PersonEnrichmentRequest
-      description: Request model for person enrichment
     ChampionTrackingRequest:
       properties:
         company_domain:
@@ -405,94 +340,6 @@ components:
       - company_domain
       title: ChampionTrackingRequest
       description: Request model for champion tracking
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    BulkEnrichmentRequest:
-      properties:
-        identifiers:
-          items:
-            type: string
-          type: array
-          title: Identifiers
-          description: List of identifiers to enrich
-        identifier_type:
-          type: string
-          title: Identifier Type
-          description: Type of identifiers
-          default: email
-        enrichment_type:
-          $ref: '#/components/schemas/EnrichmentType'
-          description: Type of enrichment
-          default: person
-      type: object
-      required:
-      - identifiers
-      title: BulkEnrichmentRequest
-      description: Request model for bulk enrichment
-    CompanyEnrichmentRequest:
-      properties:
-        identifier:
-          type: string
-          title: Identifier
-          description: Domain or company name
-        identifier_type:
-          type: string
-          title: Identifier Type
-          description: 'Type of identifier: domain or name'
-          default: domain
-        enable_predictive_intelligence:
-          type: boolean
-          title: Enable Predictive Intelligence
-          description: Generate predictive intelligence
-          default: true
-        analyze_competition:
-          type: boolean
-          title: Analyze Competition
-          description: Analyze competitive landscape
-          default: true
-        identify_opportunities:
-          type: boolean
-          title: Identify Opportunities
-          description: Identify expansion opportunities
-          default: true
-      type: object
-      required:
-      - identifier
-      title: CompanyEnrichmentRequest
-      description: Request model for company enrichment
     ProspectingRequest:
       properties:
         job_titles:
@@ -558,6 +405,125 @@ components:
       type: object
       title: ProspectingRequest
       description: Request model for AI prospecting
+    PersonEnrichmentRequest:
+      properties:
+        identifier:
+          type: string
+          title: Identifier
+          description: Email or LinkedIn URL
+        identifier_type:
+          type: string
+          title: Identifier Type
+          description: 'Type of identifier: email or linkedin'
+          default: email
+        enable_ai_insights:
+          type: boolean
+          title: Enable Ai Insights
+          description: Generate AI-powered insights
+          default: true
+        detect_buying_signals:
+          type: boolean
+          title: Detect Buying Signals
+          description: Detect buying signals
+          default: true
+        generate_outreach:
+          type: boolean
+          title: Generate Outreach
+          description: Generate personalized outreach strategy
+          default: true
+      type: object
+      required:
+      - identifier
+      title: PersonEnrichmentRequest
+      description: Request model for person enrichment
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CompanyEnrichmentRequest:
+      properties:
+        identifier:
+          type: string
+          title: Identifier
+          description: Domain or company name
+        identifier_type:
+          type: string
+          title: Identifier Type
+          description: 'Type of identifier: domain or name'
+          default: domain
+        enable_predictive_intelligence:
+          type: boolean
+          title: Enable Predictive Intelligence
+          description: Generate predictive intelligence
+          default: true
+        analyze_competition:
+          type: boolean
+          title: Analyze Competition
+          description: Analyze competitive landscape
+          default: true
+        identify_opportunities:
+          type: boolean
+          title: Identify Opportunities
+          description: Identify expansion opportunities
+          default: true
+      type: object
+      required:
+      - identifier
+      title: CompanyEnrichmentRequest
+      description: Request model for company enrichment
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    BulkEnrichmentRequest:
+      properties:
+        identifiers:
+          items:
+            type: string
+          type: array
+          title: Identifiers
+          description: List of identifiers to enrich
+        identifier_type:
+          type: string
+          title: Identifier Type
+          description: Type of identifiers
+          default: email
+        enrichment_type:
+          $ref: '#/components/schemas/EnrichmentType'
+          description: Type of enrichment
+          default: person
+      type: object
+      required:
+      - identifiers
+      title: BulkEnrichmentRequest
+      description: Request model for bulk enrichment
   securitySchemes:
     HTTPBearer:
       type: http

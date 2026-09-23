@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Target Graph API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: target-graph
+- name: target graph
   description: Account and contact intelligence. Build and enrich your target account list.
 paths:
   /api/target-graph/organizations/{org_id}:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get Organization Detail
       description: Get detailed information about a specific organization.
       operationId: get_organization_detail_api_target_graph_organizations__org_id__get
@@ -78,7 +44,7 @@ paths:
   /api/target-graph/stats:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get Stats
       description: Get target graph statistics
       operationId: get_stats_api_target_graph_stats_get
@@ -93,7 +59,7 @@ paths:
   /api/target-graph/organizations:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: List Organizations
       description: List all discovered organizations
       operationId: list_organizations_api_target_graph_organizations_get
@@ -161,7 +127,7 @@ paths:
   /api/target-graph/people:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: List People
       description: List all discovered people
       operationId: list_people_api_target_graph_people_get
@@ -259,7 +225,7 @@ paths:
   /api/target-graph/framework-personas:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Framework Personas
       description: 'The brand''s personas FROM the messaging framework (Gypsum), fused with the
 
@@ -280,7 +246,7 @@ paths:
   /api/target-graph/discover-decision-makers:
     post:
       tags:
-      - target-graph
+      - target graph
       summary: Discover Decision Makers
       description: Discover decision makers on LinkedIn for a specific organization
       operationId: discover_decision_makers_api_target_graph_discover_decision_makers_post
@@ -310,7 +276,7 @@ paths:
   /api/target-graph/high-value-targets:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get High Value Targets
       description: 'Identify High Value Targets (companies/orgs with multiple developers)
 
@@ -327,7 +293,7 @@ paths:
   /api/target-graph/high-value-targets/summary:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get Hvt Summary
       description: 'Get HVT rollup summary by CRM stage for CMO dashboard.
 
@@ -344,7 +310,7 @@ paths:
   /api/target-graph/organizations/{target_org_id}/interactions:
     post:
       tags:
-      - target-graph
+      - target graph
       summary: Log Interaction
       description: Log an interaction with an organization (call, email, meeting, etc.)
       operationId: log_interaction_api_target_graph_organizations__target_org_id__interactions_post
@@ -380,7 +346,7 @@ paths:
   /api/target-graph/organizations/{target_org_id}/hypothesis:
     put:
       tags:
-      - target-graph
+      - target graph
       summary: Update Hypothesis
       description: Update sales hypothesis for an organization (F.I.R.E. methodology)
       operationId: update_hypothesis_api_target_graph_organizations__target_org_id__hypothesis_put
@@ -416,7 +382,7 @@ paths:
   /api/target-graph/organizations/{target_org_id}/details:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get Organization Details
       description: Get full organization details including hypothesis and interaction history
       operationId: get_organization_details_api_target_graph_organizations__target_org_id__details_get
@@ -444,7 +410,7 @@ paths:
   /api/target-graph/clustering-modes:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get Clustering Modes
       description: Get available clustering modes for the graph visualization.
       operationId: get_clustering_modes_api_target_graph_clustering_modes_get
@@ -457,7 +423,7 @@ paths:
   /api/target-graph/graph-clustered:
     get:
       tags:
-      - target-graph
+      - target graph
       summary: Get Clustered Graph
       description: 'Get graph data with anchor nodes for clustering visualization.
 
@@ -528,7 +494,7 @@ paths:
   /api/target-graph/load-demo-data:
     post:
       tags:
-      - target-graph
+      - target graph
       summary: Load Demo Data
       description: 'Load demo data to simulate CRM integration.
 
@@ -545,12 +511,106 @@ paths:
   /api/target-graph/clear-demo-data:
     delete:
       tags:
-      - target-graph
+      - target graph
       summary: Clear Demo Data
       description: 'Clear demo data from the target graph.
 
         Only removes data that was created by the demo loader.'
       operationId: clear_demo_data_api_target_graph_clear_demo_data_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/targetGraph/listOrganizations:
+    get:
+      tags:
+      - target graph
+      summary: List Organizations
+      description: Get organizations in the format expected by the frontend.
+      operationId: list_organizations_api_targetGraph_listOrganizations_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of organizations to return
+          default: 100
+          title: Limit
+        description: Number of organizations to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/targetGraph/listPeople:
+    get:
+      tags:
+      - target graph
+      summary: List People
+      description: Get people in the format expected by the frontend.
+      operationId: list_people_api_targetGraph_listPeople_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Number of people to return
+          default: 100
+          title: Limit
+        description: Number of people to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/targetGraph/listRepositories:
+    get:
+      tags:
+      - target graph
+      summary: List Repositories
+      description: 'Get repositories being monitored.
+
+        For now, return empty as we''re not tracking repos separately.'
+      operationId: list_repositories_api_targetGraph_listRepositories_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - HTTPBearer: []
+  /api/targetGraph/stats:
+    get:
+      tags:
+      - target graph
+      summary: Get Stats
+      description: Get overall statistics for the target graph.
+      operationId: get_stats_api_targetGraph_stats_get
       responses:
         '200':
           description: Successful Response

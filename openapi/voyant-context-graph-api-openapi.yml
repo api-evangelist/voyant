@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Context Graph API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: context-graph
+- name: Context Graph
   description: Ontology and provenance tracking. Explore relationships between entities in your context graph.
 paths:
   /api/context-graph/:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Context Graph Ontology
       description: 'Get the Context Graph ontology.
 
@@ -72,7 +38,7 @@ paths:
   /api/context-graph:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Context Graph Ontology
       description: 'Get the Context Graph ontology.
 
@@ -94,7 +60,7 @@ paths:
   /api/context-graph/context.jsonld:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Jsonld Context
       description: 'Get the JSON-LD context file.
 
@@ -112,7 +78,7 @@ paths:
   /api/context-graph/claims:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Claim Types
       description: Get all supported claim types.
       operationId: get_claim_types_api_context_graph_claims_get
@@ -125,7 +91,7 @@ paths:
   /api/context-graph/claims/{claim_id}:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Claim Type
       description: Get a specific claim type definition.
       operationId: get_claim_type_api_context_graph_claims__claim_id__get
@@ -151,7 +117,7 @@ paths:
   /api/context-graph/schema:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Schema
       description: Get the full ontology schema.
       operationId: get_schema_api_context_graph_schema_get
@@ -164,7 +130,7 @@ paths:
   /api/context-graph/mutations:
     post:
       tags:
-      - context-graph
+      - Context Graph
       summary: Create Mutation
       description: 'Create a new context mutation with attestations.
 
@@ -193,7 +159,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: List Mutations
       description: List context mutations for the organization.
       operationId: list_mutations_api_context_graph_mutations_get
@@ -252,7 +218,7 @@ paths:
   /api/context-graph/mutations/{mutation_id}:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Mutation
       description: Get a specific mutation by ID.
       operationId: get_mutation_api_context_graph_mutations__mutation_id__get
@@ -280,7 +246,7 @@ paths:
   /api/context-graph/provenance:
     post:
       tags:
-      - context-graph
+      - Context Graph
       summary: Create Provenance
       description: Create a provenance relationship between entities.
       operationId: create_provenance_api_context_graph_provenance_post
@@ -307,7 +273,7 @@ paths:
   /api/context-graph/entities/{entity_type}/{entity_id}/provenance:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Entity Provenance
       description: 'Get the provenance graph for an entity.
 
@@ -364,7 +330,7 @@ paths:
   /api/context-graph/policies:
     post:
       tags:
-      - context-graph
+      - Context Graph
       summary: Create Policy
       description: Create a governance policy for context changes.
       operationId: create_policy_api_context_graph_policies_post
@@ -390,7 +356,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: List Policies
       description: List governance policies for the organization.
       operationId: list_policies_api_context_graph_policies_get
@@ -421,7 +387,7 @@ paths:
   /api/context-graph/policies/{policy_id}:
     get:
       tags:
-      - context-graph
+      - Context Graph
       summary: Get Policy
       description: Get a specific governance policy.
       operationId: get_policy_api_context_graph_policies__policy_id__get
@@ -502,95 +468,6 @@ components:
       - name
       title: GovernancePolicyCreate
       description: Create a governance policy
-    ProvenanceCreate:
-      properties:
-        source_entity_type:
-          type: string
-          title: Source Entity Type
-        source_entity_id:
-          type: string
-          title: Source Entity Id
-        source_entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Entity Uri
-        source_version:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Version
-        derived_entity_type:
-          type: string
-          title: Derived Entity Type
-        derived_entity_id:
-          type: string
-          title: Derived Entity Id
-        derived_entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Derived Entity Uri
-        relationship_type:
-          type: string
-          title: Relationship Type
-          description: derived, informed, supersedes
-          default: derived
-        transformation:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Transformation
-          description: How the derivation was performed
-        transformation_agent:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Transformation Agent
-          description: Who/what performed the transformation
-      type: object
-      required:
-      - source_entity_type
-      - source_entity_id
-      - derived_entity_type
-      - derived_entity_id
-      title: ProvenanceCreate
-      description: Create a provenance relationship between entities
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     MutationCreate:
       properties:
         entity_type:
@@ -645,6 +522,134 @@ components:
       - entity_id
       title: MutationCreate
       description: Create a new context mutation with attestations
+    ProvenanceCreate:
+      properties:
+        source_entity_type:
+          type: string
+          title: Source Entity Type
+        source_entity_id:
+          type: string
+          title: Source Entity Id
+        source_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Entity Uri
+        source_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Version
+        derived_entity_type:
+          type: string
+          title: Derived Entity Type
+        derived_entity_id:
+          type: string
+          title: Derived Entity Id
+        derived_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Derived Entity Uri
+        relationship_type:
+          type: string
+          title: Relationship Type
+          description: derived, informed, supersedes
+          default: derived
+        transformation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation
+          description: How the derivation was performed
+        transformation_agent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation Agent
+          description: Who/what performed the transformation
+      type: object
+      required:
+      - source_entity_type
+      - source_entity_id
+      - derived_entity_type
+      - derived_entity_id
+      title: ProvenanceCreate
+      description: Create a provenance relationship between entities
+    AttestationEvidenceCreate:
+      properties:
+        evidence_type:
+          type: string
+          title: Evidence Type
+          description: 'Type: document, url, analysis, conversation'
+        evidence_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Uri
+          description: URI to the evidence
+        evidence_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Hash
+          description: Content hash for verification
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        content_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Excerpt
+          description: Relevant excerpt from the evidence
+      type: object
+      required:
+      - evidence_type
+      title: AttestationEvidenceCreate
+      description: Evidence supporting an attestation
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     AttestationCreate:
       properties:
         claim_type:
@@ -700,45 +705,6 @@ components:
       - actor_id
       title: AttestationCreate
       description: A signed claim about context
-    AttestationEvidenceCreate:
-      properties:
-        evidence_type:
-          type: string
-          title: Evidence Type
-          description: 'Type: document, url, analysis, conversation'
-        evidence_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Uri
-          description: URI to the evidence
-        evidence_hash:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Hash
-          description: Content hash for verification
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        content_excerpt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Excerpt
-          description: Relevant excerpt from the evidence
-      type: object
-      required:
-      - evidence_type
-      title: AttestationEvidenceCreate
-      description: Evidence supporting an attestation
   securitySchemes:
     HTTPBearer:
       type: http

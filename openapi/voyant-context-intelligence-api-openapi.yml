@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Context Intelligence API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -174,7 +140,26 @@ paths:
       tags:
       - context-intelligence
       summary: Refresh Gypsum Messaging Stream
-      description: "Refresh the Gypsum messaging framework context stream.\n\nOptionally pass version_metadata to track training rationale:\n{\n    \"version_metadata\": {\n        \"Headline\": {\"content_version_id\": \"uuid\", \"change_rationale\": \"Updated per brand guidelines\"},\n        \"Persona: CTO\": {\"content_version_id\": \"uuid\", \"change_rationale\": \"Refined pain points\"}\n    },\n    \"change_source\": \"training\",\n    \"change_rationale\": \"Bulk update after training session\"\n}"
+      description: 'Refresh the Gypsum messaging framework context stream.
+
+
+        Optionally pass version_metadata to track training rationale:
+
+        {
+
+        "version_metadata": {
+
+        "Headline": {"content_version_id": "uuid", "change_rationale": "Updated per brand guidelines"},
+
+        "Persona: CTO": {"content_version_id": "uuid", "change_rationale": "Refined pain points"}
+
+        },
+
+        "change_source": "training",
+
+        "change_rationale": "Bulk update after training session"
+
+        }'
       operationId: refresh_gypsum_messaging_stream_api_context_intelligence_streams_gypsum_messaging_post
       requestBody:
         content:
@@ -677,6 +662,28 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    GypsumSyncRequest:
+      properties:
+        version_metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Version Metadata
+        change_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Source
+          default: sync
+        change_rationale:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Rationale
+      type: object
+      title: GypsumSyncRequest
+      description: Optional metadata to include when syncing from Gypsum
     ProcessContentRequest:
       properties:
         content_id:
@@ -758,6 +765,31 @@ components:
       - reason
       title: RankingOverrideRequest
       description: Request for ranking override
+    RerankRequest:
+      properties:
+        chunk_ids:
+          items:
+            type: string
+          type: array
+          title: Chunk Ids
+          description: Chunks to rerank
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking criteria
+        context_stream_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Stream Id
+          description: Optional stream context
+      type: object
+      required:
+      - chunk_ids
+      - ranking_criteria
+      title: RerankRequest
+      description: Request for reranking chunks
     ValidationError:
       properties:
         loc:
@@ -784,62 +816,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    RerankRequest:
-      properties:
-        chunk_ids:
-          items:
-            type: string
-          type: array
-          title: Chunk Ids
-          description: Chunks to rerank
-        ranking_criteria:
-          additionalProperties: true
-          type: object
-          title: Ranking Criteria
-          description: Ranking criteria
-        context_stream_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Stream Id
-          description: Optional stream context
-      type: object
-      required:
-      - chunk_ids
-      - ranking_criteria
-      title: RerankRequest
-      description: Request for reranking chunks
-    GypsumSyncRequest:
-      properties:
-        version_metadata:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Version Metadata
-        change_source:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Source
-          default: sync
-        change_rationale:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Rationale
-      type: object
-      title: GypsumSyncRequest
-      description: Optional metadata to include when syncing from Gypsum
     ChunkOptimizationRequest:
       properties:
         chunk_id:
@@ -866,6 +842,15 @@ components:
       - version_name
       title: ChunkOptimizationRequest
       description: Request for chunk optimization
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     CreateStreamRequest:
       properties:
         name:

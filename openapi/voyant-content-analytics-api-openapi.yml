@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Content Analytics API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: content-analytics
+- name: Content Analytics
   description: Content performance tracking. Monitor engagement, reach, and effectiveness across platforms.
 paths:
   /api/content-analytics/performance/overview:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Content Performance Overview
       description: 'Get comprehensive content performance analysis combining GA data with VoiceForge content metrics.
 
@@ -94,7 +60,7 @@ paths:
   /api/content-analytics/persona-engagement:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Persona Content Engagement
       description: 'Analyze persona engagement with content using semantic matching.
 
@@ -148,7 +114,7 @@ paths:
   /api/content-analytics/content-gaps:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Content Gaps Analysis
       description: 'Identify content gaps across personas and topics.
 
@@ -202,7 +168,7 @@ paths:
   /api/content-analytics/realtime-metrics:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Realtime Content Metrics
       description: 'Get real-time content performance metrics from Google Analytics.
 
@@ -226,7 +192,7 @@ paths:
   /api/content-analytics/optimization-insights:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Content Optimization Insights
       description: 'Get specific optimization recommendations for content.
 
@@ -280,7 +246,7 @@ paths:
   /api/content-analytics/summary:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Content Analytics Summary
       description: 'Get a comprehensive summary of content analytics.
 
@@ -315,7 +281,7 @@ paths:
   /api/content-analytics/ga-sync:
     post:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Sync Ga Metrics
       description: Stream GA metrics so the UI can show live analytics population.
       operationId: sync_ga_metrics_api_content_analytics_ga_sync_post
@@ -342,7 +308,7 @@ paths:
   /api/content-analytics/seed-demo:
     post:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Seed Demo Content Performance
       description: Seed demo content performance data for testing.
       operationId: seed_demo_content_performance_api_content_analytics_seed_demo_post
@@ -357,7 +323,7 @@ paths:
   /api/content-analytics/traffic-trends:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Traffic Trends
       description: 'Get daily traffic trends for total web and blog traffic.
 
@@ -392,7 +358,7 @@ paths:
   /api/content-analytics/gated-content:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Gated Content Stats
       description: 'Get gated content performance stats.
 
@@ -429,7 +395,7 @@ paths:
   /api/content-analytics/campaigns:
     get:
       tags:
-      - content-analytics
+      - Content Analytics
       summary: Get Campaign Stats
       description: 'Get email campaign performance stats with MQL generation and content attribution.
 
@@ -465,6 +431,27 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    AnalyticsSyncRequest:
+      properties:
+        days:
+          type: integer
+          title: Days
+          default: 30
+        limit:
+          type: integer
+          title: Limit
+          default: 150
+      type: object
+      title: AnalyticsSyncRequest
     ValidationError:
       properties:
         loc:
@@ -491,27 +478,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    AnalyticsSyncRequest:
-      properties:
-        days:
-          type: integer
-          title: Days
-          default: 30
-        limit:
-          type: integer
-          title: Limit
-          default: 150
-      type: object
-      title: AnalyticsSyncRequest
   securitySchemes:
     HTTPBearer:
       type: http

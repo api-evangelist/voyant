@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Intelligent Prompt Generation API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -96,7 +62,16 @@ paths:
       tags:
       - Intelligent Prompt Generation
       summary: Get Sample Prompts
-      description: "Get sample prompts showing Gypsum persona integration capabilities.\n\nOptionally specify a funnel_stage to see how prompts are tailored for different stages:\n- tofu: Awareness-stage educational content\n- mofu: Consideration-stage solution-focused content  \n- bofu: Decision-stage implementation and ROI content"
+      description: 'Get sample prompts showing Gypsum persona integration capabilities.
+
+
+        Optionally specify a funnel_stage to see how prompts are tailored for different stages:
+
+        - tofu: Awareness-stage educational content
+
+        - mofu: Consideration-stage solution-focused content
+
+        - bofu: Decision-stage implementation and ROI content'
       operationId: get_sample_prompts_api_prompts_sample_get
       security:
       - HTTPBearer: []
@@ -153,21 +128,63 @@ paths:
               schema: {}
 components:
   schemas:
-    ContentPlatform:
+    ContentTone:
       type: string
       enum:
-      - twitter
-      - instagram
-      - facebook
-      - linkedin
-      - email
-      - blog
-      - website
-      - customer_support
-      - video_script
-      - geo_prompt
-      title: ContentPlatform
-      description: Platforms for content generation.
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    PromptGenerationResponse:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/GeneratedPrompt'
+          type: array
+          title: Prompts
+          description: Generated prompt suggestions
+        content_summary:
+          additionalProperties: true
+          type: object
+          title: Content Summary
+          description: Summary of analyzed content
+        persona_context:
+          additionalProperties: true
+          type: object
+          title: Persona Context
+          description: Gypsum persona context
+        messaging_insights:
+          additionalProperties: true
+          type: object
+          title: Messaging Insights
+          description: Messaging framework insights
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Generation metadata
+      type: object
+      required:
+      - prompts
+      - content_summary
+      - persona_context
+      - messaging_insights
+      - metadata
+      title: PromptGenerationResponse
+      description: Response containing generated prompts with Gypsum insights
     ValidationError:
       properties:
         loc:
@@ -194,27 +211,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     PromptGenerationRequest:
       properties:
         domain:
@@ -262,14 +258,30 @@ components:
       type: object
       title: PromptGenerationRequest
       description: Request for generating prompts with Gypsum integration
-    FunnelStage:
+    ContentPlatform:
       type: string
       enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     GeneratedPrompt:
       properties:
         title:
@@ -332,43 +344,6 @@ components:
       - messaging_framework
       title: GeneratedPrompt
       description: A generated prompt suggestion enhanced with Gypsum persona insights
-    PromptGenerationResponse:
-      properties:
-        prompts:
-          items:
-            $ref: '#/components/schemas/GeneratedPrompt'
-          type: array
-          title: Prompts
-          description: Generated prompt suggestions
-        content_summary:
-          additionalProperties: true
-          type: object
-          title: Content Summary
-          description: Summary of analyzed content
-        persona_context:
-          additionalProperties: true
-          type: object
-          title: Persona Context
-          description: Gypsum persona context
-        messaging_insights:
-          additionalProperties: true
-          type: object
-          title: Messaging Insights
-          description: Messaging framework insights
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Generation metadata
-      type: object
-      required:
-      - prompts
-      - content_summary
-      - persona_context
-      - messaging_insights
-      - metadata
-      title: PromptGenerationResponse
-      description: Response containing generated prompts with Gypsum insights
   securitySchemes:
     HTTPBearer:
       type: http

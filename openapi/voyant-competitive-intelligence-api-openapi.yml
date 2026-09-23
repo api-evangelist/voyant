@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Competitive Intelligence API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -426,46 +392,114 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    CareersCadence:
+    ExtractedProduct:
       properties:
-        total_jobs_found:
-          type: integer
-          title: Total Jobs Found
-          default: 0
-        engineering_jobs:
-          type: integer
-          title: Engineering Jobs
-          default: 0
-        sales_marketing_jobs:
-          type: integer
-          title: Sales Marketing Jobs
-          default: 0
-        other_jobs:
-          type: integer
-          title: Other Jobs
-          default: 0
-        careers_url:
+        name:
+          type: string
+          title: Name
+        category:
           anyOf:
           - type: string
           - type: 'null'
-          title: Careers Url
-        sample_jobs:
-          items:
-            $ref: '#/components/schemas/JobPosting'
-          type: array
-          title: Sample Jobs
-        hiring_signal:
+          title: Category
+        description:
           type: string
-          title: Hiring Signal
-          default: unknown
-        departments_hiring:
+          title: Description
+        key_features:
           items:
             type: string
           type: array
-          title: Departments Hiring
+          title: Key Features
+        differentiators:
+          items:
+            type: string
+          type: array
+          title: Differentiators
       type: object
-      title: CareersCadence
-      description: Careers/hiring activity metrics
+      required:
+      - name
+      - description
+      title: ExtractedProduct
+      description: Product/offering extracted from competitor
+    BlogPost:
+      properties:
+        title:
+          type: string
+          title: Title
+        url:
+          type: string
+          title: Url
+        published_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Published Date
+        days_ago:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Days Ago
+        author:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author
+        author_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author Title
+      type: object
+      required:
+      - title
+      title: BlogPost
+      description: A detected blog post
+    MarketTrend:
+      properties:
+        trend:
+          type: string
+          title: Trend
+        impact:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Impact
+        timeframe:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timeframe
+      type: object
+      required:
+      - trend
+      title: MarketTrend
+      description: A market trend identified in the report
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ContentCadence:
       properties:
         blog_posts_last_30_days:
@@ -498,360 +532,44 @@ components:
       type: object
       title: ContentCadence
       description: Content publishing cadence metrics
-    MarketTrend:
+    CadenceScore:
       properties:
-        trend:
-          type: string
-          title: Trend
-        impact:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Impact
-        timeframe:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Timeframe
-      type: object
-      required:
-      - trend
-      title: MarketTrend
-      description: A market trend identified in the report
-    RedditMention:
-      properties:
-        subreddit:
-          type: string
-          title: Subreddit
-        title:
-          type: string
-          title: Title
-        url:
-          type: string
-          title: Url
-        score:
+        overall_score:
           type: integer
-          title: Score
-        num_comments:
-          type: integer
-          title: Num Comments
-        created_utc:
-          type: number
-          title: Created Utc
-        sentiment:
+          title: Overall Score
+          description: 0-100 cadence score
+        grade:
+          type: string
+          title: Grade
+          description: A, B, C, D, F grade
+        content_cadence:
+          $ref: '#/components/schemas/ContentCadence'
+        linkedin_cadence:
+          $ref: '#/components/schemas/LinkedInCadence'
+        careers_cadence:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/CareersCadence'
           - type: 'null'
-          title: Sentiment
-        snippet:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Snippet
-      type: object
-      required:
-      - subreddit
-      - title
-      - url
-      - score
-      - num_comments
-      - created_utc
-      title: RedditMention
-      description: A Reddit mention of a competitor
-    ExtractedMessagingFramework:
-      properties:
-        company_name:
-          type: string
-          title: Company Name
-        tagline:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tagline
-        value_proposition:
-          type: string
-          title: Value Proposition
-        positioning_statement:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Positioning Statement
-        target_audience:
-          type: string
-          title: Target Audience
-        key_differentiators:
-          items:
-            type: string
-          type: array
-          title: Key Differentiators
-        personas:
-          items:
-            $ref: '#/components/schemas/ExtractedPersona'
-          type: array
-          title: Personas
-        products:
-          items:
-            $ref: '#/components/schemas/ExtractedProduct'
-          type: array
-          title: Products
-        proof_points:
-          items:
-            type: string
-          type: array
-          title: Proof Points
-        competitive_claims:
-          items:
-            type: string
-          type: array
-          title: Competitive Claims
-        messaging_tone:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Messaging Tone
-        extracted_at:
-          type: string
-          title: Extracted At
-        confidence_score:
-          type: number
-          title: Confidence Score
-          default: 0.0
-      type: object
-      required:
-      - company_name
-      - value_proposition
-      - target_audience
-      title: ExtractedMessagingFramework
-      description: Complete messaging framework extracted via Claude
-    CompetitorIntelReport:
-      properties:
-        name:
-          type: string
-          title: Name
-        domain:
-          type: string
-          title: Domain
-        scanned_at:
-          type: string
-          title: Scanned At
-        agent_readiness:
-          $ref: '#/components/schemas/AgentReadinessScore'
-        reddit_mentions:
-          items:
-            $ref: '#/components/schemas/RedditMention'
-          type: array
-          title: Reddit Mentions
-          default: []
-        reddit_summary:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Reddit Summary
-        github_health:
-          items:
-            $ref: '#/components/schemas/GitHubRepoHealth'
-          type: array
-          title: Github Health
-          default: []
-        overall_threat_level:
-          type: string
-          title: Overall Threat Level
-          default: unknown
         insights:
           items:
             type: string
           type: array
           title: Insights
-          default: []
+        competitive_assessment:
+          type: string
+          title: Competitive Assessment
+          default: ''
+        scanned_at:
+          type: string
+          title: Scanned At
       type: object
       required:
-      - name
-      - domain
-      - scanned_at
-      - agent_readiness
-      title: CompetitorIntelReport
-      description: Full competitive intelligence report for a competitor
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    AnalystReportExtraction:
-      properties:
-        report_name:
-          type: string
-          title: Report Name
-        analyst_firm:
-          type: string
-          title: Analyst Firm
-        report_type:
-          type: string
-          title: Report Type
-        publication_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Publication Date
-        market_category:
-          type: string
-          title: Market Category
-        vendor_mentions:
-          items:
-            $ref: '#/components/schemas/VendorMention'
-          type: array
-          title: Vendor Mentions
-        market_trends:
-          items:
-            $ref: '#/components/schemas/MarketTrend'
-          type: array
-          title: Market Trends
-        key_findings:
-          items:
-            type: string
-          type: array
-          title: Key Findings
-        recommendations:
-          items:
-            type: string
-          type: array
-          title: Recommendations
-        competitive_insights:
-          items:
-            type: string
-          type: array
-          title: Competitive Insights
-        extracted_at:
-          type: string
-          title: Extracted At
-      type: object
-      required:
-      - report_name
-      - analyst_firm
-      - report_type
-      - market_category
-      title: AnalystReportExtraction
-      description: Extracted insights from an analyst report
-    VendorMention:
-      properties:
-        vendor_name:
-          type: string
-          title: Vendor Name
-        ranking:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Ranking
-        strengths:
-          items:
-            type: string
-          type: array
-          title: Strengths
-        weaknesses:
-          items:
-            type: string
-          type: array
-          title: Weaknesses
-        quote:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Quote
-        context:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context
-      type: object
-      required:
-      - vendor_name
-      title: VendorMention
-      description: A vendor mentioned in an analyst report
-    PositioningComparison:
-      properties:
-        your_framework:
-          additionalProperties: true
-          type: object
-          title: Your Framework
-        competitor_framework:
-          $ref: '#/components/schemas/ExtractedMessagingFramework'
-        comparison_insights:
-          items:
-            type: string
-          type: array
-          title: Comparison Insights
-        differentiation_opportunities:
-          items:
-            type: string
-          type: array
-          title: Differentiation Opportunities
-        messaging_gaps:
-          items:
-            type: string
-          type: array
-          title: Messaging Gaps
-        competitive_advantages:
-          items:
-            type: string
-          type: array
-          title: Competitive Advantages
-        recommended_counter_positioning:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Recommended Counter Positioning
-      type: object
-      required:
-      - your_framework
-      - competitor_framework
-      title: PositioningComparison
-      description: Side-by-side positioning comparison
-    JobPosting:
-      properties:
-        title:
-          type: string
-          title: Title
-        department:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Department
-        location:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Location
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-      type: object
-      required:
-      - title
-      title: JobPosting
-      description: A detected job posting
+      - overall_score
+      - grade
+      - content_cadence
+      - linkedin_cadence
+      title: CadenceScore
+      description: Overall content marketing cadence score
     GitHubRepoHealth:
       properties:
         repo:
@@ -932,35 +650,45 @@ components:
       - monitored_at
       title: MarketObservabilityReport
       description: Complete marketing observability report
-    ExtractedProduct:
+    PositioningComparison:
       properties:
-        name:
-          type: string
-          title: Name
-        category:
+        your_framework:
+          additionalProperties: true
+          type: object
+          title: Your Framework
+        competitor_framework:
+          $ref: '#/components/schemas/ExtractedMessagingFramework'
+        comparison_insights:
+          items:
+            type: string
+          type: array
+          title: Comparison Insights
+        differentiation_opportunities:
+          items:
+            type: string
+          type: array
+          title: Differentiation Opportunities
+        messaging_gaps:
+          items:
+            type: string
+          type: array
+          title: Messaging Gaps
+        competitive_advantages:
+          items:
+            type: string
+          type: array
+          title: Competitive Advantages
+        recommended_counter_positioning:
           anyOf:
           - type: string
           - type: 'null'
-          title: Category
-        description:
-          type: string
-          title: Description
-        key_features:
-          items:
-            type: string
-          type: array
-          title: Key Features
-        differentiators:
-          items:
-            type: string
-          type: array
-          title: Differentiators
+          title: Recommended Counter Positioning
       type: object
       required:
-      - name
-      - description
-      title: ExtractedProduct
-      description: Product/offering extracted from competitor
+      - your_framework
+      - competitor_framework
+      title: PositioningComparison
+      description: Side-by-side positioning comparison
     AgentReadinessScore:
       properties:
         overall_score:
@@ -1018,44 +746,6 @@ components:
       - overall_score
       title: AgentReadinessScore
       description: How AI-agent-friendly is this site?
-    CadenceScore:
-      properties:
-        overall_score:
-          type: integer
-          title: Overall Score
-          description: 0-100 cadence score
-        grade:
-          type: string
-          title: Grade
-          description: A, B, C, D, F grade
-        content_cadence:
-          $ref: '#/components/schemas/ContentCadence'
-        linkedin_cadence:
-          $ref: '#/components/schemas/LinkedInCadence'
-        careers_cadence:
-          anyOf:
-          - $ref: '#/components/schemas/CareersCadence'
-          - type: 'null'
-        insights:
-          items:
-            type: string
-          type: array
-          title: Insights
-        competitive_assessment:
-          type: string
-          title: Competitive Assessment
-          default: ''
-        scanned_at:
-          type: string
-          title: Scanned At
-      type: object
-      required:
-      - overall_score
-      - grade
-      - content_cadence
-      - linkedin_cadence
-      title: CadenceScore
-      description: Overall content marketing cadence score
     ExtractedPersona:
       properties:
         title:
@@ -1082,6 +772,200 @@ components:
       - description
       title: ExtractedPersona
       description: Persona extracted from competitor messaging
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RedditMention:
+      properties:
+        subreddit:
+          type: string
+          title: Subreddit
+        title:
+          type: string
+          title: Title
+        url:
+          type: string
+          title: Url
+        score:
+          type: integer
+          title: Score
+        num_comments:
+          type: integer
+          title: Num Comments
+        created_utc:
+          type: number
+          title: Created Utc
+        sentiment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sentiment
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Snippet
+      type: object
+      required:
+      - subreddit
+      - title
+      - url
+      - score
+      - num_comments
+      - created_utc
+      title: RedditMention
+      description: A Reddit mention of a competitor
+    JobPosting:
+      properties:
+        title:
+          type: string
+          title: Title
+        department:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Department
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+      type: object
+      required:
+      - title
+      title: JobPosting
+      description: A detected job posting
+    ExtractedMessagingFramework:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        value_proposition:
+          type: string
+          title: Value Proposition
+        positioning_statement:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Positioning Statement
+        target_audience:
+          type: string
+          title: Target Audience
+        key_differentiators:
+          items:
+            type: string
+          type: array
+          title: Key Differentiators
+        personas:
+          items:
+            $ref: '#/components/schemas/ExtractedPersona'
+          type: array
+          title: Personas
+        products:
+          items:
+            $ref: '#/components/schemas/ExtractedProduct'
+          type: array
+          title: Products
+        proof_points:
+          items:
+            type: string
+          type: array
+          title: Proof Points
+        competitive_claims:
+          items:
+            type: string
+          type: array
+          title: Competitive Claims
+        messaging_tone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Messaging Tone
+        extracted_at:
+          type: string
+          title: Extracted At
+        confidence_score:
+          type: number
+          title: Confidence Score
+          default: 0.0
+      type: object
+      required:
+      - company_name
+      - value_proposition
+      - target_audience
+      title: ExtractedMessagingFramework
+      description: Complete messaging framework extracted via Claude
+    AnalystReportExtraction:
+      properties:
+        report_name:
+          type: string
+          title: Report Name
+        analyst_firm:
+          type: string
+          title: Analyst Firm
+        report_type:
+          type: string
+          title: Report Type
+        publication_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Publication Date
+        market_category:
+          type: string
+          title: Market Category
+        vendor_mentions:
+          items:
+            $ref: '#/components/schemas/VendorMention'
+          type: array
+          title: Vendor Mentions
+        market_trends:
+          items:
+            $ref: '#/components/schemas/MarketTrend'
+          type: array
+          title: Market Trends
+        key_findings:
+          items:
+            type: string
+          type: array
+          title: Key Findings
+        recommendations:
+          items:
+            type: string
+          type: array
+          title: Recommendations
+        competitive_insights:
+          items:
+            type: string
+          type: array
+          title: Competitive Insights
+        extracted_at:
+          type: string
+          title: Extracted At
+      type: object
+      required:
+      - report_name
+      - analyst_firm
+      - report_type
+      - market_category
+      title: AnalystReportExtraction
+      description: Extracted insights from an analyst report
     LinkedInCadence:
       properties:
         estimated_posts_per_month:
@@ -1111,48 +995,41 @@ components:
       type: object
       title: LinkedInCadence
       description: LinkedIn activity metrics
-    HTTPValidationError:
+    VendorMention:
       properties:
-        detail:
+        vendor_name:
+          type: string
+          title: Vendor Name
+        ranking:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ranking
+        strengths:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    BlogPost:
-      properties:
-        title:
-          type: string
-          title: Title
-        url:
-          type: string
-          title: Url
-        published_date:
+          title: Strengths
+        weaknesses:
+          items:
+            type: string
+          type: array
+          title: Weaknesses
+        quote:
           anyOf:
           - type: string
           - type: 'null'
-          title: Published Date
-        days_ago:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Days Ago
-        author:
+          title: Quote
+        context:
           anyOf:
           - type: string
           - type: 'null'
-          title: Author
-        author_title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Author Title
+          title: Context
       type: object
       required:
-      - title
-      title: BlogPost
-      description: A detected blog post
+      - vendor_name
+      title: VendorMention
+      description: A vendor mentioned in an analyst report
     Body_generate_observability_report_api_competitive_intel_monitor_full_report_post:
       properties:
         request:
@@ -1167,6 +1044,46 @@ components:
       required:
       - request
       title: Body_generate_observability_report_api_competitive_intel_monitor_full_report_post
+    CareersCadence:
+      properties:
+        total_jobs_found:
+          type: integer
+          title: Total Jobs Found
+          default: 0
+        engineering_jobs:
+          type: integer
+          title: Engineering Jobs
+          default: 0
+        sales_marketing_jobs:
+          type: integer
+          title: Sales Marketing Jobs
+          default: 0
+        other_jobs:
+          type: integer
+          title: Other Jobs
+          default: 0
+        careers_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Careers Url
+        sample_jobs:
+          items:
+            $ref: '#/components/schemas/JobPosting'
+          type: array
+          title: Sample Jobs
+        hiring_signal:
+          type: string
+          title: Hiring Signal
+          default: unknown
+        departments_hiring:
+          items:
+            type: string
+          type: array
+          title: Departments Hiring
+      type: object
+      title: CareersCadence
+      description: Careers/hiring activity metrics
     CompetitorScanRequest:
       properties:
         name:
@@ -1199,6 +1116,55 @@ components:
       - domain
       title: CompetitorScanRequest
       description: Request to scan a competitor
+    CompetitorIntelReport:
+      properties:
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        scanned_at:
+          type: string
+          title: Scanned At
+        agent_readiness:
+          $ref: '#/components/schemas/AgentReadinessScore'
+        reddit_mentions:
+          items:
+            $ref: '#/components/schemas/RedditMention'
+          type: array
+          title: Reddit Mentions
+          default: []
+        reddit_summary:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Reddit Summary
+        github_health:
+          items:
+            $ref: '#/components/schemas/GitHubRepoHealth'
+          type: array
+          title: Github Health
+          default: []
+        overall_threat_level:
+          type: string
+          title: Overall Threat Level
+          default: unknown
+        insights:
+          items:
+            type: string
+          type: array
+          title: Insights
+          default: []
+      type: object
+      required:
+      - name
+      - domain
+      - scanned_at
+      - agent_readiness
+      title: CompetitorIntelReport
+      description: Full competitive intelligence report for a competitor
   securitySchemes:
     HTTPBearer:
       type: http

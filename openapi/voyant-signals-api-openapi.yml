@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Signals API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: signals
+- name: Signals
   description: 'Unified signal ingestion across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Discord, Twitter/X, ProductHunt, Slack, YouTube, G2, and government sources (SAM.gov, FERC).'
 paths:
   /api/signals/stats:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Signal Stats
       description: Return counts of signals for the current org (optionally per platform).
       operationId: get_signal_stats_api_signals_stats_get
@@ -82,7 +48,7 @@ paths:
   /api/signals/top-by-engagement:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Top Signals By Engagement
       description: 'Get top signals by engagement grouped by platform.
 
@@ -120,7 +86,7 @@ paths:
   /api/signals/trends:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Signal Trends
       description: 'Get signal counts by date and platform for trend charts.
 
@@ -159,7 +125,7 @@ paths:
   /api/signals/configured-sources:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Configured Sources
       description: 'Get configured signal sources with their keywords, grouped by platform.
 
@@ -191,7 +157,7 @@ paths:
   /api/signals/competitor-trends:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Competitor Trends
       description: 'Get competitor mention trends over time.
 
@@ -234,7 +200,7 @@ paths:
   /api/signals/publishing-comparison:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Publishing Comparison
       description: 'Compare publishing activity between your company and competitors.
 
@@ -270,7 +236,7 @@ paths:
   /api/signals/count:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Signal Count
       description: Return a simple signal count for the current organization.
       operationId: get_signal_count_api_signals_count_get
@@ -302,7 +268,7 @@ paths:
   /api/signals/github/monthly:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Github Monthly Signal Count
       description: Count GitHub signals discovered in the last 30 days.
       operationId: get_github_monthly_signal_count_api_signals_github_monthly_get
@@ -317,7 +283,7 @@ paths:
   /api/signals/profile/{username}:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Github Profile
       description: Get GitHub profile data for a specific user to test social link extraction
       operationId: get_github_profile_api_signals_profile__username__get
@@ -345,7 +311,7 @@ paths:
   /api/signals/alerts:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get System Alerts
       description: Get active system alerts for the organization
       operationId: get_system_alerts_api_signals_alerts_get
@@ -360,7 +326,7 @@ paths:
   /api/signals/alerts/{alert_id}/resolve:
     post:
       tags:
-      - signals
+      - Signals
       summary: Resolve System Alert
       description: Mark a system alert as resolved
       operationId: resolve_system_alert_api_signals_alerts__alert_id__resolve_post
@@ -388,7 +354,7 @@ paths:
   /api/signals/discover:
     post:
       tags:
-      - signals
+      - Signals
       summary: Discover Signals
       description: 'Discover GitHub signals (stars, issues, discussions, PRs)
 
@@ -430,7 +396,7 @@ paths:
   /api/signals/list:
     get:
       tags:
-      - signals
+      - Signals
       summary: List Signals
       description: List discovered signals
       operationId: list_signals_api_signals_list_get
@@ -489,7 +455,7 @@ paths:
   /api/signals/search:
     get:
       tags:
-      - signals
+      - Signals
       summary: Search Signals
       description: 'Search signals by query string (matches title and content).
 
@@ -553,7 +519,7 @@ paths:
   /api/signals/sources:
     get:
       tags:
-      - signals
+      - Signals
       summary: List Signal Sources
       description: List signal sources
       operationId: list_signal_sources_api_signals_sources_get
@@ -567,7 +533,7 @@ paths:
       - HTTPBearer: []
     post:
       tags:
-      - signals
+      - Signals
       summary: Add Signal Source
       description: Add a new signal source (GitHub, Reddit, YouTube, etc.)
       operationId: add_signal_source_api_signals_sources_post
@@ -596,7 +562,7 @@ paths:
   /api/signals/sources/{source_id}:
     delete:
       tags:
-      - signals
+      - Signals
       summary: Delete Signal Source
       description: Delete a signal source
       operationId: delete_signal_source_api_signals_sources__source_id__delete
@@ -624,7 +590,7 @@ paths:
   /api/signals/health:
     get:
       tags:
-      - signals
+      - Signals
       summary: Health Check
       description: Health check endpoint
       operationId: health_check_api_signals_health_get
@@ -637,7 +603,7 @@ paths:
   /api/signals/baseline-discovery:
     post:
       tags:
-      - signals
+      - Signals
       summary: Baseline Discovery
       description: 'Establish a baseline of signals to understand current engagement landscape
 
@@ -671,7 +637,7 @@ paths:
   /api/signals/clear:
     delete:
       tags:
-      - signals
+      - Signals
       summary: Clear All Signals
       description: Clear all signals for the organization
       operationId: clear_all_signals_api_signals_clear_delete
@@ -686,9 +652,26 @@ paths:
   /api/signals/sources/bulk:
     post:
       tags:
-      - signals
+      - Signals
       summary: Bulk Add Signal Sources
-      description: "Bulk add signal sources from a seed configuration\n\nRequest body:\n{\n    \"sources\": [\n        {\"repo\": \"owner/repo\", \"category\": \"multi_agent_ai\", \"description\": \"...\"},\n        ...\n    ],\n    \"replace_existing\": false  // If true, removes existing sources first\n}"
+      description: 'Bulk add signal sources from a seed configuration
+
+
+        Request body:
+
+        {
+
+        "sources": [
+
+        {"repo": "owner/repo", "category": "multi_agent_ai", "description": "..."},
+
+        ...
+
+        ],
+
+        "replace_existing": false // If true, removes existing sources first
+
+        }'
       operationId: bulk_add_signal_sources_api_signals_sources_bulk_post
       requestBody:
         content:
@@ -715,7 +698,7 @@ paths:
   /api/signals/sources/presets:
     get:
       tags:
-      - signals
+      - Signals
       summary: Get Source Presets
       description: Get available preset signal source configurations
       operationId: get_source_presets_api_signals_sources_presets_get
@@ -730,7 +713,7 @@ paths:
   /api/signals/sources/load-preset/{preset_name}:
     post:
       tags:
-      - signals
+      - Signals
       summary: Load Source Preset
       description: 'Load a preset signal source configuration
 
@@ -772,9 +755,27 @@ paths:
   /api/signals/discover-topics:
     post:
       tags:
-      - signals
+      - Signals
       summary: Discover By Topics
-      description: "Discover signals from GitHub topics\n\nThis searches for repositories tagged with specific topics and\nidentifies active contributors as potential leads.\n\nRequest body:\n{\n    \"topics\": [\"multi-agent\", \"event-driven-architecture\", \"iot-platform\"],\n    \"max_repos_per_topic\": 10,\n    \"max_contributors_per_repo\": 5\n}"
+      description: 'Discover signals from GitHub topics
+
+
+        This searches for repositories tagged with specific topics and
+
+        identifies active contributors as potential leads.
+
+
+        Request body:
+
+        {
+
+        "topics": ["multi-agent", "event-driven-architecture", "iot-platform"],
+
+        "max_repos_per_topic": 10,
+
+        "max_contributors_per_repo": 5
+
+        }'
       operationId: discover_by_topics_api_signals_discover_topics_post
       requestBody:
         content:
@@ -801,9 +802,29 @@ paths:
   /api/signals/generate-topics:
     post:
       tags:
-      - signals
+      - Signals
       summary: Generate Topic Suggestions
-      description: "Generate GitHub topic suggestions based on company/product context using AI.\n\nRequest body:\n{\n    \"company_name\": \"Redpanda\",\n    \"product_description\": \"Kafka-compatible streaming data platform\",\n    \"target_audience\": \"Data engineers, platform teams\",\n    \"competitors\": [\"Apache Kafka\", \"Pulsar\"],\n    \"use_cases\": [\"Real-time analytics\", \"Event streaming\"]\n}\n\nReturns categorized topic suggestions that can be added as signal sources."
+      description: 'Generate GitHub topic suggestions based on company/product context using AI.
+
+
+        Request body:
+
+        {
+
+        "company_name": "Redpanda",
+
+        "product_description": "Kafka-compatible streaming data platform",
+
+        "target_audience": "Data engineers, platform teams",
+
+        "competitors": ["Apache Kafka", "Pulsar"],
+
+        "use_cases": ["Real-time analytics", "Event streaming"]
+
+        }
+
+
+        Returns categorized topic suggestions that can be added as signal sources.'
       operationId: generate_topic_suggestions_api_signals_generate_topics_post
       requestBody:
         content:

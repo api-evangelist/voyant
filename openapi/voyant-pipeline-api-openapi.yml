@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Pipeline API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: pipeline
+- name: Pipeline
   description: Pipeline framework for multi-step agent workflows (Blueprints).
 paths:
   /api/pipeline/blueprints:
     get:
       tags:
-      - pipeline
+      - Pipeline
       summary: Get Blueprints
       description: 'List all available blueprints.
 
@@ -70,7 +36,7 @@ paths:
   /api/pipeline/blueprints/{blueprint_id}:
     get:
       tags:
-      - pipeline
+      - Pipeline
       summary: Get Blueprint Detail
       description: 'Get detailed information about a blueprint.
 
@@ -102,7 +68,7 @@ paths:
   /api/pipeline/tools:
     get:
       tags:
-      - pipeline
+      - Pipeline
       summary: List Available Tools
       description: 'List all available tools that can be used in blueprints.
 
@@ -124,7 +90,7 @@ paths:
   /api/pipeline/execute:
     post:
       tags:
-      - pipeline
+      - Pipeline
       summary: Execute Blueprint
       description: 'Execute a blueprint.
 
@@ -157,7 +123,7 @@ paths:
   /api/pipeline/executions:
     get:
       tags:
-      - pipeline
+      - Pipeline
       summary: List Executions
       description: List execution history for the organization.
       operationId: list_executions_api_pipeline_executions_get
@@ -219,7 +185,7 @@ paths:
   /api/pipeline/executions/{execution_id}:
     get:
       tags:
-      - pipeline
+      - Pipeline
       summary: Get Execution
       description: Get details of a specific execution.
       operationId: get_execution_api_pipeline_executions__execution_id__get
@@ -250,7 +216,7 @@ paths:
   /api/pipeline/signals/company:
     post:
       tags:
-      - pipeline
+      - Pipeline
       summary: Discover Company Signals
       description: 'Discover people at a company via LinkedIn signals.
 
@@ -318,7 +284,7 @@ paths:
   /api/pipeline/signals/topic:
     post:
       tags:
-      - pipeline
+      - Pipeline
       summary: Discover Topic Signals
       description: 'Find people discussing a topic across platforms.
 
@@ -372,7 +338,7 @@ paths:
   /api/pipeline/signals/competitor:
     post:
       tags:
-      - pipeline
+      - Pipeline
       summary: Discover Competitor Signals
       description: 'Find people engaging with competitor content.
 
@@ -417,7 +383,7 @@ paths:
   /api/pipeline/resolve/identity:
     post:
       tags:
-      - pipeline
+      - Pipeline
       summary: Resolve Identity
       description: 'Resolve identity across platforms given hints.
 
@@ -532,32 +498,6 @@ components:
       - blueprint_id
       title: ExecuteRequest
       description: Request to execute a blueprint
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     BlueprintSummary:
       properties:
         id:
@@ -591,6 +531,32 @@ components:
       - input_schema
       title: BlueprintSummary
       description: Summary of a blueprint
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

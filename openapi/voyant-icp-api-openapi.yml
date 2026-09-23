@@ -4,35 +4,7 @@ info:
   description: '## Brand Context Management API
 
 
-    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
-
-
-    ### Core Capabilities
-
-
-    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
-
-    - **ICP Management** - Ideal Customer Profile CRUD operations
-
-    - **Campaign Management** - Marketing campaign tracking
-
-    - **AI Chat** - Brand-aware conversational AI
-
-
-    ### Authentication
-
-
-    Most endpoints require `user_id` query parameter (Clerk organization ID).
-
-    Demo access is available for testing.
-
-
-    ### Base URL
-
-
-    Production: `https://gypsum.voyant.io`
-
-    Local: `http://localhost:3001`'
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.'
   version: 1.0.0
   contact:
     name: VoyantIO
@@ -159,47 +131,22 @@ paths:
                   message:
                     type: string
 components:
-  responses:
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-  parameters:
-    userId:
-      name: user_id
-      in: query
-      required: true
-      schema:
-        type: string
-      description: Clerk organization ID (e.g., org_abc123)
   schemas:
-    Industry:
+    ICPUpdate:
       type: object
       properties:
-        id:
-          type: string
         name:
           type: string
         description:
           type: string
-        key_challenges:
-          type: array
-          items:
-            type: string
-        technology_trends:
-          type: array
-          items:
-            type: string
-        regulatory_considerations:
-          type: array
-          items:
-            type: string
-        market_size:
+        discovery_query:
+          type: object
+        discovery_service:
           type: string
-        growth_rate:
-          type: string
+        persona_references:
+          type: object
+        industry_references:
+          type: object
     ICP:
       type: object
       properties:
@@ -241,25 +188,31 @@ components:
         updated_at:
           type: string
           format: date-time
-    ICPCreate:
+    Industry:
       type: object
-      required:
-      - name
-      - discovery_query
       properties:
+        id:
+          type: string
         name:
           type: string
         description:
           type: string
-        discovery_query:
-          type: object
-        discovery_service:
+        key_challenges:
+          type: array
+          items:
+            type: string
+        technology_trends:
+          type: array
+          items:
+            type: string
+        regulatory_considerations:
+          type: array
+          items:
+            type: string
+        market_size:
           type: string
-          default: clearbit
-        persona_references:
-          type: object
-        industry_references:
-          type: object
+        growth_rate:
+          type: string
     Error:
       type: object
       properties:
@@ -267,19 +220,6 @@ components:
           type: string
         message:
           type: string
-    ICPContext:
-      allOf:
-      - $ref: '#/components/schemas/ICP'
-      - type: object
-        properties:
-          referenced_personas:
-            type: array
-            items:
-              $ref: '#/components/schemas/Persona'
-          referenced_industries:
-            type: array
-            items:
-              $ref: '#/components/schemas/Industry'
     Persona:
       type: object
       properties:
@@ -337,8 +277,11 @@ components:
           type: string
         demographics:
           type: object
-    ICPUpdate:
+    ICPCreate:
       type: object
+      required:
+      - name
+      - discovery_query
       properties:
         name:
           type: string
@@ -348,7 +291,36 @@ components:
           type: object
         discovery_service:
           type: string
+          default: clearbit
         persona_references:
           type: object
         industry_references:
           type: object
+    ICPContext:
+      allOf:
+      - $ref: '#/components/schemas/ICP'
+      - type: object
+        properties:
+          referenced_personas:
+            type: array
+            items:
+              $ref: '#/components/schemas/Persona'
+          referenced_industries:
+            type: array
+            items:
+              $ref: '#/components/schemas/Industry'
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    userId:
+      name: user_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Clerk organization ID (e.g., org_abc123)

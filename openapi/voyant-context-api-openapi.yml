@@ -4,35 +4,7 @@ info:
   description: '## Brand Context Management API
 
 
-    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
-
-
-    ### Core Capabilities
-
-
-    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
-
-    - **ICP Management** - Ideal Customer Profile CRUD operations
-
-    - **Campaign Management** - Marketing campaign tracking
-
-    - **AI Chat** - Brand-aware conversational AI
-
-
-    ### Authentication
-
-
-    Most endpoints require `user_id` query parameter (Clerk organization ID).
-
-    Demo access is available for testing.
-
-
-    ### Base URL
-
-
-    Production: `https://gypsum.voyant.io`
-
-    Local: `http://localhost:3001`'
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.'
   version: 1.0.0
   contact:
     name: VoyantIO
@@ -43,13 +15,13 @@ servers:
 - url: http://localhost:3001
   description: Local development
 tags:
-- name: context
+- name: Context
   description: Brand context retrieval (messaging, personas, positioning, etc.)
 paths:
   /api/messaging/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Messaging Context
       description: Retrieve the brand messaging context including elevator pitch, headline, supporting points, and tone.
       operationId: getMessagingContext
@@ -69,7 +41,7 @@ paths:
   /api/personas/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get All Personas
       description: Retrieve all buyer personas for the organization.
       operationId: getPersonasContext
@@ -94,7 +66,7 @@ paths:
   /api/personas/{id}/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Persona by ID
       description: Retrieve a specific persona by ID.
       operationId: getPersonaById
@@ -118,7 +90,7 @@ paths:
   /api/positioning/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Positioning Context
       description: Retrieve the positioning framework including target market, differentiation, and value proposition.
       operationId: getPositioningContext
@@ -136,7 +108,7 @@ paths:
   /api/products/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Products
       description: Retrieve all products for the organization.
       operationId: getProductsContext
@@ -157,7 +129,7 @@ paths:
   /api/use-cases/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Use Cases
       description: Retrieve all use cases for the organization.
       operationId: getUseCasesContext
@@ -178,7 +150,7 @@ paths:
   /api/industries/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Industries
       description: Retrieve all target industries for the organization.
       operationId: getIndustriesContext
@@ -199,7 +171,7 @@ paths:
   /api/testimonials/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Testimonials
       description: Retrieve customer testimonials and social proof.
       operationId: getTestimonialsContext
@@ -220,7 +192,7 @@ paths:
   /api/marketing/context:
     get:
       tags:
-      - context
+      - Context
       summary: Get Full Marketing Context
       description: Retrieve the complete marketing context including messaging, positioning, personas, products, use cases, and more.
       operationId: getMarketingContext
@@ -235,68 +207,23 @@ paths:
                 $ref: '#/components/schemas/MarketingContext'
 components:
   schemas:
-    UseCase:
+    MessagingContext:
       type: object
       properties:
-        id:
+        elevator_pitch:
           type: string
-        title:
+        headline_message:
           type: string
-        slug:
+        supporting_points:
           type: string
-        description:
+        tone_voice:
           type: string
-        problem_statement:
-          type: string
-        solution_overview:
-          type: string
-        key_benefits:
+        key_differentiators:
           type: array
           items:
             type: string
-        target_personas:
-          type: array
-          items:
-            type: string
-        applicable_industries:
-          type: array
-          items:
-            type: string
-        technical_requirements:
-          type: array
-          items:
-            type: string
-        implementation_complexity:
+        value_proposition:
           type: string
-        roi_metrics:
-          type: array
-          items:
-            type: string
-        related_products:
-          type: array
-          items:
-            type: string
-        customer_examples:
-          type: array
-          items:
-            type: string
-    Testimonial:
-      type: object
-      properties:
-        id:
-          type: string
-        quote:
-          type: string
-        author_name:
-          type: string
-        author_title:
-          type: string
-        company:
-          type: string
-        use_case:
-          type: string
-        rating:
-          type: integer
     Industry:
       type: object
       properties:
@@ -322,58 +249,6 @@ components:
           type: string
         growth_rate:
           type: string
-    MessagingContext:
-      type: object
-      properties:
-        elevator_pitch:
-          type: string
-        headline_message:
-          type: string
-        supporting_points:
-          type: string
-        tone_voice:
-          type: string
-        key_differentiators:
-          type: array
-          items:
-            type: string
-        value_proposition:
-          type: string
-    Product:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        tagline:
-          type: string
-        category:
-          type: string
-        features:
-          type: array
-          items:
-            type: string
-        pricing_info:
-          type: object
-        target_audience:
-          type: array
-          items:
-            type: string
-        integration_capabilities:
-          type: array
-          items:
-            type: string
-        documentation_url:
-          type: string
-        demo_url:
-          type: string
-        status:
-          type: string
     Error:
       type: object
       properties:
@@ -381,33 +256,6 @@ components:
           type: string
         message:
           type: string
-    MarketingContext:
-      type: object
-      properties:
-        messaging:
-          $ref: '#/components/schemas/MessagingContext'
-        positioning:
-          $ref: '#/components/schemas/PositioningContext'
-        personas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Persona'
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
-        use_cases:
-          type: array
-          items:
-            $ref: '#/components/schemas/UseCase'
-        industries:
-          type: array
-          items:
-            $ref: '#/components/schemas/Industry'
-        testimonials:
-          type: array
-          items:
-            $ref: '#/components/schemas/Testimonial'
     Persona:
       type: object
       properties:
@@ -494,7 +342,137 @@ components:
           type: string
         compelling_reason:
           type: string
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        tagline:
+          type: string
+        category:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        pricing_info:
+          type: object
+        target_audience:
+          type: array
+          items:
+            type: string
+        integration_capabilities:
+          type: array
+          items:
+            type: string
+        documentation_url:
+          type: string
+        demo_url:
+          type: string
+        status:
+          type: string
+    MarketingContext:
+      type: object
+      properties:
+        messaging:
+          $ref: '#/components/schemas/MessagingContext'
+        positioning:
+          $ref: '#/components/schemas/PositioningContext'
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        use_cases:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseCase'
+        industries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Industry'
+        testimonials:
+          type: array
+          items:
+            $ref: '#/components/schemas/Testimonial'
+    UseCase:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        problem_statement:
+          type: string
+        solution_overview:
+          type: string
+        key_benefits:
+          type: array
+          items:
+            type: string
+        target_personas:
+          type: array
+          items:
+            type: string
+        applicable_industries:
+          type: array
+          items:
+            type: string
+        technical_requirements:
+          type: array
+          items:
+            type: string
+        implementation_complexity:
+          type: string
+        roi_metrics:
+          type: array
+          items:
+            type: string
+        related_products:
+          type: array
+          items:
+            type: string
+        customer_examples:
+          type: array
+          items:
+            type: string
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: string
+        quote:
+          type: string
+        author_name:
+          type: string
+        author_title:
+          type: string
+        company:
+          type: string
+        use_case:
+          type: string
+        rating:
+          type: integer
   responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     NotFound:
       description: Resource not found
       content:
@@ -503,12 +481,6 @@ components:
             $ref: '#/components/schemas/Error'
     InternalError:
       description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Bad request
       content:
         application/json:
           schema:

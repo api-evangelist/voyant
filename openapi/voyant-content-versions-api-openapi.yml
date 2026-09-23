@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Content Versions API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: content-versions
+- name: Content Versions
   description: Content versioning and history. Track changes and roll back to previous versions.
 paths:
   /api/content-versions/versions/{content_type}/{content_key}:
     get:
       tags:
-      - content-versions
+      - Content Versions
       summary: Get Version History
       description: Get version history for a specific content piece
       operationId: get_version_history_api_content_versions_versions__content_type___content_key__get
@@ -95,7 +61,7 @@ paths:
   /api/content-versions/versions/{content_type}/{content_key}/current:
     get:
       tags:
-      - content-versions
+      - Content Versions
       summary: Get Current Version
       description: Get the current (latest) version of a content piece
       operationId: get_current_version_api_content_versions_versions__content_type___content_key__current_get
@@ -133,7 +99,7 @@ paths:
   /api/content-versions/versions:
     post:
       tags:
-      - content-versions
+      - Content Versions
       summary: Create Version
       description: Create a new version of content (automatically handles version numbering)
       operationId: create_version_api_content_versions_versions_post
@@ -161,7 +127,7 @@ paths:
   /api/content-versions/versions/{version_id}/rollback:
     post:
       tags:
-      - content-versions
+      - Content Versions
       summary: Rollback To Version
       description: Rollback to a previous version (creates a new version with the old content)
       operationId: rollback_to_version_api_content_versions_versions__version_id__rollback_post
@@ -190,7 +156,7 @@ paths:
   /api/content-versions/training-sessions:
     post:
       tags:
-      - content-versions
+      - Content Versions
       summary: Create Training Session
       description: Start a new training session
       operationId: create_training_session_api_content_versions_training_sessions_post
@@ -217,7 +183,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     get:
       tags:
-      - content-versions
+      - Content Versions
       summary: List Training Sessions
       description: List training sessions for the org
       operationId: list_training_sessions_api_content_versions_training_sessions_get
@@ -266,7 +232,7 @@ paths:
   /api/content-versions/training-sessions/{session_id}:
     patch:
       tags:
-      - content-versions
+      - Content Versions
       summary: Update Training Session
       description: Update a training session (add conversation, mark complete, etc.)
       operationId: update_training_session_api_content_versions_training_sessions__session_id__patch
@@ -301,7 +267,7 @@ paths:
   /api/content-versions/all-current:
     get:
       tags:
-      - content-versions
+      - Content Versions
       summary: Get All Current Versions
       description: 'Get all current versions, optionally filtered by content type.
 
@@ -338,23 +304,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    TrainingSessionCreate:
-      properties:
-        content_type:
-          type: string
-          title: Content Type
-        content_key:
-          type: string
-          title: Content Key
-        original_content:
-          type: string
-          title: Original Content
-      type: object
-      required:
-      - content_type
-      - content_key
-      - original_content
-      title: TrainingSessionCreate
     TrainingSession:
       properties:
         id:
@@ -433,41 +382,6 @@ components:
       - completed_at
       - status
       title: TrainingSession
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ContentVersion:
       properties:
         id:
@@ -535,7 +449,7 @@ components:
       - created_at
       - is_current
       title: ContentVersion
-    ContentVersionCreate:
+    TrainingSessionCreate:
       properties:
         content_type:
           type: string
@@ -543,37 +457,15 @@ components:
         content_key:
           type: string
           title: Content Key
-        content:
+        original_content:
           type: string
-          title: Content
-        change_source:
-          type: string
-          title: Change Source
-          default: manual
-        change_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Reason
-        training_session_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Training Session Id
-        detected_rules:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Detected Rules
+          title: Original Content
       type: object
       required:
       - content_type
       - content_key
-      - content
-      title: ContentVersionCreate
+      - original_content
+      title: TrainingSessionCreate
     TrainingSessionUpdate:
       properties:
         final_content:
@@ -617,6 +509,80 @@ components:
           title: Status
       type: object
       title: TrainingSessionUpdate
+    ContentVersionCreate:
+      properties:
+        content_type:
+          type: string
+          title: Content Type
+        content_key:
+          type: string
+          title: Content Key
+        content:
+          type: string
+          title: Content
+        change_source:
+          type: string
+          title: Change Source
+          default: manual
+        change_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Reason
+        training_session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Training Session Id
+        detected_rules:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Detected Rules
+      type: object
+      required:
+      - content_type
+      - content_key
+      - content
+      title: ContentVersionCreate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

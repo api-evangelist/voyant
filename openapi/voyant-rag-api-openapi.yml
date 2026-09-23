@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Rag API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -264,6 +230,165 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ContentType:
+      type: string
+      enum:
+      - blog_post
+      - product_description
+      - about_page
+      - landing_page
+      - article
+      - news
+      - press_release
+      - documentation
+      - faq
+      - solutions_page
+      - case_study
+      - pricing_page
+      - product_page
+      - integration_page
+      - other
+      title: ContentType
+      description: Types of content that can be extracted.
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    GeneratedContent:
+      properties:
+        text:
+          type: string
+          title: Text
+          description: Generated content text
+        source_chunks:
+          items:
+            $ref: '#/components/schemas/SourceChunk'
+          type: array
+          title: Source Chunks
+          description: Source chunks used for generation
+        personality_used:
+          $ref: '#/components/schemas/PersonalityType'
+          description: Personality profile that was applied
+          default: default
+        template_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Template Id
+          description: ID of the template used
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Gypsum persona ID that was used
+        template_enhanced:
+          type: boolean
+          title: Template Enhanced
+          description: Whether custom template was used
+          default: false
+        persona_enhanced:
+          type: boolean
+          title: Persona Enhanced
+          description: Whether persona context was applied
+          default: false
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Generation metadata including enhancement details
+      type: object
+      required:
+      - text
+      - source_chunks
+      title: GeneratedContent
+      description: Response model for generated content.
+    ContentPlatform:
+      type: string
+      enum:
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
+    ChunkSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Search query
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by domain
+        content_type:
+          anyOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: 'null'
+          description: Filter by content type
+        top_k:
+          type: integer
+          maximum: 50.0
+          minimum: 1.0
+          title: Top K
+          description: Number of chunks to retrieve
+          default: 5
+      type: object
+      required:
+      - query
+      title: ChunkSearchRequest
+      description: Request to search for content chunks.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     GenerateContentRequest:
       properties:
         query:
@@ -334,145 +459,32 @@ components:
       - tone
       title: GenerateContentRequest
       description: Request to generate content using RAG.
-    ContentPlatform:
-      type: string
-      enum:
-      - twitter
-      - instagram
-      - facebook
-      - linkedin
-      - email
-      - blog
-      - website
-      - customer_support
-      - video_script
-      - geo_prompt
-      title: ContentPlatform
-      description: Platforms for content generation.
-    GeneratedContent:
+    SourceChunk:
       properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: ID of the source chunk
         text:
           type: string
           title: Text
-          description: Generated content text
-        source_chunks:
-          items:
-            $ref: '#/components/schemas/SourceChunk'
-          type: array
-          title: Source Chunks
-          description: Source chunks used for generation
-        personality_used:
-          $ref: '#/components/schemas/PersonalityType'
-          description: Personality profile that was applied
-          default: default
-        template_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Template Id
-          description: ID of the template used
-        persona_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Persona Id
-          description: Gypsum persona ID that was used
-        template_enhanced:
-          type: boolean
-          title: Template Enhanced
-          description: Whether custom template was used
-          default: false
-        persona_enhanced:
-          type: boolean
-          title: Persona Enhanced
-          description: Whether persona context was applied
-          default: false
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Generation metadata including enhancement details
+          description: Snippet of the chunk text
+        similarity:
+          type: number
+          title: Similarity
+          description: Similarity score
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
       type: object
       required:
+      - chunk_id
       - text
-      - source_chunks
-      title: GeneratedContent
-      description: Response model for generated content.
-    PersonalityType:
-      type: string
-      enum:
-      - the_architect
-      - human_first_closer
-      - default
-      title: PersonalityType
-      description: Available personality types for content generation.
-    ChunkSearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-          description: Search query
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter by domain
-        content_type:
-          anyOf:
-          - $ref: '#/components/schemas/ContentType'
-          - type: 'null'
-          description: Filter by content type
-        top_k:
-          type: integer
-          maximum: 50.0
-          minimum: 1.0
-          title: Top K
-          description: Number of chunks to retrieve
-          default: 5
-      type: object
-      required:
-      - query
-      title: ChunkSearchRequest
-      description: Request to search for content chunks.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
+      - similarity
+      - content_id
+      title: SourceChunk
+      description: Source chunk information for generated content.
     ChunkResponse:
       properties:
         id:
@@ -529,78 +541,14 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    FunnelStage:
+    PersonalityType:
       type: string
       enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    SourceChunk:
-      properties:
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: ID of the source chunk
-        text:
-          type: string
-          title: Text
-          description: Snippet of the chunk text
-        similarity:
-          type: number
-          title: Similarity
-          description: Similarity score
-        content_id:
-          type: string
-          title: Content Id
-          description: ID of the parent content
-      type: object
-      required:
-      - chunk_id
-      - text
-      - similarity
-      - content_id
-      title: SourceChunk
-      description: Source chunk information for generated content.
-    ContentType:
-      type: string
-      enum:
-      - blog_post
-      - product_description
-      - about_page
-      - landing_page
-      - article
-      - news
-      - press_release
-      - documentation
-      - faq
-      - solutions_page
-      - case_study
-      - pricing_page
-      - product_page
-      - integration_page
-      - other
-      title: ContentType
-      description: Types of content that can be extracted.
-    RAGProcessResponse:
-      properties:
-        task_id:
-          type: string
-          title: Task Id
-        status:
-          type: string
-          title: Status
-        message:
-          type: string
-          title: Message
-      type: object
-      required:
-      - task_id
-      - status
-      - message
-      title: RAGProcessResponse
-      description: Response model for RAG processing.
+      - the_architect
+      - human_first_closer
+      - default
+      title: PersonalityType
+      description: Available personality types for content generation.
     RAGProcessRequest:
       properties:
         chunk_size:
@@ -632,6 +580,24 @@ components:
       type: object
       title: RAGProcessRequest
       description: Request model for RAG processing.
+    RAGProcessResponse:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - task_id
+      - status
+      - message
+      title: RAGProcessResponse
+      description: Response model for RAG processing.
   securitySchemes:
     HTTPBearer:
       type: http

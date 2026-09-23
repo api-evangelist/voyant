@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Video Generation API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -165,105 +131,6 @@ paths:
               schema: {}
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    VideoScriptRequest:
-      properties:
-        company_domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Domain
-          description: Specific company domain to focus on
-        script_length:
-          type: integer
-          maximum: 300.0
-          minimum: 30.0
-          title: Script Length
-          description: Target script length in seconds
-          default: 120
-        funnel_stage:
-          $ref: '#/components/schemas/FunnelStage'
-          description: Target funnel stage
-          default: tofu
-        tone:
-          $ref: '#/components/schemas/ContentTone'
-          description: Video tone
-          default: professional
-        include_intro:
-          type: boolean
-          title: Include Intro
-          description: Include NextTechStack intro
-          default: true
-        include_outro:
-          type: boolean
-          title: Include Outro
-          description: Include standard outro
-          default: true
-        focus_areas:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Focus Areas
-          description: Specific topics to emphasize
-      type: object
-      title: VideoScriptRequest
-      description: Request for generating video script
     VideoGenerationStatus:
       properties:
         video_id:
@@ -310,6 +177,70 @@ components:
       - updated_at
       title: VideoGenerationStatus
       description: Status of video generation
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    VideoScriptRequest:
+      properties:
+        company_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Domain
+          description: Specific company domain to focus on
+        script_length:
+          type: integer
+          maximum: 300.0
+          minimum: 30.0
+          title: Script Length
+          description: Target script length in seconds
+          default: 120
+        funnel_stage:
+          $ref: '#/components/schemas/FunnelStage'
+          description: Target funnel stage
+          default: tofu
+        tone:
+          $ref: '#/components/schemas/ContentTone'
+          description: Video tone
+          default: professional
+        include_intro:
+          type: boolean
+          title: Include Intro
+          description: Include NextTechStack intro
+          default: true
+        include_outro:
+          type: boolean
+          title: Include Outro
+          description: Include standard outro
+          default: true
+        focus_areas:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Focus Areas
+          description: Specific topics to emphasize
+      type: object
+      title: VideoScriptRequest
+      description: Request for generating video script
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
     VideoGenerationRequest:
       properties:
         script_request:
@@ -352,6 +283,32 @@ components:
       - script_request
       title: VideoGenerationRequest
       description: Request for generating complete video
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     VideoGenerationResponse:
       properties:
         video_id:
@@ -389,6 +346,15 @@ components:
       - metadata
       title: VideoGenerationResponse
       description: Response from video generation request
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

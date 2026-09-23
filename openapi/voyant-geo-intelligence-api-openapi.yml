@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO GEO Intelligence API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -457,81 +423,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    InsightResponse:
-      properties:
-        insight_type:
-          type: string
-          title: Insight Type
-        priority:
-          type: string
-          title: Priority
-        title:
-          type: string
-          title: Title
-        description:
-          type: string
-          title: Description
-        topic:
-          type: string
-          title: Topic
-        data:
-          additionalProperties: true
-          type: object
-          title: Data
-        recommendations:
-          items:
-            type: string
-          type: array
-          title: Recommendations
-        created_at:
-          type: string
-          title: Created At
-      type: object
-      required:
-      - insight_type
-      - priority
-      - title
-      - description
-      - topic
-      - data
-      - recommendations
-      - created_at
-      title: InsightResponse
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     RecommendationResponse:
       properties:
         type:
@@ -632,6 +523,81 @@ components:
       - competitor_mentions
       - last_tested
       title: HotTopicResponse
+    InsightResponse:
+      properties:
+        insight_type:
+          type: string
+          title: Insight Type
+        priority:
+          type: string
+          title: Priority
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        topic:
+          type: string
+          title: Topic
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+        recommendations:
+          items:
+            type: string
+          type: array
+          title: Recommendations
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - insight_type
+      - priority
+      - title
+      - description
+      - topic
+      - data
+      - recommendations
+      - created_at
+      title: InsightResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

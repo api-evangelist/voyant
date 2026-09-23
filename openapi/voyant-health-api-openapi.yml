@@ -11,13 +11,13 @@ servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: health
+- name: Health
   description: Service health and status
 paths:
   /health:
     get:
       tags:
-      - health
+      - Health
       summary: Health Check
       description: Check if the Gypsum API server is running.
       operationId: healthCheck
@@ -43,7 +43,7 @@ paths:
   /api/gypsum/connection-status:
     get:
       tags:
-      - health
+      - Health
       summary: Connection Status
       description: Check Gypsum API connection status (used by VoiceForge integrations).
       operationId: connectionStatus
@@ -84,7 +84,7 @@ paths:
             application/json:
               schema: {}
       tags:
-      - health
+      - Health
     servers:
     - url: https://voice-forge-production.up.railway.app
       description: Production

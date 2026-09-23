@@ -4,35 +4,7 @@ info:
   description: '## Brand Context Management API
 
 
-    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
-
-
-    ### Core Capabilities
-
-
-    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
-
-    - **ICP Management** - Ideal Customer Profile CRUD operations
-
-    - **Campaign Management** - Marketing campaign tracking
-
-    - **AI Chat** - Brand-aware conversational AI
-
-
-    ### Authentication
-
-
-    Most endpoints require `user_id` query parameter (Clerk organization ID).
-
-    Demo access is available for testing.
-
-
-    ### Base URL
-
-
-    Production: `https://gypsum.voyant.io`
-
-    Local: `http://localhost:3001`'
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.'
   version: 1.0.0
   contact:
     name: VoyantIO
@@ -43,13 +15,13 @@ servers:
 - url: http://localhost:3001
   description: Local development
 tags:
-- name: sync
+- name: Sync
   description: Organization data synchronization
 paths:
   /api/sync/organization:
     post:
       tags:
-      - sync
+      - Sync
       summary: Sync Organization
       description: Trigger a sync of organization data from Clerk.
       operationId: syncOrganization
@@ -79,7 +51,7 @@ paths:
   /api/sync/organization/{orgId}/status:
     get:
       tags:
-      - sync
+      - Sync
       summary: Get Sync Status
       description: Check the sync status for an organization.
       operationId: getSyncStatus

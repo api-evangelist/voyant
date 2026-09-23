@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Content Voices API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -767,6 +733,196 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    QualityProfileResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        content_type:
+          type: string
+          title: Content Type
+        gold_content_ids:
+          items:
+            type: string
+          type: array
+          title: Gold Content Ids
+        baseline_content_ids:
+          items:
+            type: string
+          type: array
+          title: Baseline Content Ids
+        quality_markers:
+          additionalProperties: true
+          type: object
+          title: Quality Markers
+        baseline_gaps:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Baseline Gaps
+        excellence_patterns:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Excellence Patterns
+        scoring_rubric:
+          additionalProperties: true
+          type: object
+          title: Scoring Rubric
+        anti_patterns:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Anti Patterns
+        training_confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Training Confidence
+        status:
+          type: string
+          title: Status
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        last_trained_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Trained At
+      type: object
+      required:
+      - id
+      - org_id
+      - content_type
+      - gold_content_ids
+      - baseline_content_ids
+      - quality_markers
+      - baseline_gaps
+      - excellence_patterns
+      - scoring_rubric
+      - anti_patterns
+      - training_confidence
+      - status
+      - created_at
+      - last_trained_at
+      title: QualityProfileResponse
+      description: Quality profile response.
+    CreateVoiceRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Name for this voice profile
+        content_type:
+          type: string
+          title: Content Type
+          description: 'Type: blog, whitepaper, docs, case_study'
+        source_content_ids:
+          items:
+            type: string
+          type: array
+          title: Source Content Ids
+          description: IDs of content to analyze
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Description of this voice
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Set as default for this content type
+          default: false
+      type: object
+      required:
+      - name
+      - content_type
+      - source_content_ids
+      title: CreateVoiceRequest
+      description: Request to create a new content voice.
+    CrawledContentItem:
+      properties:
+        id:
+          type: string
+          title: Id
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        content_type:
+          type: string
+          title: Content Type
+        is_voice_training:
+          type: boolean
+          title: Is Voice Training
+          default: false
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Snippet
+        extracted_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Extracted At
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+      type: object
+      required:
+      - id
+      - url
+      - title
+      - content_type
+      - snippet
+      - extracted_at
+      - domain
+      title: CrawledContentItem
+      description: Crawled content available for voice selection.
+    TrainQualityRequest:
+      properties:
+        gold_content_ids:
+          items:
+            type: string
+          type: array
+          title: Gold Content Ids
+          description: IDs of best/gold content samples
+        baseline_content_ids:
+          items:
+            type: string
+          type: array
+          title: Baseline Content Ids
+          description: IDs of average/baseline content samples
+        content_type:
+          type: string
+          title: Content Type
+          description: 'Type of content: blog, whitepaper, docs'
+          default: blog
+      type: object
+      required:
+      - gold_content_ids
+      - baseline_content_ids
+      title: TrainQualityRequest
+      description: Request to train a quality model from gold vs baseline content.
     VoiceResponse:
       properties:
         id:
@@ -881,56 +1037,6 @@ components:
       - last_extracted_at
       title: VoiceResponse
       description: Content voice response.
-    UpdateVoiceRequest:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        is_default:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Default
-        status:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Status
-      type: object
-      title: UpdateVoiceRequest
-      description: Request to update a content voice.
-    TrainQualityRequest:
-      properties:
-        gold_content_ids:
-          items:
-            type: string
-          type: array
-          title: Gold Content Ids
-          description: IDs of best/gold content samples
-        baseline_content_ids:
-          items:
-            type: string
-          type: array
-          title: Baseline Content Ids
-          description: IDs of average/baseline content samples
-        content_type:
-          type: string
-          title: Content Type
-          description: 'Type of content: blog, whitepaper, docs'
-          default: blog
-      type: object
-      required:
-      - gold_content_ids
-      - baseline_content_ids
-      title: TrainQualityRequest
-      description: Request to train a quality model from gold vs baseline content.
     ValidationError:
       properties:
         loc:
@@ -957,6 +1063,31 @@ components:
       - msg
       - type
       title: ValidationError
+    UpdateVoiceRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        is_default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Default
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      type: object
+      title: UpdateVoiceRequest
+      description: Request to update a content voice.
     HTTPValidationError:
       properties:
         detail:
@@ -988,171 +1119,6 @@ components:
       - content
       title: ScoreContentRequest
       description: Request to score content against the quality model.
-    QualityProfileResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        org_id:
-          type: string
-          title: Org Id
-        content_type:
-          type: string
-          title: Content Type
-        gold_content_ids:
-          items:
-            type: string
-          type: array
-          title: Gold Content Ids
-        baseline_content_ids:
-          items:
-            type: string
-          type: array
-          title: Baseline Content Ids
-        quality_markers:
-          additionalProperties: true
-          type: object
-          title: Quality Markers
-        baseline_gaps:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Baseline Gaps
-        excellence_patterns:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Excellence Patterns
-        scoring_rubric:
-          additionalProperties: true
-          type: object
-          title: Scoring Rubric
-        anti_patterns:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Anti Patterns
-        training_confidence:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Training Confidence
-        status:
-          type: string
-          title: Status
-        created_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Created At
-        last_trained_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Trained At
-      type: object
-      required:
-      - id
-      - org_id
-      - content_type
-      - gold_content_ids
-      - baseline_content_ids
-      - quality_markers
-      - baseline_gaps
-      - excellence_patterns
-      - scoring_rubric
-      - anti_patterns
-      - training_confidence
-      - status
-      - created_at
-      - last_trained_at
-      title: QualityProfileResponse
-      description: Quality profile response.
-    CrawledContentItem:
-      properties:
-        id:
-          type: string
-          title: Id
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        content_type:
-          type: string
-          title: Content Type
-        is_voice_training:
-          type: boolean
-          title: Is Voice Training
-          default: false
-        snippet:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Snippet
-        extracted_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Extracted At
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-      type: object
-      required:
-      - id
-      - url
-      - title
-      - content_type
-      - snippet
-      - extracted_at
-      - domain
-      title: CrawledContentItem
-      description: Crawled content available for voice selection.
-    CreateVoiceRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Name for this voice profile
-        content_type:
-          type: string
-          title: Content Type
-          description: 'Type: blog, whitepaper, docs, case_study'
-        source_content_ids:
-          items:
-            type: string
-          type: array
-          title: Source Content Ids
-          description: IDs of content to analyze
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Description of this voice
-        is_default:
-          type: boolean
-          title: Is Default
-          description: Set as default for this content type
-          default: false
-      type: object
-      required:
-      - name
-      - content_type
-      - source_content_ids
-      title: CreateVoiceRequest
-      description: Request to create a new content voice.
   securitySchemes:
     HTTPBearer:
       type: http

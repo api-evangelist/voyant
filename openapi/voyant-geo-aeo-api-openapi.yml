@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO GEO/AEO API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -1053,7 +1019,24 @@ paths:
       tags:
       - GEO/AEO
       summary: Get Context For Airops
-      description: "Get context data formatted for AirOps workflow consumption.\n\nThis endpoint can be called by AirOps workflows to fetch fresh\nGTM context for content generation.\n\nArgs:\n    context_type: Type of context (use_cases, personas, products, content_topics, all)\n    limit: Max items to return\n\nReturns:\n    JSON array of items ready for AirOps workflow processing"
+      description: 'Get context data formatted for AirOps workflow consumption.
+
+
+        This endpoint can be called by AirOps workflows to fetch fresh
+
+        GTM context for content generation.
+
+
+        Args:
+
+        context_type: Type of context (use_cases, personas, products, content_topics, all)
+
+        limit: Max items to return
+
+
+        Returns:
+
+        JSON array of items ready for AirOps workflow processing'
       operationId: get_context_for_airops_api_geo_aeo_airops_context_get
       security:
       - HTTPBearer: []
@@ -1089,7 +1072,16 @@ paths:
       tags:
       - GEO/AEO
       summary: Search Airops
-      description: "Search the AirOps vector store for relevant context.\n\nArgs:\n    query: Semantic search query\n    context_type: Optional filter (persona, use_case, product, positioning, content_topic)\n    top_k: Number of results (default 5)"
+      description: 'Search the AirOps vector store for relevant context.
+
+
+        Args:
+
+        query: Semantic search query
+
+        context_type: Optional filter (persona, use_case, product, positioning, content_topic)
+
+        top_k: Number of results (default 5)'
       operationId: search_airops_api_geo_aeo_airops_search_get
       security:
       - HTTPBearer: []
@@ -1677,396 +1669,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    TestPromptsRequest:
-      properties:
-        prompts:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Prompts
-          description: Prompts to test
-        models:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Models
-          description: Models to test (chatgpt, claude, gemini, grok)
-        brand_names:
-          items:
-            type: string
-          type: array
-          title: Brand Names
-          description: Brand names to look for in responses
-        save_to_library:
-          type: boolean
-          title: Save To Library
-          description: Save prompts to the topic library after scanning
-          default: false
-        default_topic:
-          type: string
-          title: Default Topic
-          description: Topic name for saved prompts
-          default: Scanned
-      type: object
-      required:
-      - prompts
-      - brand_names
-      title: TestPromptsRequest
-      description: Request to test prompts for visibility.
-    SinglePromptTestRequest:
-      properties:
-        prompt:
-          type: string
-          title: Prompt
-          description: The prompt to test
-        models:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Models
-          description: Models to test
-        brand_names:
-          items:
-            type: string
-          type: array
-          title: Brand Names
-          description: Brand names to look for
-      type: object
-      required:
-      - prompt
-      - brand_names
-      title: SinglePromptTestRequest
-      description: Request to test a single prompt.
-    TopicCreate:
-      properties:
-        name:
-          type: string
-          minLength: 1
-          title: Name
-        color:
-          type: string
-          title: Color
-          default: '#6366f1'
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-      type: object
-      required:
-      - name
-      title: TopicCreate
-      description: Create a new topic.
-    ContentTopicResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        prompt:
-          type: string
-          title: Prompt
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-        source:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source
-          default: manual
-        visibility_score:
-          type: number
-          title: Visibility Score
-        brand_mentioned:
-          type: boolean
-          title: Brand Mentioned
-        competitors_mentioned:
-          items:
-            type: string
-          type: array
-          title: Competitors Mentioned
-        notes:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Notes
-        guidance:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Guidance
-        suggested_at:
-          type: string
-          title: Suggested At
-        status:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Status
-          default: suggested
-        priority:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Priority
-          default: medium
-      type: object
-      required:
-      - id
-      - prompt
-      - category
-      - visibility_score
-      - brand_mentioned
-      - competitors_mentioned
-      - guidance
-      - suggested_at
-      title: ContentTopicResponse
-      description: Response for a content topic.
-    Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post:
-      properties:
-        prompt_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Prompt Ids
-        models:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Models
-        brand_names:
-          items:
-            type: string
-          type: array
-          title: Brand Names
-          default: []
-      type: object
-      title: Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post
-    TargetPromptCreate:
-      properties:
-        prompt_text:
-          type: string
-          minLength: 5
-          title: Prompt Text
-        topic:
-          type: string
-          minLength: 1
-          title: Topic
-        category:
-          type: string
-          title: Category
-          default: category_based
-        priority:
-          type: integer
-          maximum: 10.0
-          minimum: 1.0
-          title: Priority
-          default: 5
-        intent:
-          type: string
-          title: Intent
-          default: informational
-        target_keywords:
-          items:
-            type: string
-          type: array
-          title: Target Keywords
-        notes:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Notes
-      type: object
-      required:
-      - prompt_text
-      - topic
-      title: TargetPromptCreate
-      description: Create a new target prompt.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    SaveSessionRequest:
-      properties:
-        platform:
-          type: string
-          title: Platform
-          description: 'Platform: chatgpt, claude, or gemini'
-        cookies:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Cookies
-          description: Browser cookies
-      type: object
-      required:
-      - platform
-      - cookies
-      title: SaveSessionRequest
-      description: Request to save session cookies for an AI platform.
-    VisibilityReportResponse:
-      properties:
-        brand_name:
-          type: string
-          title: Brand Name
-        total_prompts_tested:
-          type: integer
-          title: Total Prompts Tested
-        overall_visibility_score:
-          type: number
-          title: Overall Visibility Score
-        model_breakdown:
-          additionalProperties:
-            type: number
-          type: object
-          title: Model Breakdown
-        top_performing_prompts:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Top Performing Prompts
-        needs_improvement:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Needs Improvement
-        content_recommendations:
-          items:
-            type: string
-          type: array
-          title: Content Recommendations
-        generated_at:
-          type: string
-          title: Generated At
-      type: object
-      required:
-      - brand_name
-      - total_prompts_tested
-      - overall_visibility_score
-      - model_breakdown
-      - top_performing_prompts
-      - needs_improvement
-      - content_recommendations
-      - generated_at
-      title: VisibilityReportResponse
-      description: Full visibility report response.
-    TopicResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        color:
-          type: string
-          title: Color
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        prompt_count:
-          type: integer
-          title: Prompt Count
-      type: object
-      required:
-      - id
-      - name
-      - color
-      - description
-      - prompt_count
-      title: TopicResponse
-      description: Response for a topic.
-    PromptResponse:
-      properties:
-        prompts:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Prompts
-        generated_at:
-          type: string
-          title: Generated At
-      type: object
-      required:
-      - prompts
-      - generated_at
-      title: PromptResponse
-      description: Response with generated prompts.
-    CreateTopicsFromSignalsRequest:
-      properties:
-        signal_ids:
-          items:
-            type: string
-          type: array
-          title: Signal Ids
-          description: List of signal IDs to convert to topics
-        category:
-          type: string
-          title: Category
-          description: Default category for created topics
-          default: general
-      type: object
-      required:
-      - signal_ids
-      title: CreateTopicsFromSignalsRequest
-      description: Request to create content topics from signals.
-    ScanJobResponse:
-      properties:
-        job_id:
-          type: string
-          title: Job Id
-        status:
-          type: string
-          title: Status
-        message:
-          type: string
-          title: Message
-      type: object
-      required:
-      - job_id
-      - status
-      - message
-      title: ScanJobResponse
-      description: Response when starting an async scan job.
     BulkScheduleRequest:
       properties:
         prompt_ids:
@@ -2087,76 +1689,6 @@ components:
       - enabled
       title: BulkScheduleRequest
       description: Bulk update scheduling for multiple prompts.
-    TargetPromptUpdate:
-      properties:
-        prompt_text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Prompt Text
-        topic:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Topic
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-        status:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Status
-        priority:
-          anyOf:
-          - type: integer
-            maximum: 10.0
-            minimum: 1.0
-          - type: 'null'
-          title: Priority
-        notes:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Notes
-      type: object
-      title: TargetPromptUpdate
-      description: Update a target prompt.
-    VisibilityResultResponse:
-      properties:
-        prompt:
-          type: string
-          title: Prompt
-        visibility_score:
-          type: number
-          title: Visibility Score
-        models_mentioned:
-          type: integer
-          title: Models Mentioned
-        total_models:
-          type: integer
-          title: Total Models
-        responses:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Responses
-        tested_at:
-          type: string
-          title: Tested At
-      type: object
-      required:
-      - prompt
-      - visibility_score
-      - models_mentioned
-      - total_models
-      - responses
-      - tested_at
-      title: VisibilityResultResponse
-      description: Response for a single prompt visibility test.
     TargetPromptResponse:
       properties:
         id:
@@ -2227,46 +1759,6 @@ components:
       - created_at
       title: TargetPromptResponse
       description: Response for a target prompt.
-    BaselineProbeRequest:
-      properties:
-        company_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Name
-          description: Company name (defaults to org's company)
-        models:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Models
-          description: Models to probe (chatgpt, claude, gemini, perplexity)
-      type: object
-      title: BaselineProbeRequest
-      description: Request to run a baseline probe.
-    BulkPromptCreate:
-      properties:
-        prompts:
-          items:
-            $ref: '#/components/schemas/TargetPromptCreate'
-          type: array
-          title: Prompts
-      type: object
-      required:
-      - prompts
-      title: BulkPromptCreate
-      description: Bulk create prompts.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     GuidanceRequest:
       properties:
         prompt:
@@ -2306,59 +1798,409 @@ components:
       - ai_response
       title: GuidanceRequest
       description: Request for visibility gap guidance.
-    SaveContentTopicRequest:
+    VisibilityReportResponse:
       properties:
+        brand_name:
+          type: string
+          title: Brand Name
+        total_prompts_tested:
+          type: integer
+          title: Total Prompts Tested
+        overall_visibility_score:
+          type: number
+          title: Overall Visibility Score
+        model_breakdown:
+          additionalProperties:
+            type: number
+          type: object
+          title: Model Breakdown
+        top_performing_prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Top Performing Prompts
+        needs_improvement:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Needs Improvement
+        content_recommendations:
+          items:
+            type: string
+          type: array
+          title: Content Recommendations
+        generated_at:
+          type: string
+          title: Generated At
+      type: object
+      required:
+      - brand_name
+      - total_prompts_tested
+      - overall_visibility_score
+      - model_breakdown
+      - top_performing_prompts
+      - needs_improvement
+      - content_recommendations
+      - generated_at
+      title: VisibilityReportResponse
+      description: Full visibility report response.
+    ContentTopicResponse:
+      properties:
+        id:
+          type: string
+          title: Id
         prompt:
           type: string
           title: Prompt
-          description: The prompt/query that revealed the gap
         category:
           anyOf:
           - type: string
           - type: 'null'
           title: Category
-          description: Prompt category
         source:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Source
-          description: 'Source: manual, signal, geo_visibility, competitor_gap'
           default: manual
         visibility_score:
           type: number
           title: Visibility Score
-          default: 0.0
         brand_mentioned:
           type: boolean
           title: Brand Mentioned
-          default: false
         competitors_mentioned:
           items:
             type: string
           type: array
           title: Competitors Mentioned
-          default: []
-        ai_response_summary:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Ai Response Summary
-          description: Summary of AI response
         notes:
           anyOf:
           - type: string
           - type: 'null'
           title: Notes
-          description: Additional notes
-        priority:
+        guidance:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Guidance
+        suggested_at:
           type: string
+          title: Suggested At
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+          default: suggested
+        priority:
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Priority
-          description: 'Priority: high, medium, low'
           default: medium
       type: object
       required:
+      - id
       - prompt
-      title: SaveContentTopicRequest
-      description: Request to save a visibility gap as a content topic.
+      - category
+      - visibility_score
+      - brand_mentioned
+      - competitors_mentioned
+      - guidance
+      - suggested_at
+      title: ContentTopicResponse
+      description: Response for a content topic.
+    TopicResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        color:
+          type: string
+          title: Color
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        prompt_count:
+          type: integer
+          title: Prompt Count
+      type: object
+      required:
+      - id
+      - name
+      - color
+      - description
+      - prompt_count
+      title: TopicResponse
+      description: Response for a topic.
+    PromptResponse:
+      properties:
+        prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Prompts
+        generated_at:
+          type: string
+          title: Generated At
+      type: object
+      required:
+      - prompts
+      - generated_at
+      title: PromptResponse
+      description: Response with generated prompts.
+    TargetPromptCreate:
+      properties:
+        prompt_text:
+          type: string
+          minLength: 5
+          title: Prompt Text
+        topic:
+          type: string
+          minLength: 1
+          title: Topic
+        category:
+          type: string
+          title: Category
+          default: category_based
+        priority:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Priority
+          default: 5
+        intent:
+          type: string
+          title: Intent
+          default: informational
+        target_keywords:
+          items:
+            type: string
+          type: array
+          title: Target Keywords
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      type: object
+      required:
+      - prompt_text
+      - topic
+      title: TargetPromptCreate
+      description: Create a new target prompt.
+    StartScanRequest:
+      properties:
+        prompts:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Prompts
+          description: Prompts to test
+        models:
+          items:
+            type: string
+          type: array
+          title: Models
+          description: Models to test
+          default:
+          - claude
+          - gemini
+          - perplexity
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          description: Brand names to look for
+      type: object
+      required:
+      - prompts
+      - brand_names
+      title: StartScanRequest
+      description: Request to start an async visibility scan.
+    CreateTopicsFromSignalsRequest:
+      properties:
+        signal_ids:
+          items:
+            type: string
+          type: array
+          title: Signal Ids
+          description: List of signal IDs to convert to topics
+        category:
+          type: string
+          title: Category
+          description: Default category for created topics
+          default: general
+      type: object
+      required:
+      - signal_ids
+      title: CreateTopicsFromSignalsRequest
+      description: Request to create content topics from signals.
+    BulkPromptCreate:
+      properties:
+        prompts:
+          items:
+            $ref: '#/components/schemas/TargetPromptCreate'
+          type: array
+          title: Prompts
+      type: object
+      required:
+      - prompts
+      title: BulkPromptCreate
+      description: Bulk create prompts.
+    Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post:
+      properties:
+        prompt_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Prompt Ids
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          default: []
+      type: object
+      title: Body_scan_saved_prompts_api_geo_aeo_prompts_scan_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SinglePromptTestRequest:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt to test
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+          description: Models to test
+        brand_names:
+          items:
+            type: string
+          type: array
+          title: Brand Names
+          description: Brand names to look for
+      type: object
+      required:
+      - prompt
+      - brand_names
+      title: SinglePromptTestRequest
+      description: Request to test a single prompt.
+    SaveSessionRequest:
+      properties:
+        platform:
+          type: string
+          title: Platform
+          description: 'Platform: chatgpt, claude, or gemini'
+        cookies:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Cookies
+          description: Browser cookies
+      type: object
+      required:
+      - platform
+      - cookies
+      title: SaveSessionRequest
+      description: Request to save session cookies for an AI platform.
+    TopicCreate:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+        color:
+          type: string
+          title: Color
+          default: '#6366f1'
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      required:
+      - name
+      title: TopicCreate
+      description: Create a new topic.
+    ScanJobResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - job_id
+      - status
+      - message
+      title: ScanJobResponse
+      description: Response when starting an async scan job.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     GeneratePromptsRequest:
       properties:
         company_name:
@@ -2423,7 +2265,60 @@ components:
       - company_name
       title: GeneratePromptsRequest
       description: Request to generate GEO prompts from context.
-    StartScanRequest:
+    SaveContentTopicRequest:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+          description: The prompt/query that revealed the gap
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Prompt category
+        source:
+          type: string
+          title: Source
+          description: 'Source: manual, signal, geo_visibility, competitor_gap'
+          default: manual
+        visibility_score:
+          type: number
+          title: Visibility Score
+          default: 0.0
+        brand_mentioned:
+          type: boolean
+          title: Brand Mentioned
+          default: false
+        competitors_mentioned:
+          items:
+            type: string
+          type: array
+          title: Competitors Mentioned
+          default: []
+        ai_response_summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ai Response Summary
+          description: Summary of AI response
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+          description: Additional notes
+        priority:
+          type: string
+          title: Priority
+          description: 'Priority: high, medium, low'
+          default: medium
+      type: object
+      required:
+      - prompt
+      title: SaveContentTopicRequest
+      description: Request to save a visibility gap as a content topic.
+    TestPromptsRequest:
       properties:
         prompts:
           items:
@@ -2433,27 +2328,124 @@ components:
           title: Prompts
           description: Prompts to test
         models:
-          items:
-            type: string
-          type: array
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
           title: Models
-          description: Models to test
-          default:
-          - claude
-          - gemini
-          - perplexity
+          description: Models to test (chatgpt, claude, gemini, grok)
         brand_names:
           items:
             type: string
           type: array
           title: Brand Names
-          description: Brand names to look for
+          description: Brand names to look for in responses
+        save_to_library:
+          type: boolean
+          title: Save To Library
+          description: Save prompts to the topic library after scanning
+          default: false
+        default_topic:
+          type: string
+          title: Default Topic
+          description: Topic name for saved prompts
+          default: Scanned
       type: object
       required:
       - prompts
       - brand_names
-      title: StartScanRequest
-      description: Request to start an async visibility scan.
+      title: TestPromptsRequest
+      description: Request to test prompts for visibility.
+    BaselineProbeRequest:
+      properties:
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Company name (defaults to org's company)
+        models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Models
+          description: Models to probe (chatgpt, claude, gemini, perplexity)
+      type: object
+      title: BaselineProbeRequest
+      description: Request to run a baseline probe.
+    TargetPromptUpdate:
+      properties:
+        prompt_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Text
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+        priority:
+          anyOf:
+          - type: integer
+            maximum: 10.0
+            minimum: 1.0
+          - type: 'null'
+          title: Priority
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      type: object
+      title: TargetPromptUpdate
+      description: Update a target prompt.
+    VisibilityResultResponse:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+        visibility_score:
+          type: number
+          title: Visibility Score
+        models_mentioned:
+          type: integer
+          title: Models Mentioned
+        total_models:
+          type: integer
+          title: Total Models
+        responses:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Responses
+        tested_at:
+          type: string
+          title: Tested At
+      type: object
+      required:
+      - prompt
+      - visibility_score
+      - models_mentioned
+      - total_models
+      - responses
+      - tested_at
+      title: VisibilityResultResponse
+      description: Response for a single prompt visibility test.
   securitySchemes:
     HTTPBearer:
       type: http

@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Strategy Pipeline API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -307,6 +273,55 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    RunRequest:
+      properties:
+        mode:
+          type: string
+          title: Mode
+          default: recommended
+      type: object
+      title: RunRequest
+    CreateRequest:
+      properties:
+        client_name:
+          type: string
+          title: Client Name
+        brief:
+          type: string
+          title: Brief
+          default: ''
+        brand_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Brand Id
+      type: object
+      required:
+      - client_name
+      title: CreateRequest
+    ResumeRequest:
+      properties:
+        kind:
+          type: string
+          title: Kind
+          default: confirm_personas
+        selection:
+          items:
+            type: string
+          type: array
+          title: Selection
+          default: []
+      type: object
+      title: ResumeRequest
+    OrgKeyRequest:
+      properties:
+        api_key:
+          type: string
+          title: Api Key
+      type: object
+      required:
+      - api_key
+      title: OrgKeyRequest
     ValidationError:
       properties:
         loc:
@@ -333,24 +348,6 @@ components:
       - msg
       - type
       title: ValidationError
-    CreateRequest:
-      properties:
-        client_name:
-          type: string
-          title: Client Name
-        brief:
-          type: string
-          title: Brief
-          default: ''
-        brand_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Brand Id
-      type: object
-      required:
-      - client_name
-      title: CreateRequest
     HTTPValidationError:
       properties:
         detail:
@@ -360,37 +357,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    RunRequest:
-      properties:
-        mode:
-          type: string
-          title: Mode
-          default: recommended
-      type: object
-      title: RunRequest
-    ResumeRequest:
-      properties:
-        kind:
-          type: string
-          title: Kind
-          default: confirm_personas
-        selection:
-          items:
-            type: string
-          type: array
-          title: Selection
-          default: []
-      type: object
-      title: ResumeRequest
-    OrgKeyRequest:
-      properties:
-        api_key:
-          type: string
-          title: Api Key
-      type: object
-      required:
-      - api_key
-      title: OrgKeyRequest
   securitySchemes:
     HTTPBearer:
       type: http

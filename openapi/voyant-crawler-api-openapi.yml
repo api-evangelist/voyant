@@ -1,56 +1,22 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Crawler API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: crawler
+- name: Crawler
   description: Website crawling and content extraction. Ingest web pages, blogs, and documentation.
 paths:
   /api/crawl/engines:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: List Crawler Engines
       description: 'List available crawler engines and their status.
 
@@ -68,7 +34,7 @@ paths:
   /api/crawl/estimate:
     post:
       tags:
-      - crawler
+      - Crawler
       summary: Estimate Crawl Scope
       description: Estimate number of URLs by checking sitemap.xml.
       operationId: estimate_crawl_scope_api_crawl_estimate_post
@@ -95,7 +61,7 @@ paths:
   /api/crawl/start:
     post:
       tags:
-      - crawler
+      - Crawler
       summary: Start Crawl
       description: 'Start a new crawl job using Celery.
 
@@ -126,7 +92,7 @@ paths:
   /api/crawl/status/{crawl_id}:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: Get Crawl Status
       description: Get status of a crawl job.
       operationId: get_crawl_status_api_crawl_status__crawl_id__get
@@ -154,7 +120,7 @@ paths:
   /api/crawl/summary/{crawl_id}:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: Get Crawl Summary
       description: Get summary of a completed crawl job.
       operationId: get_crawl_summary_api_crawl_summary__crawl_id__get
@@ -183,7 +149,7 @@ paths:
   /api/crawl/jobs:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: List Crawl Jobs
       description: List all crawl jobs for organization.
       operationId: list_crawl_jobs_api_crawl_jobs_get
@@ -219,7 +185,7 @@ paths:
   /api/crawl/{crawl_id}/cancel:
     post:
       tags:
-      - crawler
+      - Crawler
       summary: Cancel Crawl
       description: Cancel a running crawl job.
       operationId: cancel_crawl_api_crawl__crawl_id__cancel_post
@@ -247,7 +213,7 @@ paths:
   /api/crawl/stream/{crawl_id}:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: Stream Crawl Events
       description: Stream crawl progress and newly captured content via SSE.
       operationId: stream_crawl_events_api_crawl_stream__crawl_id__get
@@ -275,7 +241,7 @@ paths:
   /api/crawl/{crawl_id}/contents:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: List Crawl Contents
       description: Return captured content rows for a crawl to support polling UI updates.
       operationId: list_crawl_contents_api_crawl__crawl_id__contents_get
@@ -322,7 +288,7 @@ paths:
   /api/crawl/debug/health:
     get:
       tags:
-      - crawler
+      - Crawler
       summary: Debug Health
       description: Debug endpoint to check crawler and Celery health.
       operationId: debug_health_api_crawl_debug_health_get
@@ -335,7 +301,7 @@ paths:
   /api/crawl/import-authoritative:
     post:
       tags:
-      - crawler
+      - Crawler
       summary: Import Authoritative Content
       description: 'Import llms.txt or context.txt as authoritative context content.
 
@@ -367,7 +333,7 @@ paths:
   /api/crawl/cleanup/all:
     delete:
       tags:
-      - crawler
+      - Crawler
       summary: Cleanup All Crawl Data
       description: 'Delete ALL crawl data for the organization.
 
@@ -406,7 +372,7 @@ paths:
   /api/crawl/cleanup/external-content:
     delete:
       tags:
-      - crawler
+      - Crawler
       summary: Cleanup External Content
       description: 'Delete content that was incorrectly crawled from external domains.
 
@@ -510,67 +476,6 @@ components:
       - domains
       title: CrawlRequest
       description: Request model for crawl job.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ImportAuthoritativeContentRequest:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: The full content of the file
-        source_url:
-          type: string
-          title: Source Url
-          description: URL where the file was found
-        file_type:
-          type: string
-          title: File Type
-          description: 'Type of file: ''llms.txt'' or ''context.txt'''
-        domain:
-          type: string
-          title: Domain
-          description: Domain the file belongs to
-      type: object
-      required:
-      - content
-      - source_url
-      - file_type
-      - domain
-      title: ImportAuthoritativeContentRequest
-      description: Request model for importing llms.txt or context.txt as authoritative content.
     CrawlResponse:
       properties:
         crawl_id:
@@ -593,6 +498,17 @@ components:
       - message
       title: CrawlResponse
       description: Response model for crawl job.
+    CrawlEstimateRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain or URL to estimate
+      type: object
+      required:
+      - domain
+      title: CrawlEstimateRequest
+      description: Request model for scan estimate.
     CrawlSummary:
       properties:
         crawl_id:
@@ -641,17 +557,67 @@ components:
       - status
       title: CrawlSummary
       description: Summary model for completed crawl.
-    CrawlEstimateRequest:
+    ValidationError:
       properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ImportAuthoritativeContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The full content of the file
+        source_url:
+          type: string
+          title: Source Url
+          description: URL where the file was found
+        file_type:
+          type: string
+          title: File Type
+          description: 'Type of file: ''llms.txt'' or ''context.txt'''
         domain:
           type: string
           title: Domain
-          description: Domain or URL to estimate
+          description: Domain the file belongs to
       type: object
       required:
+      - content
+      - source_url
+      - file_type
       - domain
-      title: CrawlEstimateRequest
-      description: Request model for scan estimate.
+      title: ImportAuthoritativeContentRequest
+      description: Request model for importing llms.txt or context.txt as authoritative content.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

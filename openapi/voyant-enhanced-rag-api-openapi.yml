@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Enhanced RAG API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -344,6 +310,109 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HybridSearchRequest:
+      properties:
+        query:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Query
+          description: Search query
+        strategy:
+          type: string
+          enum:
+          - hybrid
+          - semantic
+          - keyword
+          - domain
+          title: Strategy
+          description: Search strategy to use
+          default: hybrid
+        top_k:
+          type: integer
+          maximum: 50.0
+          minimum: 1.0
+          title: Top K
+          description: Number of results to return
+          default: 10
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by specific domain
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+          description: Filter by content type
+      type: object
+      required:
+      - query
+      title: HybridSearchRequest
+      description: Request model for hybrid search.
+    GenerateWithHybridResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        generated_content:
+          type: string
+          title: Generated Content
+        context_sources:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Context Sources
+        retrieval_stats:
+          additionalProperties: true
+          type: object
+          title: Retrieval Stats
+        generation_metadata:
+          additionalProperties: true
+          type: object
+          title: Generation Metadata
+        timestamp:
+          type: string
+          title: Timestamp
+      type: object
+      required:
+      - query
+      - generated_content
+      - context_sources
+      - retrieval_stats
+      - generation_metadata
+      - timestamp
+      title: GenerateWithHybridResponse
+      description: Response model for hybrid RAG content generation.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     GenerateWithGypsumRequest:
       properties:
         query:
@@ -405,158 +474,36 @@ components:
       - tone
       title: GenerateWithGypsumRequest
       description: Request model for content generation with Gypsum + RAG integration.
-    HybridSearchRequest:
-      properties:
-        query:
-          type: string
-          maxLength: 1000
-          minLength: 1
-          title: Query
-          description: Search query
-        strategy:
-          type: string
-          enum:
-          - hybrid
-          - semantic
-          - keyword
-          - domain
-          title: Strategy
-          description: Search strategy to use
-          default: hybrid
-        top_k:
-          type: integer
-          maximum: 50.0
-          minimum: 1.0
-          title: Top K
-          description: Number of results to return
-          default: 10
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter by specific domain
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-          description: Filter by content type
-      type: object
-      required:
-      - query
-      title: HybridSearchRequest
-      description: Request model for hybrid search.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    GenerateWithGypsumResponse:
+    HybridSearchResponse:
       properties:
         query:
           type: string
           title: Query
-        generated_content:
-          type: string
-          title: Generated Content
-        context_sources:
+        results:
           items:
             additionalProperties: true
             type: object
           type: array
-          title: Context Sources
-        gypsum_context:
-          additionalProperties: true
-          type: object
-          title: Gypsum Context
+          title: Results
         retrieval_stats:
           additionalProperties: true
           type: object
           title: Retrieval Stats
-        generation_metadata:
-          additionalProperties: true
-          type: object
-          title: Generation Metadata
         timestamp:
           type: string
           title: Timestamp
+        strategy_used:
+          type: string
+          title: Strategy Used
       type: object
       required:
       - query
-      - generated_content
-      - context_sources
-      - gypsum_context
+      - results
       - retrieval_stats
-      - generation_metadata
       - timestamp
-      title: GenerateWithGypsumResponse
-      description: Response model for Gypsum + RAG content generation.
-    GenerateWithHybridResponse:
-      properties:
-        query:
-          type: string
-          title: Query
-        generated_content:
-          type: string
-          title: Generated Content
-        context_sources:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Context Sources
-        retrieval_stats:
-          additionalProperties: true
-          type: object
-          title: Retrieval Stats
-        generation_metadata:
-          additionalProperties: true
-          type: object
-          title: Generation Metadata
-        timestamp:
-          type: string
-          title: Timestamp
-      type: object
-      required:
-      - query
-      - generated_content
-      - context_sources
-      - retrieval_stats
-      - generation_metadata
-      - timestamp
-      title: GenerateWithHybridResponse
-      description: Response model for hybrid RAG content generation.
+      - strategy_used
+      title: HybridSearchResponse
+      description: Response model for hybrid search.
     GenerateWithHybridRequest:
       properties:
         query:
@@ -607,36 +554,55 @@ components:
       - tone
       title: GenerateWithHybridRequest
       description: Request model for content generation with hybrid RAG.
-    HybridSearchResponse:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GenerateWithGypsumResponse:
       properties:
         query:
           type: string
           title: Query
-        results:
+        generated_content:
+          type: string
+          title: Generated Content
+        context_sources:
           items:
             additionalProperties: true
             type: object
           type: array
-          title: Results
+          title: Context Sources
+        gypsum_context:
+          additionalProperties: true
+          type: object
+          title: Gypsum Context
         retrieval_stats:
           additionalProperties: true
           type: object
           title: Retrieval Stats
+        generation_metadata:
+          additionalProperties: true
+          type: object
+          title: Generation Metadata
         timestamp:
           type: string
           title: Timestamp
-        strategy_used:
-          type: string
-          title: Strategy Used
       type: object
       required:
       - query
-      - results
+      - generated_content
+      - context_sources
+      - gypsum_context
       - retrieval_stats
+      - generation_metadata
       - timestamp
-      - strategy_used
-      title: HybridSearchResponse
-      description: Response model for hybrid search.
+      title: GenerateWithGypsumResponse
+      description: Response model for Gypsum + RAG content generation.
   securitySchemes:
     HTTPBearer:
       type: http

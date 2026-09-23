@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Onboarding Wizard API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -565,6 +531,96 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    CrawlDomainRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        max_pages:
+          type: integer
+          maximum: 5000.0
+          minimum: 1.0
+          title: Max Pages
+          default: 500
+        max_depth:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Max Depth
+          default: 3
+      type: object
+      required:
+      - domain
+      title: CrawlDomainRequest
+      description: Request to crawl a domain
+    ProposePersonasResponse:
+      properties:
+        personas:
+          items:
+            $ref: '#/components/schemas/ProposedPersona'
+          type: array
+          title: Personas
+        reasoning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reasoning
+      type: object
+      required:
+      - personas
+      title: ProposePersonasResponse
+      description: Response with proposed personas
+    ProposePersonasRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+      type: object
+      required:
+      - company_name
+      - products
+      title: ProposePersonasRequest
+      description: Request to propose personas based on company/product context
+    UpdatePersonaRequest:
+      properties:
+        content:
+          additionalProperties: true
+          type: object
+          title: Content
+        status:
+          type: string
+          title: Status
+          default: edited
+      type: object
+      required:
+      - content
+      title: UpdatePersonaRequest
+      description: Update a specific persona
+    GenerateStepRequest:
+      properties:
+        regenerate:
+          type: boolean
+          title: Regenerate
+          default: false
+      type: object
+      title: GenerateStepRequest
+      description: Request to generate content for a framework step
     ConfirmDiscoveryRequest:
       properties:
         company_name:
@@ -613,70 +669,17 @@ components:
       - domain
       title: ConfirmDiscoveryRequest
       description: User-confirmed/edited discovery data
-    UpdatePersonaRequest:
+    ApproveStepRequest:
       properties:
         content:
           additionalProperties: true
           type: object
           title: Content
-        status:
-          type: string
-          title: Status
-          default: edited
       type: object
       required:
       - content
-      title: UpdatePersonaRequest
-      description: Update a specific persona
-    ProposePersonasResponse:
-      properties:
-        personas:
-          items:
-            $ref: '#/components/schemas/ProposedPersona'
-          type: array
-          title: Personas
-        reasoning:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reasoning
-      type: object
-      required:
-      - personas
-      title: ProposePersonasResponse
-      description: Response with proposed personas
-    Body_upload_document_api_onboarding_documents_upload_post:
-      properties:
-        file:
-          type: string
-          contentMediaType: application/octet-stream
-          title: File
-      type: object
-      required:
-      - file
-      title: Body_upload_document_api_onboarding_documents_upload_post
-    CrawlDomainRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-        max_pages:
-          type: integer
-          maximum: 5000.0
-          minimum: 1.0
-          title: Max Pages
-          default: 500
-        max_depth:
-          type: integer
-          maximum: 10.0
-          minimum: 1.0
-          title: Max Depth
-          default: 3
-      type: object
-      required:
-      - domain
-      title: CrawlDomainRequest
-      description: Request to crawl a domain
+      title: ApproveStepRequest
+      description: Approve generated content for a step
     ProposedPersona:
       properties:
         name:
@@ -712,6 +715,16 @@ components:
       - product_benefits
       title: ProposedPersona
       description: A proposed persona with their perspective
+    Body_upload_document_api_onboarding_documents_upload_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_upload_document_api_onboarding_documents_upload_post
     ValidationError:
       properties:
         loc:
@@ -795,53 +808,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ProposePersonasRequest:
-      properties:
-        company_name:
-          type: string
-          title: Company Name
-        products:
-          items:
-            type: string
-          type: array
-          title: Products
-        what_you_do:
-          items:
-            type: string
-          type: array
-          title: What You Do
-          default: []
-        tagline:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tagline
-      type: object
-      required:
-      - company_name
-      - products
-      title: ProposePersonasRequest
-      description: Request to propose personas based on company/product context
-    GenerateStepRequest:
-      properties:
-        regenerate:
-          type: boolean
-          title: Regenerate
-          default: false
-      type: object
-      title: GenerateStepRequest
-      description: Request to generate content for a framework step
-    ApproveStepRequest:
-      properties:
-        content:
-          additionalProperties: true
-          type: object
-          title: Content
-      type: object
-      required:
-      - content
-      title: ApproveStepRequest
-      description: Approve generated content for a step
     DiscoverDomainRequest:
       properties:
         domain:

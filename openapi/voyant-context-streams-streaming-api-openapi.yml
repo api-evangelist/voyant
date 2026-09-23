@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Context Streams Streaming API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -215,48 +181,30 @@ paths:
               schema: {}
 components:
   schemas:
-    SubscribeRequest:
+    PublishRequest:
       properties:
-        topics:
-          items:
-            type: string
-          type: array
-          title: Topics
-        consumer_group:
-          type: string
-          title: Consumer Group
-          default: voyant-knowledge-ingestion
+        stream_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Stream Ids
+        include_messaging:
+          type: boolean
+          title: Include Messaging
+          default: true
+        include_personas:
+          type: boolean
+          title: Include Personas
+          default: true
+        include_competitive:
+          type: boolean
+          title: Include Competitive
+          default: true
       type: object
-      required:
-      - topics
-      title: SubscribeRequest
-      description: Request to subscribe to topics for signal ingestion
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: PublishRequest
+      description: Request to publish knowledge to streaming topics
     StreamingConfigRequest:
       properties:
         broker_url:
@@ -350,6 +298,48 @@ components:
       description: 'Configuration for Kafka-compatible streaming connection (per org).
 
         Works with Redpanda, Confluent, MSK, or any Kafka-protocol broker.'
+    SubscribeRequest:
+      properties:
+        topics:
+          items:
+            type: string
+          type: array
+          title: Topics
+        consumer_group:
+          type: string
+          title: Consumer Group
+          default: voyant-knowledge-ingestion
+      type: object
+      required:
+      - topics
+      title: SubscribeRequest
+      description: Request to subscribe to topics for signal ingestion
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     HTTPValidationError:
       properties:
         detail:
@@ -359,30 +349,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    PublishRequest:
-      properties:
-        stream_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Stream Ids
-        include_messaging:
-          type: boolean
-          title: Include Messaging
-          default: true
-        include_personas:
-          type: boolean
-          title: Include Personas
-          default: true
-        include_competitive:
-          type: boolean
-          title: Include Competitive
-          default: true
-      type: object
-      title: PublishRequest
-      description: Request to publish knowledge to streaming topics
   securitySchemes:
     HTTPBearer:
       type: http

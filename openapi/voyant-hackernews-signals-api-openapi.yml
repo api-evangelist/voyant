@@ -1,44 +1,10 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Hackernews Signals API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
@@ -65,7 +31,24 @@ paths:
       tags:
       - hackernews-signals
       summary: Discover Hackernews Signals
-      description: "Discover Hacker News signals by searching stories and comments.\n\nRequest body:\n{\n    \"keywords\": [\"kubernetes\", \"rust programming\"],\n    \"time_window_hours\": 168,  // default: 1 week\n    \"max_results\": 50,\n    \"content_type\": \"story\",  // story, comment, or all\n    \"min_score\": 10  // minimum points to include\n}"
+      description: 'Discover Hacker News signals by searching stories and comments.
+
+
+        Request body:
+
+        {
+
+        "keywords": ["kubernetes", "rust programming"],
+
+        "time_window_hours": 168, // default: 1 week
+
+        "max_results": 50,
+
+        "content_type": "story", // story, comment, or all
+
+        "min_score": 10 // minimum points to include
+
+        }'
       operationId: discover_hackernews_signals_api_hackernews_signals_discover_post
       requestBody:
         content:
@@ -163,7 +146,33 @@ paths:
       tags:
       - hackernews-signals
       summary: Scan Top Stories With Keywords
-      description: "Scan HN for keyword matches using multiple sources:\n1. Algolia search going back 3 months (historical)\n2. Current top stories\n3. Newest stories (fresh submissions)\n\nAlso crawls comment threads for keyword mentions.\n\nRequest:\n{\n    \"keywords\": [\"scylladb\", \"cassandra\"],  // Optional, uses configured sources if not provided\n    \"days_back\": 90,  // How far back to search (default 3 months)\n    \"scan_comments\": true,\n    \"min_score\": 1,  // Lower for newest\n    \"include_newest\": true  // Monitor /newest\n}"
+      description: 'Scan HN for keyword matches using multiple sources:
+
+        1. Algolia search going back 3 months (historical)
+
+        2. Current top stories
+
+        3. Newest stories (fresh submissions)
+
+
+        Also crawls comment threads for keyword mentions.
+
+
+        Request:
+
+        {
+
+        "keywords": ["scylladb", "cassandra"], // Optional, uses configured sources if not provided
+
+        "days_back": 90, // How far back to search (default 3 months)
+
+        "scan_comments": true,
+
+        "min_score": 1, // Lower for newest
+
+        "include_newest": true // Monitor /newest
+
+        }'
       operationId: scan_top_stories_with_keywords_api_hackernews_scan_with_keywords_post
       requestBody:
         content:

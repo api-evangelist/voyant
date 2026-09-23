@@ -1,58 +1,40 @@
 openapi: 3.2.0
 info:
   title: VoyantIO Discovery API
-  description: '
-
-    ## Brand Context Intelligence Platform
+  description: '## Brand Context Intelligence Platform
 
 
-    VoyantIO provides AI-powered brand context management for GTM teams.
-
-
-    ### Core Capabilities
-
-
-    - **Context Streams** - Centralized brand knowledge that any AI tool can use
-
-    - **Telemetry** - Visitor tracking with IP geolocation and company enrichment
-
-    - **Signals** - Social listening across 10+ platforms: GitHub, Reddit, HackerNews, LinkedIn, Twitter/X, Discord, ProductHunt, YouTube, G2, Slack, and government sources
-
-    - **Target Graph** - Account and contact intelligence with engagement tracking
-
-    - **RAG** - Retrieval-augmented content generation with brand awareness
-
-
-    ### Authentication
-
-
-    Most endpoints require a Bearer token from Clerk authentication.
-
-    Public endpoints (telemetry ingestion, well-known files) are clearly marked.
-
-
-    ### Rate Limits
-
-
-    - Telemetry ingestion: 100 req/min per IP
-
-    - API endpoints: 1000 req/min per org
-
-    '
+    VoyantIO provides AI-powered brand context management for GTM teams.'
   version: 1.0.0
 servers:
 - url: https://voice-forge-production.up.railway.app
   description: Production
 tags:
-- name: discovery
+- name: Discovery
   description: One-time discovery runs and results.
 paths:
   /api/discovery/insights:
     get:
       tags:
-      - discovery
+      - Discovery
       summary: Get Discovery Insights
-      description: "Get latest discovery insights, patterns, and predictions.\n\nArgs:\n    limit: Maximum number of items to return per category\n    days_back: Number of days to look back for insights\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    Overview of discovery system with latest insights"
+      description: 'Get latest discovery insights, patterns, and predictions.
+
+
+        Args:
+
+        limit: Maximum number of items to return per category
+
+        days_back: Number of days to look back for insights
+
+        db: Database session
+
+        current_user: Current authenticated user
+
+
+        Returns:
+
+        Overview of discovery system with latest insights'
       operationId: get_discovery_insights_api_discovery_insights_get
       security:
       - HTTPBearer: []
@@ -87,9 +69,23 @@ paths:
   /api/discovery/sources:
     get:
       tags:
-      - discovery
+      - Discovery
       summary: Get Discovery Sources
-      description: "Get all discovery sources and their current state.\n\nArgs:\n    active_only: Only return active sources\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    List of discovery sources with their state"
+      description: 'Get all discovery sources and their current state.
+
+
+        Args:
+
+        active_only: Only return active sources
+
+        db: Database session
+
+        current_user: Current authenticated user
+
+
+        Returns:
+
+        List of discovery sources with their state'
       operationId: get_discovery_sources_api_discovery_sources_get
       security:
       - HTTPBearer: []
@@ -120,9 +116,23 @@ paths:
   /api/discovery/insights/{insight_id}/action:
     post:
       tags:
-      - discovery
+      - Discovery
       summary: Mark Insight Action Taken
-      description: "Mark that action has been taken on an insight.\n\nArgs:\n    insight_id: ID of the insight\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    Success message"
+      description: 'Mark that action has been taken on an insight.
+
+
+        Args:
+
+        insight_id: ID of the insight
+
+        db: Database session
+
+        current_user: Current authenticated user
+
+
+        Returns:
+
+        Success message'
       operationId: mark_insight_action_taken_api_discovery_insights__insight_id__action_post
       security:
       - HTTPBearer: []
@@ -148,9 +158,25 @@ paths:
   /api/discovery/patterns/{pattern_type}:
     get:
       tags:
-      - discovery
+      - Discovery
       summary: Get Patterns By Type
-      description: "Get discovery patterns by type.\n\nArgs:\n    pattern_type: Type of pattern (team_formation, migration, velocity_change)\n    limit: Maximum number of patterns to return\n    db: Database session\n    current_user: Current authenticated user\n\nReturns:\n    List of patterns of the specified type"
+      description: 'Get discovery patterns by type.
+
+
+        Args:
+
+        pattern_type: Type of pattern (team_formation, migration, velocity_change)
+
+        limit: Maximum number of patterns to return
+
+        db: Database session
+
+        current_user: Current authenticated user
+
+
+        Returns:
+
+        List of patterns of the specified type'
       operationId: get_patterns_by_type_api_discovery_patterns__pattern_type__get
       security:
       - HTTPBearer: []
@@ -182,41 +208,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     DiscoveryPatternResponse:
       properties:
         id:
@@ -304,6 +295,32 @@ components:
       - api_calls_remaining
       title: DiscoveryOverview
       description: Overview of discovery system status.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     DiscoveryStateResponse:
       properties:
         id:
@@ -348,6 +365,15 @@ components:
       - metadata
       title: DiscoveryStateResponse
       description: Response model for discovery source state.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     DiscoveryInsightResponse:
       properties:
         id:

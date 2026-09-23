@@ -4,35 +4,7 @@ info:
   description: '## Brand Context Management API
 
 
-    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.
-
-
-    ### Core Capabilities
-
-
-    - **Context Endpoints** - Retrieve brand messaging, personas, products, use cases, and positioning
-
-    - **ICP Management** - Ideal Customer Profile CRUD operations
-
-    - **Campaign Management** - Marketing campaign tracking
-
-    - **AI Chat** - Brand-aware conversational AI
-
-
-    ### Authentication
-
-
-    Most endpoints require `user_id` query parameter (Clerk organization ID).
-
-    Demo access is available for testing.
-
-
-    ### Base URL
-
-
-    Production: `https://gypsum.voyant.io`
-
-    Local: `http://localhost:3001`'
+    Gypsum provides the messaging framework, personas, positioning, and brand context for VoyantIO integrations.'
   version: 1.0.0
   contact:
     name: VoyantIO
@@ -43,13 +15,13 @@ servers:
 - url: http://localhost:3001
   description: Local development
 tags:
-- name: campaigns
+- name: Campaigns
   description: Marketing campaign management
 paths:
   /api/campaigns:
     get:
       tags:
-      - campaigns
+      - Campaigns
       summary: List Campaigns
       description: Retrieve all marketing campaigns.
       operationId: listCampaigns
@@ -69,7 +41,7 @@ paths:
                       $ref: '#/components/schemas/Campaign'
     post:
       tags:
-      - campaigns
+      - Campaigns
       summary: Create Campaign
       description: Create a new marketing campaign.
       operationId: createCampaign
@@ -91,7 +63,7 @@ paths:
   /api/campaigns/{id}:
     get:
       tags:
-      - campaigns
+      - Campaigns
       summary: Get Campaign
       description: Retrieve a specific campaign by ID.
       operationId: getCampaign
@@ -111,7 +83,7 @@ paths:
                 $ref: '#/components/schemas/Campaign'
     put:
       tags:
-      - campaigns
+      - Campaigns
       summary: Update Campaign
       description: Update an existing campaign.
       operationId: updateCampaign
@@ -138,7 +110,7 @@ paths:
   /api/campaigns/{id}/generation-context:
     get:
       tags:
-      - campaigns
+      - Campaigns
       summary: Get Campaign Generation Context
       description: Retrieve the full context needed for AI content generation for a campaign.
       operationId: getCampaignGenerationContext
@@ -157,15 +129,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignGenerationContext'
 components:
-  parameters:
-    userId:
-      name: user_id
-      in: query
-      required: true
-      schema:
-        type: string
-      description: Clerk organization ID (e.g., org_abc123)
   schemas:
+    MessagingContext:
+      type: object
+      properties:
+        elevator_pitch:
+          type: string
+        headline_message:
+          type: string
+        supporting_points:
+          type: string
+        tone_voice:
+          type: string
+        key_differentiators:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
     CampaignCreate:
       type: object
       required:
@@ -191,94 +172,35 @@ components:
           type: array
           items:
             type: string
-    MessagingContext:
+    PositioningContext:
       type: object
       properties:
-        elevator_pitch:
+        company_name:
           type: string
-        headline_message:
+        target_market:
           type: string
-        supporting_points:
+        category:
           type: string
-        tone_voice:
+        differentiation:
           type: string
-        key_differentiators:
+        competitive_alternatives:
+          type: array
+          items:
+            type: string
+        unique_capabilities:
+          type: array
+          items:
+            type: string
+        proof_points:
           type: array
           items:
             type: string
         value_proposition:
           type: string
-    Product:
-      type: object
-      properties:
-        id:
+        key_benefit:
           type: string
-        name:
+        compelling_reason:
           type: string
-        slug:
-          type: string
-        description:
-          type: string
-        tagline:
-          type: string
-        category:
-          type: string
-        features:
-          type: array
-          items:
-            type: string
-        pricing_info:
-          type: object
-        target_audience:
-          type: array
-          items:
-            type: string
-        integration_capabilities:
-          type: array
-          items:
-            type: string
-        documentation_url:
-          type: string
-        demo_url:
-          type: string
-        status:
-          type: string
-    Campaign:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        status:
-          type: string
-          enum:
-          - draft
-          - active
-          - paused
-          - completed
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        target_personas:
-          type: array
-          items:
-            type: string
-        channels:
-          type: array
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     Persona:
       type: object
       properties:
@@ -336,34 +258,40 @@ components:
           type: string
         demographics:
           type: object
-    PositioningContext:
+    Product:
       type: object
       properties:
-        company_name:
+        id:
           type: string
-        target_market:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        tagline:
           type: string
         category:
           type: string
-        differentiation:
-          type: string
-        competitive_alternatives:
+        features:
           type: array
           items:
             type: string
-        unique_capabilities:
+        pricing_info:
+          type: object
+        target_audience:
           type: array
           items:
             type: string
-        proof_points:
+        integration_capabilities:
           type: array
           items:
             type: string
-        value_proposition:
+        documentation_url:
           type: string
-        key_benefit:
+        demo_url:
           type: string
-        compelling_reason:
+        status:
           type: string
     CampaignGenerationContext:
       type: object
@@ -382,3 +310,47 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Product'
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+          - draft
+          - active
+          - paused
+          - completed
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        target_personas:
+          type: array
+          items:
+            type: string
+        channels:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+  parameters:
+    userId:
+      name: user_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Clerk organization ID (e.g., org_abc123)

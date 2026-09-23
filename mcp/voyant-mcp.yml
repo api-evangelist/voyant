@@ -107,31 +107,11 @@ x-evidence:
   http_status: 200
   content_type: application/json
 deployment:
-  mode: remote
-  endpoint: https://voice-forge-production.up.railway.app/mcp/sse
-  transport: http+sse
-  install: null
-  package: null
-  auth: api-key
+  mode: none
+  endpoint: https://voice-forge-production.up.railway.app/mcp
   verified: probed
-  checked: '2026-08-13'
-  note: >-
-    CORRECTED 2026-08-13. The 2026-08-12 catalog MCP census recorded `mode: none, probe: dead`
-    because it POSTed JSON-RPC to https://voice-forge-production.up.railway.app/mcp and got
-    `405 {"detail":"Method Not Allowed"}`. That is a transport mismatch, not a dead server:
-    voyant-mcp speaks the LEGACY MCP HTTP+SSE transport, not Streamable HTTP, so there is no
-    single POST-able /mcp endpoint by design. Re-probed today:
-      GET  /mcp/sse      -> 200 text/event-stream  (session transport, live)
-      GET  /mcp/health   -> 200 {"status":"healthy","tools_available":15,"active_sessions":0}
-      GET  /mcp/tools    -> 200, 5,677 bytes, 15 tools WITH inputSchemas, anonymous
-      POST /mcp/messages -> 400 {"error":"Invalid session"} (correct: needs a session from /mcp/sse)
-      POST /mcp          -> 405 (no Streamable HTTP transport)
-    An agent client configured for the legacy SSE transport reaches this server today; one
-    configured only for Streamable HTTP cannot. That is the real finding, and it is a provider-side
-    gap worth reporting: the modern transport is not implemented.
-  previous:
-    mode: none
-    probe: dead
-    checked: '2026-08-12'
-    source: catalog MCP census
-    superseded_by: live re-probe 2026-08-13
+  probe: dead
+  note: the endpoint this manifest claimed did not answer; recorded as none rather than deleted so the
+    claim stays auditable
+  checked: '2026-08-12'
+  source: catalog MCP census
