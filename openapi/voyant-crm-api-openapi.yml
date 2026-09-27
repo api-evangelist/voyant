@@ -261,79 +261,15 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    CRMConfigRequest:
+    HTTPValidationError:
       properties:
-        crm_type:
-          type: string
-          title: Crm Type
-          description: 'Type of CRM: pardot, hubspot, salesforce, etc.'
-        config:
-          additionalProperties: true
-          type: object
-          title: Config
-          description: CRM-specific configuration
-        test_connection:
-          type: boolean
-          title: Test Connection
-          description: Test connection after saving
-          default: true
-      type: object
-      required:
-      - crm_type
-      - config
-      title: CRMConfigRequest
-      description: CRM configuration request
-    CampaignAddRequest:
-      properties:
-        campaign_id:
-          type: string
-          title: Campaign Id
-          description: CRM campaign/list ID
-        contact_emails:
+        detail:
           items:
-            type: string
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Contact Emails
-          description: Email addresses to add
-        create_if_missing:
-          type: boolean
-          title: Create If Missing
-          description: Create contacts if they don't exist
-          default: false
+          title: Detail
       type: object
-      required:
-      - campaign_id
-      - contact_emails
-      title: CampaignAddRequest
-      description: Add contacts to campaign request
-    ContactSyncRequest:
-      properties:
-        contact_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Contact Ids
-          description: Specific contact IDs to sync (all if not provided)
-        sync_direction:
-          type: string
-          title: Sync Direction
-          description: 'Sync direction: to_crm, from_crm, bidirectional'
-          default: to_crm
-        update_existing:
-          type: boolean
-          title: Update Existing
-          description: Update existing contacts in CRM
-          default: true
-        sync_companies:
-          type: boolean
-          title: Sync Companies
-          description: Also sync associated companies
-          default: true
-      type: object
-      title: ContactSyncRequest
-      description: Contact sync request
+      title: HTTPValidationError
     SignalSyncRequest:
       properties:
         signal_ids:
@@ -369,6 +305,57 @@ components:
       type: object
       title: SignalSyncRequest
       description: Signal sync request
+    ContactSyncRequest:
+      properties:
+        contact_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Contact Ids
+          description: Specific contact IDs to sync (all if not provided)
+        sync_direction:
+          type: string
+          title: Sync Direction
+          description: 'Sync direction: to_crm, from_crm, bidirectional'
+          default: to_crm
+        update_existing:
+          type: boolean
+          title: Update Existing
+          description: Update existing contacts in CRM
+          default: true
+        sync_companies:
+          type: boolean
+          title: Sync Companies
+          description: Also sync associated companies
+          default: true
+      type: object
+      title: ContactSyncRequest
+      description: Contact sync request
+    CampaignAddRequest:
+      properties:
+        campaign_id:
+          type: string
+          title: Campaign Id
+          description: CRM campaign/list ID
+        contact_emails:
+          items:
+            type: string
+          type: array
+          title: Contact Emails
+          description: Email addresses to add
+        create_if_missing:
+          type: boolean
+          title: Create If Missing
+          description: Create contacts if they don't exist
+          default: false
+      type: object
+      required:
+      - campaign_id
+      - contact_emails
+      title: CampaignAddRequest
+      description: Add contacts to campaign request
     ValidationError:
       properties:
         loc:
@@ -395,15 +382,28 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    CRMConfigRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        crm_type:
+          type: string
+          title: Crm Type
+          description: 'Type of CRM: pardot, hubspot, salesforce, etc.'
+        config:
+          additionalProperties: true
+          type: object
+          title: Config
+          description: CRM-specific configuration
+        test_connection:
+          type: boolean
+          title: Test Connection
+          description: Test connection after saving
+          default: true
       type: object
-      title: HTTPValidationError
+      required:
+      - crm_type
+      - config
+      title: CRMConfigRequest
+      description: CRM configuration request
   securitySchemes:
     HTTPBearer:
       type: http

@@ -273,6 +273,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     RunRequest:
       properties:
         mode:
@@ -281,24 +290,6 @@ components:
           default: recommended
       type: object
       title: RunRequest
-    CreateRequest:
-      properties:
-        client_name:
-          type: string
-          title: Client Name
-        brief:
-          type: string
-          title: Brief
-          default: ''
-        brand_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Brand Id
-      type: object
-      required:
-      - client_name
-      title: CreateRequest
     ResumeRequest:
       properties:
         kind:
@@ -322,6 +313,24 @@ components:
       required:
       - api_key
       title: OrgKeyRequest
+    CreateRequest:
+      properties:
+        client_name:
+          type: string
+          title: Client Name
+        brief:
+          type: string
+          title: Brief
+          default: ''
+        brand_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Brand Id
+      type: object
+      required:
+      - client_name
+      title: CreateRequest
     ValidationError:
       properties:
         loc:
@@ -348,15 +357,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

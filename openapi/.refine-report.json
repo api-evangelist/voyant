@@ -104,9 +104,7 @@
     "voyant-well-known-api-openapi.yml",
     "voyant-youtube-signals-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 1 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -178,8 +176,7 @@
     "voyant-openapi-original.json: declared missing tag: VoyantIO API",
     "voyant-openapi-original.json: declared missing tag: ontology",
     "tag 'health' spans 2 source specs (voyant-gypsum-openapi.json, voyant-openapi-original.json): per-path servers applied",
-    "superseded outputs removed: voyant-pd-fs-api-openapi.yml",
-    "apis.yml register: written (+2 apis, 99 total)"
+    "apis.yml register: written (+1 apis, 99 total)"
   ],
   "skipped": [
     "voyant-admin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -250,7 +247,7 @@
     "voyant-onboarding-wizard-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "voyant-ontology-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "voyant-org-settings-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "voyant-pd-fs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "voyant-pdfs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "voyant-pipeline-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "voyant-pitch-deck-generator-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "voyant-playbooks-api-openapi.yml: previously refined output, superseded by openapi/_original/",

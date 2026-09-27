@@ -13,15 +13,19 @@ description: >-
   ARR. Pre-seed, founded by Andrew M. Brown; the API runs under the internal name "VoiceForge".
 deliveryModel:
   model: saas
-  open_source: false
+  license_evidence:
+    not_product:
+    - andrew-brown-noosphere/agent-samples
+  open_source: unknown
   commercial: true
   callable_host: true
   label: Hosted service · you call their endpoint
-  confidence: high
+  confidence: low
   source:
   - openapi
   - pricing
-  generated: '2026-08-28'
+  - repository-not-product
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: paid
@@ -57,9 +61,10 @@ tags:
   - Semantic Search
   - RAG
   - MCP
-  - agent-native
+  - Agent-Native
   - Signals
   - Telemetry
+  - Real-Time
 tags_raw:
   - artificial-intelligence
   - context-management
@@ -75,6 +80,7 @@ tags_raw:
   - agent-native
   - signals
   - telemetry
+  - Real-Time
 apis:
 - name: Voyant MCP Server
   description: >-
@@ -87,7 +93,7 @@ apis:
   baseURL: https://voice-forge-production.up.railway.app/mcp
   tags:
   - MCP
-  - agent-native
+  - Agent-Native
   - Context Management
   - Artificial Intelligence
   tags_raw:

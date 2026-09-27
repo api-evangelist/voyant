@@ -60,15 +60,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    ConnectRequest:
-      properties:
-        api_token:
-          type: string
-          title: Api Token
-      type: object
-      required:
-      - api_token
-      title: ConnectRequest
     HTTPValidationError:
       properties:
         detail:
@@ -78,6 +69,15 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ConnectRequest:
+      properties:
+        api_token:
+          type: string
+          title: Api Token
+      type: object
+      required:
+      - api_token
+      title: ConnectRequest
     ValidationError:
       properties:
         loc:

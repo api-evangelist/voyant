@@ -79,6 +79,19 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    api__notion_integration__CallbackRequest:
+      properties:
+        code:
+          type: string
+          title: Code
+        state:
+          type: string
+          title: State
+      type: object
+      required:
+      - code
+      - state
+      title: CallbackRequest
     ValidationError:
       properties:
         loc:
@@ -105,19 +118,6 @@ components:
       - msg
       - type
       title: ValidationError
-    api__notion_integration__CallbackRequest:
-      properties:
-        code:
-          type: string
-          title: Code
-        state:
-          type: string
-          title: State
-      type: object
-      required:
-      - code
-      - state
-      title: CallbackRequest
   securitySchemes:
     HTTPBearer:
       type: http

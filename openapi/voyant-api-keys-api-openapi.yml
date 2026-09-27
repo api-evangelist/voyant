@@ -122,32 +122,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    CreateApiKeyRequest:
+    HTTPValidationError:
       properties:
-        name:
-          type: string
-          maxLength: 100
-          minLength: 1
-          title: Name
-          description: Human-readable name for this key
-        scopes:
+        detail:
           items:
-            type: string
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Scopes
-          description: 'Permissions: read, write, crawl, admin'
-          default:
-          - read
-        expires_in_days:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Expires In Days
-          description: Days until expiration (None = never)
+          title: Detail
       type: object
-      required:
-      - name
-      title: CreateApiKeyRequest
+      title: HTTPValidationError
     CreateApiKeyResponse:
       properties:
         id:
@@ -186,41 +169,32 @@ components:
       - expires_at
       title: CreateApiKeyResponse
       description: Response when creating a key - includes the full key (only shown once).
-    ValidationError:
+    CreateApiKeyRequest:
       properties:
-        loc:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: Human-readable name for this key
+        scopes:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            type: string
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Scopes
+          description: 'Permissions: read, write, crawl, admin'
+          default:
+          - read
+        expires_in_days:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Expires In Days
+          description: Days until expiration (None = never)
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - name
+      title: CreateApiKeyRequest
     ApiKeyResponse:
       properties:
         id:
@@ -268,6 +242,32 @@ components:
       - usage_count
       - is_active
       title: ApiKeyResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

@@ -58,6 +58,15 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     api__export__ExportResponse:
       properties:
         success:
@@ -81,36 +90,6 @@ components:
       - success
       - message
       title: ExportResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ExportRequest:
-      properties:
-        title:
-          type: string
-          title: Title
-        content:
-          type: string
-          title: Content
-        format:
-          type: string
-          title: Format
-          default: docx
-        export_to_drive:
-          type: boolean
-          title: Export To Drive
-          default: true
-      type: object
-      required:
-      - title
-      - content
-      title: ExportRequest
     ValidationError:
       properties:
         loc:
@@ -137,6 +116,27 @@ components:
       - msg
       - type
       title: ValidationError
+    ExportRequest:
+      properties:
+        title:
+          type: string
+          title: Title
+        content:
+          type: string
+          title: Content
+        format:
+          type: string
+          title: Format
+          default: docx
+        export_to_drive:
+          type: boolean
+          title: Export To Drive
+          default: true
+      type: object
+      required:
+      - title
+      - content
+      title: ExportRequest
   securitySchemes:
     HTTPBearer:
       type: http

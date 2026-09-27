@@ -130,6 +130,71 @@ paths:
                 $ref: '#/components/schemas/CampaignGenerationContext'
 components:
   schemas:
+    PositioningContext:
+      type: object
+      properties:
+        company_name:
+          type: string
+        target_market:
+          type: string
+        category:
+          type: string
+        differentiation:
+          type: string
+        competitive_alternatives:
+          type: array
+          items:
+            type: string
+        unique_capabilities:
+          type: array
+          items:
+            type: string
+        proof_points:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+        key_benefit:
+          type: string
+        compelling_reason:
+          type: string
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+          - draft
+          - active
+          - paused
+          - completed
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        target_personas:
+          type: array
+          items:
+            type: string
+        channels:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     MessagingContext:
       type: object
       properties:
@@ -172,34 +237,57 @@ components:
           type: array
           items:
             type: string
-    PositioningContext:
+    CampaignGenerationContext:
       type: object
       properties:
-        company_name:
+        campaign:
+          $ref: '#/components/schemas/Campaign'
+        messaging:
+          $ref: '#/components/schemas/MessagingContext'
+        positioning:
+          $ref: '#/components/schemas/PositioningContext'
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    Product:
+      type: object
+      properties:
+        id:
           type: string
-        target_market:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        tagline:
           type: string
         category:
           type: string
-        differentiation:
-          type: string
-        competitive_alternatives:
+        features:
           type: array
           items:
             type: string
-        unique_capabilities:
+        pricing_info:
+          type: object
+        target_audience:
           type: array
           items:
             type: string
-        proof_points:
+        integration_capabilities:
           type: array
           items:
             type: string
-        value_proposition:
+        documentation_url:
           type: string
-        key_benefit:
+        demo_url:
           type: string
-        compelling_reason:
+        status:
           type: string
     Persona:
       type: object
@@ -258,94 +346,6 @@ components:
           type: string
         demographics:
           type: object
-    Product:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        tagline:
-          type: string
-        category:
-          type: string
-        features:
-          type: array
-          items:
-            type: string
-        pricing_info:
-          type: object
-        target_audience:
-          type: array
-          items:
-            type: string
-        integration_capabilities:
-          type: array
-          items:
-            type: string
-        documentation_url:
-          type: string
-        demo_url:
-          type: string
-        status:
-          type: string
-    CampaignGenerationContext:
-      type: object
-      properties:
-        campaign:
-          $ref: '#/components/schemas/Campaign'
-        messaging:
-          $ref: '#/components/schemas/MessagingContext'
-        positioning:
-          $ref: '#/components/schemas/PositioningContext'
-        personas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Persona'
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
-    Campaign:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        status:
-          type: string
-          enum:
-          - draft
-          - active
-          - paused
-          - completed
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        target_personas:
-          type: array
-          items:
-            type: string
-        channels:
-          type: array
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
   parameters:
     userId:
       name: user_id

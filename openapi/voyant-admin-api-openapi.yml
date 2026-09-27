@@ -179,6 +179,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     OrgSummary:
       properties:
         org_id:
@@ -219,6 +228,21 @@ components:
       required:
       - org_id
       title: OrgSummary
+    OrgListResponse:
+      properties:
+        orgs:
+          items:
+            $ref: '#/components/schemas/OrgSummary'
+          type: array
+          title: Orgs
+        total:
+          type: integer
+          title: Total
+      type: object
+      required:
+      - orgs
+      - total
+      title: OrgListResponse
     InviteRequest:
       properties:
         email:
@@ -258,30 +282,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    OrgListResponse:
-      properties:
-        orgs:
-          items:
-            $ref: '#/components/schemas/OrgSummary'
-          type: array
-          title: Orgs
-        total:
-          type: integer
-          title: Total
-      type: object
-      required:
-      - orgs
-      - total
-      title: OrgListResponse
   securitySchemes:
     HTTPBearer:
       type: http

@@ -304,168 +304,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    TrainingSession:
+    HTTPValidationError:
       properties:
-        id:
-          type: string
-          title: Id
-        org_id:
-          type: string
-          title: Org Id
-        content_type:
-          type: string
-          title: Content Type
-        content_key:
-          type: string
-          title: Content Key
-        original_content:
-          type: string
-          title: Original Content
-        final_content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Final Content
-        conversation:
+        detail:
           items:
-            additionalProperties: true
-            type: object
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Conversation
-        rules_detected:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Rules Detected
-        rules_applied:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Rules Applied
-        content_accepted:
-          type: boolean
-          title: Content Accepted
-        created_by:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Created By
-        started_at:
-          type: string
-          format: date-time
-          title: Started At
-        completed_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Completed At
-        status:
-          type: string
-          title: Status
+          title: Detail
       type: object
-      required:
-      - id
-      - org_id
-      - content_type
-      - content_key
-      - original_content
-      - final_content
-      - conversation
-      - rules_detected
-      - rules_applied
-      - content_accepted
-      - created_by
-      - started_at
-      - completed_at
-      - status
-      title: TrainingSession
-    ContentVersion:
-      properties:
-        id:
-          type: string
-          title: Id
-        org_id:
-          type: string
-          title: Org Id
-        content_type:
-          type: string
-          title: Content Type
-        content_key:
-          type: string
-          title: Content Key
-        content:
-          type: string
-          title: Content
-        version_number:
-          type: integer
-          title: Version Number
-        change_source:
-          type: string
-          title: Change Source
-        change_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Reason
-        training_session_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Training Session Id
-        detected_rules:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Detected Rules
-        created_by:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Created By
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        is_current:
-          type: boolean
-          title: Is Current
-      type: object
-      required:
-      - id
-      - org_id
-      - content_type
-      - content_key
-      - content
-      - version_number
-      - change_source
-      - change_reason
-      - training_session_id
-      - detected_rules
-      - created_by
-      - created_at
-      - is_current
-      title: ContentVersion
-    TrainingSessionCreate:
-      properties:
-        content_type:
-          type: string
-          title: Content Type
-        content_key:
-          type: string
-          title: Content Key
-        original_content:
-          type: string
-          title: Original Content
-      type: object
-      required:
-      - content_type
-      - content_key
-      - original_content
-      title: TrainingSessionCreate
+      title: HTTPValidationError
     TrainingSessionUpdate:
       properties:
         final_content:
@@ -548,6 +395,168 @@ components:
       - content_key
       - content
       title: ContentVersionCreate
+    TrainingSessionCreate:
+      properties:
+        content_type:
+          type: string
+          title: Content Type
+        content_key:
+          type: string
+          title: Content Key
+        original_content:
+          type: string
+          title: Original Content
+      type: object
+      required:
+      - content_type
+      - content_key
+      - original_content
+      title: TrainingSessionCreate
+    ContentVersion:
+      properties:
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        content_type:
+          type: string
+          title: Content Type
+        content_key:
+          type: string
+          title: Content Key
+        content:
+          type: string
+          title: Content
+        version_number:
+          type: integer
+          title: Version Number
+        change_source:
+          type: string
+          title: Change Source
+        change_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Reason
+        training_session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Training Session Id
+        detected_rules:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Detected Rules
+        created_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created By
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        is_current:
+          type: boolean
+          title: Is Current
+      type: object
+      required:
+      - id
+      - org_id
+      - content_type
+      - content_key
+      - content
+      - version_number
+      - change_source
+      - change_reason
+      - training_session_id
+      - detected_rules
+      - created_by
+      - created_at
+      - is_current
+      title: ContentVersion
+    TrainingSession:
+      properties:
+        id:
+          type: string
+          title: Id
+        org_id:
+          type: string
+          title: Org Id
+        content_type:
+          type: string
+          title: Content Type
+        content_key:
+          type: string
+          title: Content Key
+        original_content:
+          type: string
+          title: Original Content
+        final_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Final Content
+        conversation:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Conversation
+        rules_detected:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Rules Detected
+        rules_applied:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Rules Applied
+        content_accepted:
+          type: boolean
+          title: Content Accepted
+        created_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created By
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - id
+      - org_id
+      - content_type
+      - content_key
+      - original_content
+      - final_content
+      - conversation
+      - rules_detected
+      - rules_applied
+      - content_accepted
+      - created_by
+      - started_at
+      - completed_at
+      - status
+      title: TrainingSession
     ValidationError:
       properties:
         loc:
@@ -574,15 +583,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

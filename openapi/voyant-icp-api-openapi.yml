@@ -132,6 +132,19 @@ paths:
                     type: string
 components:
   schemas:
+    ICPContext:
+      allOf:
+      - $ref: '#/components/schemas/ICP'
+      - type: object
+        properties:
+          referenced_personas:
+            type: array
+            items:
+              $ref: '#/components/schemas/Persona'
+          referenced_industries:
+            type: array
+            items:
+              $ref: '#/components/schemas/Industry'
     ICPUpdate:
       type: object
       properties:
@@ -147,6 +160,32 @@ components:
           type: object
         industry_references:
           type: object
+    ICPCreate:
+      type: object
+      required:
+      - name
+      - discovery_query
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        discovery_query:
+          type: object
+        discovery_service:
+          type: string
+          default: clearbit
+        persona_references:
+          type: object
+        industry_references:
+          type: object
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     ICP:
       type: object
       properties:
@@ -213,13 +252,6 @@ components:
           type: string
         growth_rate:
           type: string
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
     Persona:
       type: object
       properties:
@@ -277,38 +309,6 @@ components:
           type: string
         demographics:
           type: object
-    ICPCreate:
-      type: object
-      required:
-      - name
-      - discovery_query
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        discovery_query:
-          type: object
-        discovery_service:
-          type: string
-          default: clearbit
-        persona_references:
-          type: object
-        industry_references:
-          type: object
-    ICPContext:
-      allOf:
-      - $ref: '#/components/schemas/ICP'
-      - type: object
-        properties:
-          referenced_personas:
-            type: array
-            items:
-              $ref: '#/components/schemas/Persona'
-          referenced_industries:
-            type: array
-            items:
-              $ref: '#/components/schemas/Industry'
   responses:
     NotFound:
       description: Resource not found

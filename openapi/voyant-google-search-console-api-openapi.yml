@@ -255,6 +255,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ImportQueriesRequest:
       properties:
         site_url:
@@ -302,31 +311,6 @@ components:
       - site_url
       title: ImportQueriesRequest
       description: Request to import queries as target prompts
-    ImportResult:
-      properties:
-        imported:
-          type: integer
-          title: Imported
-        skipped:
-          type: integer
-          title: Skipped
-        topic:
-          type: string
-          title: Topic
-        prompts:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Prompts
-      type: object
-      required:
-      - imported
-      - skipped
-      - topic
-      - prompts
-      title: ImportResult
-      description: Result of import operation
     GSCQueryResponse:
       properties:
         query:
@@ -353,20 +337,6 @@ components:
       - position
       title: GSCQueryResponse
       description: Response for a search query
-    GSCSiteResponse:
-      properties:
-        site_url:
-          type: string
-          title: Site Url
-        permission_level:
-          type: string
-          title: Permission Level
-      type: object
-      required:
-      - site_url
-      - permission_level
-      title: GSCSiteResponse
-      description: Response for a GSC site
     ValidationError:
       properties:
         loc:
@@ -430,15 +400,45 @@ components:
       - period
       title: GSCQueriesResponse
       description: Response for search queries endpoint
-    HTTPValidationError:
+    ImportResult:
       properties:
-        detail:
+        imported:
+          type: integer
+          title: Imported
+        skipped:
+          type: integer
+          title: Skipped
+        topic:
+          type: string
+          title: Topic
+        prompts:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            additionalProperties: true
+            type: object
           type: array
-          title: Detail
+          title: Prompts
       type: object
-      title: HTTPValidationError
+      required:
+      - imported
+      - skipped
+      - topic
+      - prompts
+      title: ImportResult
+      description: Result of import operation
+    GSCSiteResponse:
+      properties:
+        site_url:
+          type: string
+          title: Site Url
+        permission_level:
+          type: string
+          title: Permission Level
+      type: object
+      required:
+      - site_url
+      - permission_level
+      title: GSCSiteResponse
+      description: Response for a GSC site
   securitySchemes:
     HTTPBearer:
       type: http

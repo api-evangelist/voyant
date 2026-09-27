@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: VoyantIO PD Fs API
+  title: VoyantIO PDFs API
   description: '## Brand Context Intelligence Platform
 
 
@@ -478,6 +478,110 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PersonalityType:
+      type: string
+      enum:
+      - the_architect
+      - human_first_closer
+      - default
+      title: PersonalityType
+      description: Available personality types for content generation.
+    Body_analyze_pdf_api_pdfs__pdf_id__analyze_post:
+      properties:
+        analysis_type:
+          type: string
+          title: Analysis Type
+      type: object
+      required:
+      - analysis_type
+      title: Body_analyze_pdf_api_pdfs__pdf_id__analyze_post
+    Body_generate_content_with_pdfs_api_pdfs_generate_content_post:
+      properties:
+        query:
+          type: string
+          title: Query
+        platform:
+          type: string
+          title: Platform
+        tone:
+          type: string
+          title: Tone
+        pdf_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pdf Ids
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        top_k:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Top K
+          default: 5
+      type: object
+      required:
+      - query
+      - platform
+      - tone
+      title: Body_generate_content_with_pdfs_api_pdfs_generate_content_post
+    Body_upload_pdf_api_pdfs_upload_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+        process_immediately:
+          type: boolean
+          title: Process Immediately
+          default: false
+      type: object
+      required:
+      - file
+      title: Body_upload_pdf_api_pdfs_upload_post
+    SourceChunk:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: ID of the source chunk
+        text:
+          type: string
+          title: Text
+          description: Snippet of the chunk text
+        similarity:
+          type: number
+          title: Similarity
+          description: Similarity score
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+      type: object
+      required:
+      - chunk_id
+      - text
+      - similarity
+      - content_id
+      title: SourceChunk
+      description: Source chunk information for generated content.
     GeneratedContent:
       properties:
         text:
@@ -527,53 +631,6 @@ components:
       - source_chunks
       title: GeneratedContent
       description: Response model for generated content.
-    Body_analyze_pdf_api_pdfs__pdf_id__analyze_post:
-      properties:
-        analysis_type:
-          type: string
-          title: Analysis Type
-      type: object
-      required:
-      - analysis_type
-      title: Body_analyze_pdf_api_pdfs__pdf_id__analyze_post
-    Body_generate_content_with_pdfs_api_pdfs_generate_content_post:
-      properties:
-        query:
-          type: string
-          title: Query
-        platform:
-          type: string
-          title: Platform
-        tone:
-          type: string
-          title: Tone
-        pdf_ids:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pdf Ids
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-        top_k:
-          type: integer
-          maximum: 20.0
-          minimum: 1.0
-          title: Top K
-          default: 5
-      type: object
-      required:
-      - query
-      - platform
-      - tone
-      title: Body_generate_content_with_pdfs_api_pdfs_generate_content_post
     ValidationError:
       properties:
         loc:
@@ -600,63 +657,6 @@ components:
       - msg
       - type
       title: ValidationError
-    SourceChunk:
-      properties:
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: ID of the source chunk
-        text:
-          type: string
-          title: Text
-          description: Snippet of the chunk text
-        similarity:
-          type: number
-          title: Similarity
-          description: Similarity score
-        content_id:
-          type: string
-          title: Content Id
-          description: ID of the parent content
-      type: object
-      required:
-      - chunk_id
-      - text
-      - similarity
-      - content_id
-      title: SourceChunk
-      description: Source chunk information for generated content.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PersonalityType:
-      type: string
-      enum:
-      - the_architect
-      - human_first_closer
-      - default
-      title: PersonalityType
-      description: Available personality types for content generation.
-    Body_upload_pdf_api_pdfs_upload_post:
-      properties:
-        file:
-          type: string
-          contentMediaType: application/octet-stream
-          title: File
-        process_immediately:
-          type: boolean
-          title: Process Immediately
-          default: false
-      type: object
-      required:
-      - file
-      title: Body_upload_pdf_api_pdfs_upload_post
   securitySchemes:
     HTTPBearer:
       type: http

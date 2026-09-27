@@ -119,15 +119,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     GenerateElementRequest:
       properties:
         element_type:
@@ -164,30 +155,6 @@ components:
       - element_type
       title: GenerateElementRequest
       description: Request to generate a single element with AI.
-    BootstrapRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: Domain to crawl and analyze
-        competitors:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Competitors
-          description: Known competitors (optional)
-        skip_crawl:
-          type: boolean
-          title: Skip Crawl
-          description: Skip crawl if content already exists
-          default: false
-      type: object
-      required:
-      - domain
-      title: BootstrapRequest
-      description: Request to bootstrap a new organization.
     ValidationError:
       properties:
         loc:
@@ -214,6 +181,39 @@ components:
       - msg
       - type
       title: ValidationError
+    BootstrapRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain to crawl and analyze
+        competitors:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitors
+          description: Known competitors (optional)
+        skip_crawl:
+          type: boolean
+          title: Skip Crawl
+          description: Skip crawl if content already exists
+          default: false
+      type: object
+      required:
+      - domain
+      title: BootstrapRequest
+      description: Request to bootstrap a new organization.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

@@ -160,68 +160,15 @@ paths:
               schema: {}
 components:
   schemas:
-    VoiceAnalytics:
+    HTTPValidationError:
       properties:
-        total_items:
-          type: integer
-          title: Total Items
-        processed_items:
-          type: integer
-          title: Processed Items
-        voice_consistency_score:
-          type: integer
-          title: Voice Consistency Score
-        content_types:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Content Types
-        recent_additions:
+        detail:
           items:
-            $ref: '#/components/schemas/TrainingDataResponse'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Recent Additions
+          title: Detail
       type: object
-      required:
-      - total_items
-      - processed_items
-      - voice_consistency_score
-      - content_types
-      - recent_additions
-      title: VoiceAnalytics
-    TrainingDataCreate:
-      properties:
-        source_type:
-          type: string
-          title: Source Type
-        content:
-          type: string
-          title: Content
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        tags:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Tags
-          default: []
-        metadata:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Metadata
-          default: {}
-      type: object
-      required:
-      - source_type
-      - content
-      title: TrainingDataCreate
+      title: HTTPValidationError
     TrainingDataResponse:
       properties:
         id:
@@ -274,6 +221,68 @@ components:
       - added_at
       - metadata
       title: TrainingDataResponse
+    TrainingDataCreate:
+      properties:
+        source_type:
+          type: string
+          title: Source Type
+        content:
+          type: string
+          title: Content
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+          default: []
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+          default: {}
+      type: object
+      required:
+      - source_type
+      - content
+      title: TrainingDataCreate
+    VoiceAnalytics:
+      properties:
+        total_items:
+          type: integer
+          title: Total Items
+        processed_items:
+          type: integer
+          title: Processed Items
+        voice_consistency_score:
+          type: integer
+          title: Voice Consistency Score
+        content_types:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Content Types
+        recent_additions:
+          items:
+            $ref: '#/components/schemas/TrainingDataResponse'
+          type: array
+          title: Recent Additions
+      type: object
+      required:
+      - total_items
+      - processed_items
+      - voice_consistency_score
+      - content_types
+      - recent_additions
+      title: VoiceAnalytics
     ValidationError:
       properties:
         loc:
@@ -300,15 +309,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

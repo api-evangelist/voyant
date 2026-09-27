@@ -662,28 +662,119 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    GypsumSyncRequest:
+    RankingOverrideRequest:
       properties:
-        version_metadata:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: Chunk to override
+        boost_score:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - type: number
           - type: 'null'
-          title: Version Metadata
-        change_source:
+          title: Boost Score
+          description: Boost score (positive or negative)
+        pin_position:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Pin Position
+          description: Pin to position
+        exclude:
+          type: boolean
+          title: Exclude
+          description: Exclude from results
+          default: false
+        reason:
+          type: string
+          title: Reason
+          description: Reason for override
+        context_stream_id:
           anyOf:
           - type: string
           - type: 'null'
-          title: Change Source
-          default: sync
-        change_rationale:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Rationale
+          title: Context Stream Id
+          description: Apply to specific stream
       type: object
-      title: GypsumSyncRequest
-      description: Optional metadata to include when syncing from Gypsum
+      required:
+      - chunk_id
+      - reason
+      title: RankingOverrideRequest
+      description: Request for ranking override
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RerankRequest:
+      properties:
+        chunk_ids:
+          items:
+            type: string
+          type: array
+          title: Chunk Ids
+          description: Chunks to rerank
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking criteria
+        context_stream_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Stream Id
+          description: Optional stream context
+      type: object
+      required:
+      - chunk_ids
+      - ranking_criteria
+      title: RerankRequest
+      description: Request for reranking chunks
+    CreateStreamRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Stream name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Stream description
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Metadata filters
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking configuration
+        token_limits:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Token Limits
+          description: Token limits by use case
+          default:
+            default: 2000
+        is_public:
+          type: boolean
+          title: Is Public
+          description: Whether stream is public
+          default: false
+      type: object
+      required:
+      - name
+      title: CreateStreamRequest
+      description: Request for creating a context stream
     ProcessContentRequest:
       properties:
         content_id:
@@ -726,96 +817,6 @@ components:
       type: object
       title: ProcessContentRequest
       description: Request for processing content with intelligence
-    RankingOverrideRequest:
-      properties:
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: Chunk to override
-        boost_score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Boost Score
-          description: Boost score (positive or negative)
-        pin_position:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Pin Position
-          description: Pin to position
-        exclude:
-          type: boolean
-          title: Exclude
-          description: Exclude from results
-          default: false
-        reason:
-          type: string
-          title: Reason
-          description: Reason for override
-        context_stream_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Stream Id
-          description: Apply to specific stream
-      type: object
-      required:
-      - chunk_id
-      - reason
-      title: RankingOverrideRequest
-      description: Request for ranking override
-    RerankRequest:
-      properties:
-        chunk_ids:
-          items:
-            type: string
-          type: array
-          title: Chunk Ids
-          description: Chunks to rerank
-        ranking_criteria:
-          additionalProperties: true
-          type: object
-          title: Ranking Criteria
-          description: Ranking criteria
-        context_stream_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Stream Id
-          description: Optional stream context
-      type: object
-      required:
-      - chunk_ids
-      - ranking_criteria
-      title: RerankRequest
-      description: Request for reranking chunks
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     ChunkOptimizationRequest:
       properties:
         chunk_id:
@@ -842,55 +843,54 @@ components:
       - version_name
       title: ChunkOptimizationRequest
       description: Request for chunk optimization
-    HTTPValidationError:
+    GypsumSyncRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    CreateStreamRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Stream name
-        description:
+        version_metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Version Metadata
+        change_source:
           anyOf:
           - type: string
           - type: 'null'
-          title: Description
-          description: Stream description
-        filters:
-          additionalProperties: true
+          title: Change Source
+          default: sync
+        change_rationale:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Rationale
+      type: object
+      title: GypsumSyncRequest
+      description: Optional metadata to include when syncing from Gypsum
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
           type: object
-          title: Filters
-          description: Metadata filters
-        ranking_criteria:
-          additionalProperties: true
-          type: object
-          title: Ranking Criteria
-          description: Ranking configuration
-        token_limits:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Token Limits
-          description: Token limits by use case
-          default:
-            default: 2000
-        is_public:
-          type: boolean
-          title: Is Public
-          description: Whether stream is public
-          default: false
+          title: Context
       type: object
       required:
-      - name
-      title: CreateStreamRequest
-      description: Request for creating a context stream
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

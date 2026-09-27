@@ -97,104 +97,15 @@ paths:
               schema: {}
 components:
   schemas:
-    VideoScene:
+    HTTPValidationError:
       properties:
-        scene_id:
-          type: string
-          title: Scene Id
-        duration:
-          type: integer
-          title: Duration
-        scene_type:
-          type: string
-          title: Scene Type
-        script_text:
-          type: string
-          title: Script Text
-        visual_notes:
-          type: string
-          title: Visual Notes
-        timestamp_start:
-          type: integer
-          title: Timestamp Start
-        timestamp_end:
-          type: integer
-          title: Timestamp End
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - scene_id
-      - duration
-      - scene_type
-      - script_text
-      - visual_notes
-      - timestamp_start
-      - timestamp_end
-      title: VideoScene
-      description: Individual video scene
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    VideoScriptRequest:
-      properties:
-        company_domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Domain
-          description: Specific company domain to focus on
-        script_length:
-          type: integer
-          maximum: 300.0
-          minimum: 30.0
-          title: Script Length
-          description: Target script length in seconds
-          default: 120
-        funnel_stage:
-          $ref: '#/components/schemas/FunnelStage'
-          description: Target funnel stage
-          default: tofu
-        tone:
-          $ref: '#/components/schemas/ContentTone'
-          description: Video tone
-          default: professional
-        include_intro:
-          type: boolean
-          title: Include Intro
-          description: Include NextTechStack intro
-          default: true
-        include_outro:
-          type: boolean
-          title: Include Outro
-          description: Include standard outro
-          default: true
-        focus_areas:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Focus Areas
-          description: Specific topics to emphasize
-      type: object
-      title: VideoScriptRequest
-      description: Request for generating video script
+      title: HTTPValidationError
     VideoScriptResponse:
       properties:
         script_id:
@@ -242,6 +153,104 @@ components:
       - metadata
       title: VideoScriptResponse
       description: Generated video script response
+    VideoScriptRequest:
+      properties:
+        company_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Domain
+          description: Specific company domain to focus on
+        script_length:
+          type: integer
+          maximum: 300.0
+          minimum: 30.0
+          title: Script Length
+          description: Target script length in seconds
+          default: 120
+        funnel_stage:
+          $ref: '#/components/schemas/FunnelStage'
+          description: Target funnel stage
+          default: tofu
+        tone:
+          $ref: '#/components/schemas/ContentTone'
+          description: Video tone
+          default: professional
+        include_intro:
+          type: boolean
+          title: Include Intro
+          description: Include NextTechStack intro
+          default: true
+        include_outro:
+          type: boolean
+          title: Include Outro
+          description: Include standard outro
+          default: true
+        focus_areas:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Focus Areas
+          description: Specific topics to emphasize
+      type: object
+      title: VideoScriptRequest
+      description: Request for generating video script
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    VideoScene:
+      properties:
+        scene_id:
+          type: string
+          title: Scene Id
+        duration:
+          type: integer
+          title: Duration
+        scene_type:
+          type: string
+          title: Scene Type
+        script_text:
+          type: string
+          title: Script Text
+        visual_notes:
+          type: string
+          title: Visual Notes
+        timestamp_start:
+          type: integer
+          title: Timestamp Start
+        timestamp_end:
+          type: integer
+          title: Timestamp End
+      type: object
+      required:
+      - scene_id
+      - duration
+      - scene_type
+      - script_text
+      - visual_notes
+      - timestamp_start
+      - timestamp_end
+      title: VideoScene
+      description: Individual video scene
     ValidationError:
       properties:
         loc:
@@ -268,15 +277,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

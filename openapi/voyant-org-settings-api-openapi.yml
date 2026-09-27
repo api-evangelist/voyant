@@ -90,6 +90,36 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    OrgSettingsResponse:
+      properties:
+        primary_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Primary Domain
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+      type: object
+      title: OrgSettingsResponse
+    OrgSettingsRequest:
+      properties:
+        primary_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Primary Domain
+          description: Primary domain for this organization (e.g., buf.build)
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+          description: Display name for the company
+      type: object
+      title: OrgSettingsRequest
     ValidationError:
       properties:
         loc:
@@ -116,36 +146,6 @@ components:
       - msg
       - type
       title: ValidationError
-    OrgSettingsRequest:
-      properties:
-        primary_domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Primary Domain
-          description: Primary domain for this organization (e.g., buf.build)
-        company_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Name
-          description: Display name for the company
-      type: object
-      title: OrgSettingsRequest
-    OrgSettingsResponse:
-      properties:
-        primary_domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Primary Domain
-        company_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Name
-      type: object
-      title: OrgSettingsResponse
   securitySchemes:
     HTTPBearer:
       type: http

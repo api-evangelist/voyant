@@ -409,73 +409,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    CrawlRequest:
+    HTTPValidationError:
       properties:
-        domains:
+        detail:
           items:
-            type: string
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Domains
-          description: List of domains to crawl
-        max_pages:
-          type: integer
-          maximum: 2000.0
-          minimum: 1.0
-          title: Max Pages
-          description: Maximum pages to crawl
-          default: 500
-        max_depth:
-          type: integer
-          maximum: 10.0
-          minimum: 1.0
-          title: Max Depth
-          description: Maximum crawl depth
-          default: 3
-        respect_robots:
-          type: boolean
-          title: Respect Robots
-          description: Respect robots.txt
-          default: true
-        same_domain_only:
-          type: boolean
-          title: Same Domain Only
-          description: Only crawl same domain
-          default: true
-        static_workers:
-          type: integer
-          maximum: 20.0
-          minimum: 1.0
-          title: Static Workers
-          description: Parallel workers for static sites
-          default: 5
-        headless:
-          type: boolean
-          title: Headless
-          description: Run browser in headless mode
-          default: true
-        include_patterns:
-          items:
-            type: string
-          type: array
-          title: Include Patterns
-          description: Regex URL/path patterns to include
-        exclude_patterns:
-          items:
-            type: string
-          type: array
-          title: Exclude Patterns
-          description: Regex URL/path patterns to exclude
-        exclude_subdomains:
-          items:
-            type: string
-          type: array
-          title: Exclude Subdomains
-          description: Subdomains to exclude (e.g., ['docs', 'api', 'cdn'])
+          title: Detail
       type: object
-      required:
-      - domains
-      title: CrawlRequest
-      description: Request model for crawl job.
+      title: HTTPValidationError
     CrawlResponse:
       properties:
         crawl_id:
@@ -509,6 +451,32 @@ components:
       - domain
       title: CrawlEstimateRequest
       description: Request model for scan estimate.
+    ImportAuthoritativeContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The full content of the file
+        source_url:
+          type: string
+          title: Source Url
+          description: URL where the file was found
+        file_type:
+          type: string
+          title: File Type
+          description: 'Type of file: ''llms.txt'' or ''context.txt'''
+        domain:
+          type: string
+          title: Domain
+          description: Domain the file belongs to
+      type: object
+      required:
+      - content
+      - source_url
+      - file_type
+      - domain
+      title: ImportAuthoritativeContentRequest
+      description: Request model for importing llms.txt or context.txt as authoritative content.
     CrawlSummary:
       properties:
         crawl_id:
@@ -583,41 +551,73 @@ components:
       - msg
       - type
       title: ValidationError
-    ImportAuthoritativeContentRequest:
+    CrawlRequest:
       properties:
-        content:
-          type: string
-          title: Content
-          description: The full content of the file
-        source_url:
-          type: string
-          title: Source Url
-          description: URL where the file was found
-        file_type:
-          type: string
-          title: File Type
-          description: 'Type of file: ''llms.txt'' or ''context.txt'''
-        domain:
-          type: string
-          title: Domain
-          description: Domain the file belongs to
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+          description: List of domains to crawl
+        max_pages:
+          type: integer
+          maximum: 2000.0
+          minimum: 1.0
+          title: Max Pages
+          description: Maximum pages to crawl
+          default: 500
+        max_depth:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Max Depth
+          description: Maximum crawl depth
+          default: 3
+        respect_robots:
+          type: boolean
+          title: Respect Robots
+          description: Respect robots.txt
+          default: true
+        same_domain_only:
+          type: boolean
+          title: Same Domain Only
+          description: Only crawl same domain
+          default: true
+        static_workers:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Static Workers
+          description: Parallel workers for static sites
+          default: 5
+        headless:
+          type: boolean
+          title: Headless
+          description: Run browser in headless mode
+          default: true
+        include_patterns:
+          items:
+            type: string
+          type: array
+          title: Include Patterns
+          description: Regex URL/path patterns to include
+        exclude_patterns:
+          items:
+            type: string
+          type: array
+          title: Exclude Patterns
+          description: Regex URL/path patterns to exclude
+        exclude_subdomains:
+          items:
+            type: string
+          type: array
+          title: Exclude Subdomains
+          description: Subdomains to exclude (e.g., ['docs', 'api', 'cdn'])
       type: object
       required:
-      - content
-      - source_url
-      - file_type
-      - domain
-      title: ImportAuthoritativeContentRequest
-      description: Request model for importing llms.txt or context.txt as authoritative content.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - domains
+      title: CrawlRequest
+      description: Request model for crawl job.
   securitySchemes:
     HTTPBearer:
       type: http

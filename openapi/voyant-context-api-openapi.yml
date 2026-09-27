@@ -207,6 +207,131 @@ paths:
                 $ref: '#/components/schemas/MarketingContext'
 components:
   schemas:
+    PositioningContext:
+      type: object
+      properties:
+        company_name:
+          type: string
+        target_market:
+          type: string
+        category:
+          type: string
+        differentiation:
+          type: string
+        competitive_alternatives:
+          type: array
+          items:
+            type: string
+        unique_capabilities:
+          type: array
+          items:
+            type: string
+        proof_points:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+        key_benefit:
+          type: string
+        compelling_reason:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    UseCase:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        problem_statement:
+          type: string
+        solution_overview:
+          type: string
+        key_benefits:
+          type: array
+          items:
+            type: string
+        target_personas:
+          type: array
+          items:
+            type: string
+        applicable_industries:
+          type: array
+          items:
+            type: string
+        technical_requirements:
+          type: array
+          items:
+            type: string
+        implementation_complexity:
+          type: string
+        roi_metrics:
+          type: array
+          items:
+            type: string
+        related_products:
+          type: array
+          items:
+            type: string
+        customer_examples:
+          type: array
+          items:
+            type: string
+    MarketingContext:
+      type: object
+      properties:
+        messaging:
+          $ref: '#/components/schemas/MessagingContext'
+        positioning:
+          $ref: '#/components/schemas/PositioningContext'
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        use_cases:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseCase'
+        industries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Industry'
+        testimonials:
+          type: array
+          items:
+            $ref: '#/components/schemas/Testimonial'
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: string
+        quote:
+          type: string
+        author_name:
+          type: string
+        author_title:
+          type: string
+        company:
+          type: string
+        use_case:
+          type: string
+        rating:
+          type: integer
     MessagingContext:
       type: object
       properties:
@@ -249,12 +374,40 @@ components:
           type: string
         growth_rate:
           type: string
-    Error:
+    Product:
       type: object
       properties:
-        error:
+        id:
           type: string
-        message:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        tagline:
+          type: string
+        category:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        pricing_info:
+          type: object
+        target_audience:
+          type: array
+          items:
+            type: string
+        integration_capabilities:
+          type: array
+          items:
+            type: string
+        documentation_url:
+          type: string
+        demo_url:
+          type: string
+        status:
           type: string
     Persona:
       type: object
@@ -313,166 +466,7 @@ components:
           type: string
         demographics:
           type: object
-    PositioningContext:
-      type: object
-      properties:
-        company_name:
-          type: string
-        target_market:
-          type: string
-        category:
-          type: string
-        differentiation:
-          type: string
-        competitive_alternatives:
-          type: array
-          items:
-            type: string
-        unique_capabilities:
-          type: array
-          items:
-            type: string
-        proof_points:
-          type: array
-          items:
-            type: string
-        value_proposition:
-          type: string
-        key_benefit:
-          type: string
-        compelling_reason:
-          type: string
-    Product:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        tagline:
-          type: string
-        category:
-          type: string
-        features:
-          type: array
-          items:
-            type: string
-        pricing_info:
-          type: object
-        target_audience:
-          type: array
-          items:
-            type: string
-        integration_capabilities:
-          type: array
-          items:
-            type: string
-        documentation_url:
-          type: string
-        demo_url:
-          type: string
-        status:
-          type: string
-    MarketingContext:
-      type: object
-      properties:
-        messaging:
-          $ref: '#/components/schemas/MessagingContext'
-        positioning:
-          $ref: '#/components/schemas/PositioningContext'
-        personas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Persona'
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
-        use_cases:
-          type: array
-          items:
-            $ref: '#/components/schemas/UseCase'
-        industries:
-          type: array
-          items:
-            $ref: '#/components/schemas/Industry'
-        testimonials:
-          type: array
-          items:
-            $ref: '#/components/schemas/Testimonial'
-    UseCase:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        problem_statement:
-          type: string
-        solution_overview:
-          type: string
-        key_benefits:
-          type: array
-          items:
-            type: string
-        target_personas:
-          type: array
-          items:
-            type: string
-        applicable_industries:
-          type: array
-          items:
-            type: string
-        technical_requirements:
-          type: array
-          items:
-            type: string
-        implementation_complexity:
-          type: string
-        roi_metrics:
-          type: array
-          items:
-            type: string
-        related_products:
-          type: array
-          items:
-            type: string
-        customer_examples:
-          type: array
-          items:
-            type: string
-    Testimonial:
-      type: object
-      properties:
-        id:
-          type: string
-        quote:
-          type: string
-        author_name:
-          type: string
-        author_title:
-          type: string
-        company:
-          type: string
-        use_case:
-          type: string
-        rating:
-          type: integer
   responses:
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     NotFound:
       description: Resource not found
       content:
@@ -481,6 +475,12 @@ components:
             $ref: '#/components/schemas/Error'
     InternalError:
       description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Bad request
       content:
         application/json:
           schema:

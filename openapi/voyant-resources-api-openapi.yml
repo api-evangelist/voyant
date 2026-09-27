@@ -70,20 +70,6 @@ components:
         type: string
       description: Clerk organization ID (e.g., org_abc123)
   schemas:
-    ResourceCreate:
-      type: object
-      required:
-      - name
-      - type
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-        url:
-          type: string
-        description:
-          type: string
     Resource:
       type: object
       properties:
@@ -100,3 +86,17 @@ components:
         created_at:
           type: string
           format: date-time
+    ResourceCreate:
+      type: object
+      required:
+      - name
+      - type
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+        description:
+          type: string

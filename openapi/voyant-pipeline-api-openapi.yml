@@ -477,27 +477,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ExecuteRequest:
-      properties:
-        blueprint_id:
-          type: string
-          title: Blueprint Id
-          description: ID of the blueprint to execute
-        inputs:
-          additionalProperties: true
-          type: object
-          title: Inputs
-          description: Input parameters
-        stream:
-          type: boolean
-          title: Stream
-          description: Whether to stream execution updates
-          default: false
-      type: object
-      required:
-      - blueprint_id
-      title: ExecuteRequest
-      description: Request to execute a blueprint
     BlueprintSummary:
       properties:
         id:
@@ -557,6 +536,27 @@ components:
       - msg
       - type
       title: ValidationError
+    ExecuteRequest:
+      properties:
+        blueprint_id:
+          type: string
+          title: Blueprint Id
+          description: ID of the blueprint to execute
+        inputs:
+          additionalProperties: true
+          type: object
+          title: Inputs
+          description: Input parameters
+        stream:
+          type: boolean
+          title: Stream
+          description: Whether to stream execution updates
+          default: false
+      type: object
+      required:
+      - blueprint_id
+      title: ExecuteRequest
+      description: Request to execute a blueprint
   securitySchemes:
     HTTPBearer:
       type: http

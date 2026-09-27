@@ -182,6 +182,47 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        top_k:
+          type: integer
+          title: Top K
+          default: 5
+        context_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Type
+      type: object
+      required:
+      - query
+      title: SearchRequest
+    PushChunksRequest:
+      properties:
+        stream_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stream Name
+          default: Messaging Framework
+        limit:
+          type: integer
+          title: Limit
+          default: 50
+      type: object
+      title: PushChunksRequest
     SyncResponse:
       properties:
         success:
@@ -204,24 +245,6 @@ components:
       - success
       - message
       title: SyncResponse
-    SearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-        top_k:
-          type: integer
-          title: Top K
-          default: 5
-        context_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Type
-      type: object
-      required:
-      - query
-      title: SearchRequest
     ValidationError:
       properties:
         loc:
@@ -248,29 +271,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PushChunksRequest:
-      properties:
-        stream_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Stream Name
-          default: Messaging Framework
-        limit:
-          type: integer
-          title: Limit
-          default: 50
-      type: object
-      title: PushChunksRequest
   securitySchemes:
     HTTPBearer:
       type: http

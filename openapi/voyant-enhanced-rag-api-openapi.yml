@@ -310,109 +310,15 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    HybridSearchRequest:
+    HTTPValidationError:
       properties:
-        query:
-          type: string
-          maxLength: 1000
-          minLength: 1
-          title: Query
-          description: Search query
-        strategy:
-          type: string
-          enum:
-          - hybrid
-          - semantic
-          - keyword
-          - domain
-          title: Strategy
-          description: Search strategy to use
-          default: hybrid
-        top_k:
-          type: integer
-          maximum: 50.0
-          minimum: 1.0
-          title: Top K
-          description: Number of results to return
-          default: 10
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter by specific domain
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-          description: Filter by content type
-      type: object
-      required:
-      - query
-      title: HybridSearchRequest
-      description: Request model for hybrid search.
-    GenerateWithHybridResponse:
-      properties:
-        query:
-          type: string
-          title: Query
-        generated_content:
-          type: string
-          title: Generated Content
-        context_sources:
+        detail:
           items:
-            additionalProperties: true
-            type: object
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Context Sources
-        retrieval_stats:
-          additionalProperties: true
-          type: object
-          title: Retrieval Stats
-        generation_metadata:
-          additionalProperties: true
-          type: object
-          title: Generation Metadata
-        timestamp:
-          type: string
-          title: Timestamp
+          title: Detail
       type: object
-      required:
-      - query
-      - generated_content
-      - context_sources
-      - retrieval_stats
-      - generation_metadata
-      - timestamp
-      title: GenerateWithHybridResponse
-      description: Response model for hybrid RAG content generation.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
     GenerateWithGypsumRequest:
       properties:
         query:
@@ -474,6 +380,46 @@ components:
       - tone
       title: GenerateWithGypsumRequest
       description: Request model for content generation with Gypsum + RAG integration.
+    GenerateWithGypsumResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        generated_content:
+          type: string
+          title: Generated Content
+        context_sources:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Context Sources
+        gypsum_context:
+          additionalProperties: true
+          type: object
+          title: Gypsum Context
+        retrieval_stats:
+          additionalProperties: true
+          type: object
+          title: Retrieval Stats
+        generation_metadata:
+          additionalProperties: true
+          type: object
+          title: Generation Metadata
+        timestamp:
+          type: string
+          title: Timestamp
+      type: object
+      required:
+      - query
+      - generated_content
+      - context_sources
+      - gypsum_context
+      - retrieval_stats
+      - generation_metadata
+      - timestamp
+      title: GenerateWithGypsumResponse
+      description: Response model for Gypsum + RAG content generation.
     HybridSearchResponse:
       properties:
         query:
@@ -504,6 +450,83 @@ components:
       - strategy_used
       title: HybridSearchResponse
       description: Response model for hybrid search.
+    GenerateWithHybridResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        generated_content:
+          type: string
+          title: Generated Content
+        context_sources:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Context Sources
+        retrieval_stats:
+          additionalProperties: true
+          type: object
+          title: Retrieval Stats
+        generation_metadata:
+          additionalProperties: true
+          type: object
+          title: Generation Metadata
+        timestamp:
+          type: string
+          title: Timestamp
+      type: object
+      required:
+      - query
+      - generated_content
+      - context_sources
+      - retrieval_stats
+      - generation_metadata
+      - timestamp
+      title: GenerateWithHybridResponse
+      description: Response model for hybrid RAG content generation.
+    HybridSearchRequest:
+      properties:
+        query:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Query
+          description: Search query
+        strategy:
+          type: string
+          enum:
+          - hybrid
+          - semantic
+          - keyword
+          - domain
+          title: Strategy
+          description: Search strategy to use
+          default: hybrid
+        top_k:
+          type: integer
+          maximum: 50.0
+          minimum: 1.0
+          title: Top K
+          description: Number of results to return
+          default: 10
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by specific domain
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+          description: Filter by content type
+      type: object
+      required:
+      - query
+      title: HybridSearchRequest
+      description: Request model for hybrid search.
     GenerateWithHybridRequest:
       properties:
         query:
@@ -554,55 +577,32 @@ components:
       - tone
       title: GenerateWithHybridRequest
       description: Request model for content generation with hybrid RAG.
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    GenerateWithGypsumResponse:
-      properties:
-        query:
+          title: Location
+        msg:
           type: string
-          title: Query
-        generated_content:
+          title: Message
+        type:
           type: string
-          title: Generated Content
-        context_sources:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Context Sources
-        gypsum_context:
-          additionalProperties: true
+          title: Error Type
+        input:
+          title: Input
+        ctx:
           type: object
-          title: Gypsum Context
-        retrieval_stats:
-          additionalProperties: true
-          type: object
-          title: Retrieval Stats
-        generation_metadata:
-          additionalProperties: true
-          type: object
-          title: Generation Metadata
-        timestamp:
-          type: string
-          title: Timestamp
+          title: Context
       type: object
       required:
-      - query
-      - generated_content
-      - context_sources
-      - gypsum_context
-      - retrieval_stats
-      - generation_metadata
-      - timestamp
-      title: GenerateWithGypsumResponse
-      description: Response model for Gypsum + RAG content generation.
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

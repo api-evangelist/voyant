@@ -408,51 +408,50 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    VisibilitySnapshotResponse:
+    HTTPValidationError:
       properties:
-        snapshot_at:
-          type: string
-          title: Snapshot At
-        overall_visibility:
-          type: number
-          title: Overall Visibility
-        brand_mentions:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthSummaryResponse:
+      properties:
+        total:
           type: integer
-          title: Brand Mentions
-        competitor_mentions:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Competitor Mentions
-        model_scores:
-          additionalProperties:
-            type: number
-          type: object
-          title: Model Scores
-        change_vs_yesterday:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Change Vs Yesterday
-        change_vs_last_week:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Change Vs Last Week
-        prompts_tested:
+          title: Total
+        connected:
           type: integer
-          title: Prompts Tested
+          title: Connected
+        errors:
+          type: integer
+          title: Errors
+        connected_integrations:
+          items:
+            $ref: '#/components/schemas/IntegrationResponse'
+          type: array
+          title: Connected Integrations
+        disconnected_integrations:
+          items:
+            $ref: '#/components/schemas/IntegrationResponse'
+          type: array
+          title: Disconnected Integrations
+        error_integrations:
+          items:
+            $ref: '#/components/schemas/IntegrationResponse'
+          type: array
+          title: Error Integrations
       type: object
       required:
-      - snapshot_at
-      - overall_visibility
-      - brand_mentions
-      - competitor_mentions
-      - model_scores
-      - change_vs_yesterday
-      - change_vs_last_week
-      - prompts_tested
-      title: VisibilitySnapshotResponse
+      - total
+      - connected
+      - errors
+      - connected_integrations
+      - disconnected_integrations
+      - error_integrations
+      title: HealthSummaryResponse
     AgentResponse:
       properties:
         id:
@@ -530,41 +529,80 @@ components:
       - items_processed
       - schedule_interval_minutes
       title: AgentResponse
-    HealthSummaryResponse:
+    ActivityResponse:
       properties:
-        total:
-          type: integer
-          title: Total
-        connected:
-          type: integer
-          title: Connected
-        errors:
-          type: integer
-          title: Errors
-        connected_integrations:
-          items:
-            $ref: '#/components/schemas/IntegrationResponse'
-          type: array
-          title: Connected Integrations
-        disconnected_integrations:
-          items:
-            $ref: '#/components/schemas/IntegrationResponse'
-          type: array
-          title: Disconnected Integrations
-        error_integrations:
-          items:
-            $ref: '#/components/schemas/IntegrationResponse'
-          type: array
-          title: Error Integrations
+        id:
+          type: string
+          title: Id
+        activity_type:
+          type: string
+          title: Activity Type
+        source:
+          type: string
+          title: Source
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        icon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Icon
+        importance:
+          type: string
+          title: Importance
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+        entity_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+        entity_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Id
+        action_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action Url
+        action_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action Label
+        is_read:
+          type: boolean
+          title: Is Read
+        created_at:
+          type: string
+          title: Created At
       type: object
       required:
-      - total
-      - connected
-      - errors
-      - connected_integrations
-      - disconnected_integrations
-      - error_integrations
-      title: HealthSummaryResponse
+      - id
+      - activity_type
+      - source
+      - title
+      - description
+      - icon
+      - importance
+      - metadata
+      - entity_type
+      - entity_id
+      - action_url
+      - action_label
+      - is_read
+      - created_at
+      title: ActivityResponse
     IntegrationResponse:
       properties:
         integration_type:
@@ -646,89 +684,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ActivityResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        activity_type:
-          type: string
-          title: Activity Type
-        source:
-          type: string
-          title: Source
-        title:
-          type: string
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        icon:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Icon
-        importance:
-          type: string
-          title: Importance
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-        entity_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Entity Type
-        entity_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Entity Id
-        action_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Action Url
-        action_label:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Action Label
-        is_read:
-          type: boolean
-          title: Is Read
-        created_at:
-          type: string
-          title: Created At
-      type: object
-      required:
-      - id
-      - activity_type
-      - source
-      - title
-      - description
-      - icon
-      - importance
-      - metadata
-      - entity_type
-      - entity_id
-      - action_url
-      - action_label
-      - is_read
-      - created_at
-      title: ActivityResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     RegisterAgentRequest:
       properties:
         agent_type:
@@ -761,6 +716,51 @@ components:
       - agent_type
       - agent_name
       title: RegisterAgentRequest
+    VisibilitySnapshotResponse:
+      properties:
+        snapshot_at:
+          type: string
+          title: Snapshot At
+        overall_visibility:
+          type: number
+          title: Overall Visibility
+        brand_mentions:
+          type: integer
+          title: Brand Mentions
+        competitor_mentions:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Competitor Mentions
+        model_scores:
+          additionalProperties:
+            type: number
+          type: object
+          title: Model Scores
+        change_vs_yesterday:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Vs Yesterday
+        change_vs_last_week:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Vs Last Week
+        prompts_tested:
+          type: integer
+          title: Prompts Tested
+      type: object
+      required:
+      - snapshot_at
+      - overall_visibility
+      - brand_mentions
+      - competitor_mentions
+      - model_scores
+      - change_vs_yesterday
+      - change_vs_last_week
+      - prompts_tested
+      title: VisibilitySnapshotResponse
   securitySchemes:
     HTTPBearer:
       type: http

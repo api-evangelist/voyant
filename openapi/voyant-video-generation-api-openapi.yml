@@ -131,6 +131,15 @@ paths:
               schema: {}
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     VideoGenerationStatus:
       properties:
         video_id:
@@ -177,18 +186,48 @@ components:
       - updated_at
       title: VideoGenerationStatus
       description: Status of video generation
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
+    VideoGenerationRequest:
+      properties:
+        script_request:
+          $ref: '#/components/schemas/VideoScriptRequest'
+        avatar_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Avatar Id
+          description: HeyGen avatar ID
+          default: default_presenter
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+          description: Voice ID for narration
+          default: professional_male
+        background_style:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Style
+          description: Background style
+          default: office
+        video_quality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Video Quality
+          description: Video quality setting
+          default: 1080p
+        generate_subtitles:
+          type: boolean
+          title: Generate Subtitles
+          description: Generate video with subtitles
+          default: true
+      type: object
+      required:
+      - script_request
+      title: VideoGenerationRequest
+      description: Request for generating complete video
     VideoScriptRequest:
       properties:
         company_domain:
@@ -233,82 +272,6 @@ components:
       type: object
       title: VideoScriptRequest
       description: Request for generating video script
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    VideoGenerationRequest:
-      properties:
-        script_request:
-          $ref: '#/components/schemas/VideoScriptRequest'
-        avatar_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Avatar Id
-          description: HeyGen avatar ID
-          default: default_presenter
-        voice_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Voice Id
-          description: Voice ID for narration
-          default: professional_male
-        background_style:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Background Style
-          description: Background style
-          default: office
-        video_quality:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Video Quality
-          description: Video quality setting
-          default: 1080p
-        generate_subtitles:
-          type: boolean
-          title: Generate Subtitles
-          description: Generate video with subtitles
-          default: true
-      type: object
-      required:
-      - script_request
-      title: VideoGenerationRequest
-      description: Request for generating complete video
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     VideoGenerationResponse:
       properties:
         video_id:
@@ -346,15 +309,52 @@ components:
       - metadata
       title: VideoGenerationResponse
       description: Response from video generation request
-    HTTPValidationError:
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: HTTPValidationError
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

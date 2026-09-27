@@ -423,51 +423,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    RecommendationResponse:
+    HTTPValidationError:
       properties:
-        type:
-          type: string
-          title: Type
-        priority:
-          type: string
-          title: Priority
-        title:
-          type: string
-          title: Title
-        reason:
-          type: string
-          title: Reason
-        suggested_format:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suggested Format
-        target_keywords:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Target Keywords
-        suggested_prompt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suggested Prompt
-        suggested_actions:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Suggested Actions
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - type
-      - priority
-      - title
-      - reason
-      title: RecommendationResponse
+      title: HTTPValidationError
     HotTopicResponse:
       properties:
         query:
@@ -523,6 +487,51 @@ components:
       - competitor_mentions
       - last_tested
       title: HotTopicResponse
+    RecommendationResponse:
+      properties:
+        type:
+          type: string
+          title: Type
+        priority:
+          type: string
+          title: Priority
+        title:
+          type: string
+          title: Title
+        reason:
+          type: string
+          title: Reason
+        suggested_format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Format
+        target_keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Keywords
+        suggested_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Prompt
+        suggested_actions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Suggested Actions
+      type: object
+      required:
+      - type
+      - priority
+      - title
+      - reason
+      title: RecommendationResponse
     InsightResponse:
       properties:
         insight_type:
@@ -589,15 +598,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

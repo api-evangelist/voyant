@@ -414,114 +414,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    GovernancePolicyCreate:
+    HTTPValidationError:
       properties:
-        name:
-          type: string
-          title: Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        version:
-          type: string
-          title: Version
-          default: '1.0'
-        applies_to_entity_types:
+        detail:
           items:
-            type: string
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Applies To Entity Types
-        applies_to_field_paths:
-          items:
-            type: string
-          type: array
-          title: Applies To Field Paths
-        required_claim_types:
-          items:
-            type: string
-          type: array
-          title: Required Claim Types
-        required_actor_roles:
-          items:
-            type: string
-          type: array
-          title: Required Actor Roles
-        min_attestations:
-          type: integer
-          minimum: 1.0
-          title: Min Attestations
-          default: 1
-        validation_schema:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Validation Schema
-        is_active:
-          type: boolean
-          title: Is Active
-          default: true
+          title: Detail
       type: object
-      required:
-      - name
-      title: GovernancePolicyCreate
-      description: Create a governance policy
-    MutationCreate:
-      properties:
-        entity_type:
-          type: string
-          title: Entity Type
-          description: 'Type: persona, product, use_case, etc.'
-        entity_id:
-          type: string
-          title: Entity Id
-          description: ID of the mutated entity
-        entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Entity Uri
-          description: Full URI for linked data
-        field_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Field Path
-          description: JSON path to the changed field
-        previous_value:
-          anyOf:
-          - {}
-          - type: 'null'
-          title: Previous Value
-        new_value:
-          anyOf:
-          - {}
-          - type: 'null'
-          title: New Value
-        mutation_type:
-          type: string
-          title: Mutation Type
-          description: create, update, delete, merge, split
-          default: update
-        semantic_delta:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Semantic Delta
-          description: Human-readable description of what changed
-        attestations:
-          items:
-            $ref: '#/components/schemas/AttestationCreate'
-          type: array
-          title: Attestations
-      type: object
-      required:
-      - entity_type
-      - entity_id
-      title: MutationCreate
-      description: Create a new context mutation with attestations
+      title: HTTPValidationError
     ProvenanceCreate:
       properties:
         source_entity_type:
@@ -576,80 +477,6 @@ components:
       - derived_entity_id
       title: ProvenanceCreate
       description: Create a provenance relationship between entities
-    AttestationEvidenceCreate:
-      properties:
-        evidence_type:
-          type: string
-          title: Evidence Type
-          description: 'Type: document, url, analysis, conversation'
-        evidence_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Uri
-          description: URI to the evidence
-        evidence_hash:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Hash
-          description: Content hash for verification
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        content_excerpt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Excerpt
-          description: Relevant excerpt from the evidence
-      type: object
-      required:
-      - evidence_type
-      title: AttestationEvidenceCreate
-      description: Evidence supporting an attestation
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     AttestationCreate:
       properties:
         claim_type:
@@ -705,6 +532,179 @@ components:
       - actor_id
       title: AttestationCreate
       description: A signed claim about context
+    GovernancePolicyCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        version:
+          type: string
+          title: Version
+          default: '1.0'
+        applies_to_entity_types:
+          items:
+            type: string
+          type: array
+          title: Applies To Entity Types
+        applies_to_field_paths:
+          items:
+            type: string
+          type: array
+          title: Applies To Field Paths
+        required_claim_types:
+          items:
+            type: string
+          type: array
+          title: Required Claim Types
+        required_actor_roles:
+          items:
+            type: string
+          type: array
+          title: Required Actor Roles
+        min_attestations:
+          type: integer
+          minimum: 1.0
+          title: Min Attestations
+          default: 1
+        validation_schema:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Validation Schema
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+      type: object
+      required:
+      - name
+      title: GovernancePolicyCreate
+      description: Create a governance policy
+    AttestationEvidenceCreate:
+      properties:
+        evidence_type:
+          type: string
+          title: Evidence Type
+          description: 'Type: document, url, analysis, conversation'
+        evidence_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Uri
+          description: URI to the evidence
+        evidence_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Hash
+          description: Content hash for verification
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        content_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Excerpt
+          description: Relevant excerpt from the evidence
+      type: object
+      required:
+      - evidence_type
+      title: AttestationEvidenceCreate
+      description: Evidence supporting an attestation
+    MutationCreate:
+      properties:
+        entity_type:
+          type: string
+          title: Entity Type
+          description: 'Type: persona, product, use_case, etc.'
+        entity_id:
+          type: string
+          title: Entity Id
+          description: ID of the mutated entity
+        entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Uri
+          description: Full URI for linked data
+        field_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Path
+          description: JSON path to the changed field
+        previous_value:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Previous Value
+        new_value:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: New Value
+        mutation_type:
+          type: string
+          title: Mutation Type
+          description: create, update, delete, merge, split
+          default: update
+        semantic_delta:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Semantic Delta
+          description: Human-readable description of what changed
+        attestations:
+          items:
+            $ref: '#/components/schemas/AttestationCreate'
+          type: array
+          title: Attestations
+      type: object
+      required:
+      - entity_type
+      - entity_id
+      title: MutationCreate
+      description: Create a new context mutation with attestations
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

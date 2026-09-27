@@ -128,89 +128,15 @@ paths:
               schema: {}
 components:
   schemas:
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    PromptGenerationResponse:
+    HTTPValidationError:
       properties:
-        prompts:
+        detail:
           items:
-            $ref: '#/components/schemas/GeneratedPrompt'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Prompts
-          description: Generated prompt suggestions
-        content_summary:
-          additionalProperties: true
-          type: object
-          title: Content Summary
-          description: Summary of analyzed content
-        persona_context:
-          additionalProperties: true
-          type: object
-          title: Persona Context
-          description: Gypsum persona context
-        messaging_insights:
-          additionalProperties: true
-          type: object
-          title: Messaging Insights
-          description: Messaging framework insights
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Generation metadata
+          title: Detail
       type: object
-      required:
-      - prompts
-      - content_summary
-      - persona_context
-      - messaging_insights
-      - metadata
-      title: PromptGenerationResponse
-      description: Response containing generated prompts with Gypsum insights
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
     PromptGenerationRequest:
       properties:
         domain:
@@ -273,15 +199,63 @@ components:
       - geo_prompt
       title: ContentPlatform
       description: Platforms for content generation.
-    HTTPValidationError:
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    PromptGenerationResponse:
       properties:
-        detail:
+        prompts:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: '#/components/schemas/GeneratedPrompt'
           type: array
-          title: Detail
+          title: Prompts
+          description: Generated prompt suggestions
+        content_summary:
+          additionalProperties: true
+          type: object
+          title: Content Summary
+          description: Summary of analyzed content
+        persona_context:
+          additionalProperties: true
+          type: object
+          title: Persona Context
+          description: Gypsum persona context
+        messaging_insights:
+          additionalProperties: true
+          type: object
+          title: Messaging Insights
+          description: Messaging framework insights
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Generation metadata
       type: object
-      title: HTTPValidationError
+      required:
+      - prompts
+      - content_summary
+      - persona_context
+      - messaging_insights
+      - metadata
+      title: PromptGenerationResponse
+      description: Response containing generated prompts with Gypsum insights
     GeneratedPrompt:
       properties:
         title:
@@ -344,6 +318,32 @@ components:
       - messaging_framework
       title: GeneratedPrompt
       description: A generated prompt suggestion enhanced with Gypsum persona insights
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

@@ -81,6 +81,24 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    NotionConfig:
+      properties:
+        sync_enabled:
+          type: boolean
+          title: Sync Enabled
+          default: false
+        sync_frequency:
+          type: string
+          title: Sync Frequency
+          default: daily
+        selected_databases:
+          items:
+            type: string
+          type: array
+          title: Selected Databases
+          default: []
+      type: object
+      title: NotionConfig
     ValidationError:
       properties:
         loc:
@@ -107,24 +125,6 @@ components:
       - msg
       - type
       title: ValidationError
-    NotionConfig:
-      properties:
-        sync_enabled:
-          type: boolean
-          title: Sync Enabled
-          default: false
-        sync_frequency:
-          type: string
-          title: Sync Frequency
-          default: daily
-        selected_databases:
-          items:
-            type: string
-          type: array
-          title: Selected Databases
-          default: []
-      type: object
-      title: NotionConfig
   securitySchemes:
     HTTPBearer:
       type: http

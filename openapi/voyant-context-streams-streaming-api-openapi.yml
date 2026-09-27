@@ -181,30 +181,15 @@ paths:
               schema: {}
 components:
   schemas:
-    PublishRequest:
+    HTTPValidationError:
       properties:
-        stream_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Stream Ids
-        include_messaging:
-          type: boolean
-          title: Include Messaging
-          default: true
-        include_personas:
-          type: boolean
-          title: Include Personas
-          default: true
-        include_competitive:
-          type: boolean
-          title: Include Competitive
-          default: true
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: PublishRequest
-      description: Request to publish knowledge to streaming topics
+      title: HTTPValidationError
     StreamingConfigRequest:
       properties:
         broker_url:
@@ -314,6 +299,30 @@ components:
       - topics
       title: SubscribeRequest
       description: Request to subscribe to topics for signal ingestion
+    PublishRequest:
+      properties:
+        stream_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Stream Ids
+        include_messaging:
+          type: boolean
+          title: Include Messaging
+          default: true
+        include_personas:
+          type: boolean
+          title: Include Personas
+          default: true
+        include_competitive:
+          type: boolean
+          title: Include Competitive
+          default: true
+      type: object
+      title: PublishRequest
+      description: Request to publish knowledge to streaming topics
     ValidationError:
       properties:
         loc:
@@ -340,15 +349,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http
