@@ -255,15 +255,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ImportQueriesRequest:
       properties:
         site_url:
@@ -311,58 +302,6 @@ components:
       - site_url
       title: ImportQueriesRequest
       description: Request to import queries as target prompts
-    GSCQueryResponse:
-      properties:
-        query:
-          type: string
-          title: Query
-        clicks:
-          type: integer
-          title: Clicks
-        impressions:
-          type: integer
-          title: Impressions
-        ctr:
-          type: number
-          title: Ctr
-        position:
-          type: number
-          title: Position
-      type: object
-      required:
-      - query
-      - clicks
-      - impressions
-      - ctr
-      - position
-      title: GSCQueryResponse
-      description: Response for a search query
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     GSCQueriesResponse:
       properties:
         site_url:
@@ -400,6 +339,81 @@ components:
       - period
       title: GSCQueriesResponse
       description: Response for search queries endpoint
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    GSCQueryResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        clicks:
+          type: integer
+          title: Clicks
+        impressions:
+          type: integer
+          title: Impressions
+        ctr:
+          type: number
+          title: Ctr
+        position:
+          type: number
+          title: Position
+      type: object
+      required:
+      - query
+      - clicks
+      - impressions
+      - ctr
+      - position
+      title: GSCQueryResponse
+      description: Response for a search query
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GSCSiteResponse:
+      properties:
+        site_url:
+          type: string
+          title: Site Url
+        permission_level:
+          type: string
+          title: Permission Level
+      type: object
+      required:
+      - site_url
+      - permission_level
+      title: GSCSiteResponse
+      description: Response for a GSC site
     ImportResult:
       properties:
         imported:
@@ -425,20 +439,6 @@ components:
       - prompts
       title: ImportResult
       description: Result of import operation
-    GSCSiteResponse:
-      properties:
-        site_url:
-          type: string
-          title: Site Url
-        permission_level:
-          type: string
-          title: Permission Level
-      type: object
-      required:
-      - site_url
-      - permission_level
-      title: GSCSiteResponse
-      description: Response for a GSC site
   securitySchemes:
     HTTPBearer:
       type: http

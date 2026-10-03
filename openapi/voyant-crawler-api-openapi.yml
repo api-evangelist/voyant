@@ -409,122 +409,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    CrawlResponse:
-      properties:
-        crawl_id:
-          type: string
-          title: Crawl Id
-        task_id:
-          type: string
-          title: Task Id
-        status:
-          type: string
-          title: Status
-        message:
-          type: string
-          title: Message
-      type: object
-      required:
-      - crawl_id
-      - task_id
-      - status
-      - message
-      title: CrawlResponse
-      description: Response model for crawl job.
-    CrawlEstimateRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: Domain or URL to estimate
-      type: object
-      required:
-      - domain
-      title: CrawlEstimateRequest
-      description: Request model for scan estimate.
-    ImportAuthoritativeContentRequest:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: The full content of the file
-        source_url:
-          type: string
-          title: Source Url
-          description: URL where the file was found
-        file_type:
-          type: string
-          title: File Type
-          description: 'Type of file: ''llms.txt'' or ''context.txt'''
-        domain:
-          type: string
-          title: Domain
-          description: Domain the file belongs to
-      type: object
-      required:
-      - content
-      - source_url
-      - file_type
-      - domain
-      title: ImportAuthoritativeContentRequest
-      description: Request model for importing llms.txt or context.txt as authoritative content.
-    CrawlSummary:
-      properties:
-        crawl_id:
-          type: string
-          title: Crawl Id
-        org_id:
-          type: string
-          title: Org Id
-        domains:
-          items:
-            type: string
-          type: array
-          title: Domains
-        total_urls_found:
-          type: integer
-          title: Total Urls Found
-        total_urls_crawled:
-          type: integer
-          title: Total Urls Crawled
-        total_pages_saved:
-          type: integer
-          title: Total Pages Saved
-        success_rate:
-          type: number
-          title: Success Rate
-        elapsed_time:
-          type: number
-          title: Elapsed Time
-        pages_per_second:
-          type: number
-          title: Pages Per Second
-        status:
-          type: string
-          title: Status
-      type: object
-      required:
-      - crawl_id
-      - org_id
-      - domains
-      - total_urls_found
-      - total_urls_crawled
-      - total_pages_saved
-      - success_rate
-      - elapsed_time
-      - pages_per_second
-      - status
-      title: CrawlSummary
-      description: Summary model for completed crawl.
     ValidationError:
       properties:
         loc:
@@ -551,6 +435,32 @@ components:
       - msg
       - type
       title: ValidationError
+    ImportAuthoritativeContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The full content of the file
+        source_url:
+          type: string
+          title: Source Url
+          description: URL where the file was found
+        file_type:
+          type: string
+          title: File Type
+          description: 'Type of file: ''llms.txt'' or ''context.txt'''
+        domain:
+          type: string
+          title: Domain
+          description: Domain the file belongs to
+      type: object
+      required:
+      - content
+      - source_url
+      - file_type
+      - domain
+      title: ImportAuthoritativeContentRequest
+      description: Request model for importing llms.txt or context.txt as authoritative content.
     CrawlRequest:
       properties:
         domains:
@@ -618,6 +528,96 @@ components:
       - domains
       title: CrawlRequest
       description: Request model for crawl job.
+    CrawlSummary:
+      properties:
+        crawl_id:
+          type: string
+          title: Crawl Id
+        org_id:
+          type: string
+          title: Org Id
+        domains:
+          items:
+            type: string
+          type: array
+          title: Domains
+        total_urls_found:
+          type: integer
+          title: Total Urls Found
+        total_urls_crawled:
+          type: integer
+          title: Total Urls Crawled
+        total_pages_saved:
+          type: integer
+          title: Total Pages Saved
+        success_rate:
+          type: number
+          title: Success Rate
+        elapsed_time:
+          type: number
+          title: Elapsed Time
+        pages_per_second:
+          type: number
+          title: Pages Per Second
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - crawl_id
+      - org_id
+      - domains
+      - total_urls_found
+      - total_urls_crawled
+      - total_pages_saved
+      - success_rate
+      - elapsed_time
+      - pages_per_second
+      - status
+      title: CrawlSummary
+      description: Summary model for completed crawl.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CrawlEstimateRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain or URL to estimate
+      type: object
+      required:
+      - domain
+      title: CrawlEstimateRequest
+      description: Request model for scan estimate.
+    CrawlResponse:
+      properties:
+        crawl_id:
+          type: string
+          title: Crawl Id
+        task_id:
+          type: string
+          title: Task Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - crawl_id
+      - task_id
+      - status
+      - message
+      title: CrawlResponse
+      description: Response model for crawl job.
   securitySchemes:
     HTTPBearer:
       type: http

@@ -52,6 +52,27 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
+    ChatResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        response:
+          type: string
+        usage:
+          type: object
+          properties:
+            input_tokens:
+              type: integer
+            output_tokens:
+              type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     ChatRequest:
       type: object
       required:
@@ -79,24 +100,3 @@ components:
           description: Visitor persona for tailored responses
         organization_id:
           type: string
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-    ChatResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        response:
-          type: string
-        usage:
-          type: object
-          properties:
-            input_tokens:
-              type: integer
-            output_tokens:
-              type: integer

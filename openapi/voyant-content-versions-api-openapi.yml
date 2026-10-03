@@ -304,97 +304,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    TrainingSessionUpdate:
-      properties:
-        final_content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Final Content
-        conversation:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Conversation
-        rules_detected:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Rules Detected
-        rules_applied:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Rules Applied
-        content_accepted:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Content Accepted
-        status:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Status
-      type: object
-      title: TrainingSessionUpdate
-    ContentVersionCreate:
-      properties:
-        content_type:
-          type: string
-          title: Content Type
-        content_key:
-          type: string
-          title: Content Key
-        content:
-          type: string
-          title: Content
-        change_source:
-          type: string
-          title: Change Source
-          default: manual
-        change_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Reason
-        training_session_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Training Session Id
-        detected_rules:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Detected Rules
-      type: object
-      required:
-      - content_type
-      - content_key
-      - content
-      title: ContentVersionCreate
     TrainingSessionCreate:
       properties:
         content_type:
@@ -479,6 +388,32 @@ components:
       - created_at
       - is_current
       title: ContentVersion
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     TrainingSession:
       properties:
         id:
@@ -557,32 +492,97 @@ components:
       - completed_at
       - status
       title: TrainingSession
-    ValidationError:
+    HTTPValidationError:
       properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ContentVersionCreate:
+      properties:
+        content_type:
           type: string
-          title: Message
-        type:
+          title: Content Type
+        content_key:
           type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Content Key
+        content:
+          type: string
+          title: Content
+        change_source:
+          type: string
+          title: Change Source
+          default: manual
+        change_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Reason
+        training_session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Training Session Id
+        detected_rules:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Detected Rules
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - content_type
+      - content_key
+      - content
+      title: ContentVersionCreate
+    TrainingSessionUpdate:
+      properties:
+        final_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Final Content
+        conversation:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Conversation
+        rules_detected:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Rules Detected
+        rules_applied:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Rules Applied
+        content_accepted:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Content Accepted
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      type: object
+      title: TrainingSessionUpdate
   securitySchemes:
     HTTPBearer:
       type: http

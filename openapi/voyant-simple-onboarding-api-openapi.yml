@@ -99,15 +99,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     SimpleOnboardingResponse:
       properties:
         session_id:
@@ -134,81 +125,32 @@ components:
       - competitors
       title: SimpleOnboardingResponse
       description: Complete response from simple onboarding discovery
-    MessagingData:
+    ValidationError:
       properties:
-        headline:
-          type: string
-          title: Headline
-        tagline:
-          type: string
-          title: Tagline
-        value_proposition:
-          type: string
-          title: Value Proposition
-        key_differentiators:
+        loc:
           items:
-            type: string
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Key Differentiators
-          default: []
-        target_audience:
+          title: Location
+        msg:
           type: string
-          title: Target Audience
-      type: object
-      required:
-      - headline
-      - tagline
-      - value_proposition
-      - target_audience
-      title: MessagingData
-      description: Generated high-level messaging
-    DiscoveryData:
-      properties:
-        company_name:
+          title: Message
+        type:
           type: string
-          title: Company Name
-        domain:
-          type: string
-          title: Domain
-        tagline:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tagline
-        products:
-          items:
-            type: string
-          type: array
-          title: Products
-          default: []
-        what_you_do:
-          items:
-            type: string
-          type: array
-          title: What You Do
-          default: []
-        social_links:
-          additionalProperties:
-            type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
           type: object
-          title: Social Links
-          default: {}
+          title: Context
       type: object
       required:
-      - company_name
-      - domain
-      title: DiscoveryData
-      description: Homepage discovery data
-    SimpleOnboardingRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-      type: object
-      required:
-      - domain
-      title: SimpleOnboardingRequest
-      description: Start simplified onboarding with just a domain
+      - loc
+      - msg
+      - type
+      title: ValidationError
     EnrichmentData:
       properties:
         industry:
@@ -257,6 +199,34 @@ components:
       type: object
       title: EnrichmentData
       description: Lusha enrichment data
+    MessagingData:
+      properties:
+        headline:
+          type: string
+          title: Headline
+        tagline:
+          type: string
+          title: Tagline
+        value_proposition:
+          type: string
+          title: Value Proposition
+        key_differentiators:
+          items:
+            type: string
+          type: array
+          title: Key Differentiators
+          default: []
+        target_audience:
+          type: string
+          title: Target Audience
+      type: object
+      required:
+      - headline
+      - tagline
+      - value_proposition
+      - target_audience
+      title: MessagingData
+      description: Generated high-level messaging
     ConfirmOnboardingRequest:
       properties:
         session_id:
@@ -285,6 +255,62 @@ components:
       - messaging
       title: ConfirmOnboardingRequest
       description: User-confirmed onboarding data
+    DiscoveryData:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        domain:
+          type: string
+          title: Domain
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+          default: []
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        social_links:
+          additionalProperties:
+            type: string
+          type: object
+          title: Social Links
+          default: {}
+      type: object
+      required:
+      - company_name
+      - domain
+      title: DiscoveryData
+      description: Homepage discovery data
+    SimpleOnboardingRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+      type: object
+      required:
+      - domain
+      title: SimpleOnboardingRequest
+      description: Start simplified onboarding with just a domain
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     CompetitorSuggestion:
       properties:
         name:
@@ -311,32 +337,6 @@ components:
       - why_competitor
       title: CompetitorSuggestion
       description: A suggested competitor
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

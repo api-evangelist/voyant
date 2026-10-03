@@ -250,6 +250,32 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     SearchContentRequest:
       properties:
         query:
@@ -263,15 +289,29 @@ components:
       required:
       - query
       title: SearchContentRequest
-    HTTPValidationError:
+    MapOrganizationRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        company_name:
+          type: string
+          title: Company Name
+        github_usernames:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Github Usernames
+        target_titles:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Titles
       type: object
-      title: HTTPValidationError
+      required:
+      - company_name
+      title: MapOrganizationRequest
     SearchPeopleRequest:
       properties:
         query:
@@ -310,55 +350,15 @@ components:
           default: 50
       type: object
       title: DiscoverSignalsRequest
-    MapOrganizationRequest:
+    HTTPValidationError:
       properties:
-        company_name:
-          type: string
-          title: Company Name
-        github_usernames:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Github Usernames
-        target_titles:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Target Titles
-      type: object
-      required:
-      - company_name
-      title: MapOrganizationRequest
-    ValidationError:
-      properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

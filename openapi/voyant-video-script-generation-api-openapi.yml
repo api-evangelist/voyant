@@ -97,15 +97,6 @@ paths:
               schema: {}
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     VideoScriptResponse:
       properties:
         script_id:
@@ -153,6 +144,74 @@ components:
       - metadata
       title: VideoScriptResponse
       description: Generated video script response
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    VideoScene:
+      properties:
+        scene_id:
+          type: string
+          title: Scene Id
+        duration:
+          type: integer
+          title: Duration
+        scene_type:
+          type: string
+          title: Scene Type
+        script_text:
+          type: string
+          title: Script Text
+        visual_notes:
+          type: string
+          title: Visual Notes
+        timestamp_start:
+          type: integer
+          title: Timestamp Start
+        timestamp_end:
+          type: integer
+          title: Timestamp End
+      type: object
+      required:
+      - scene_id
+      - duration
+      - scene_type
+      - script_text
+      - visual_notes
+      - timestamp_start
+      - timestamp_end
+      title: VideoScene
+      description: Individual video scene
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
     VideoScriptRequest:
       properties:
         company_domain:
@@ -209,74 +268,15 @@ components:
       - authoritative
       title: ContentTone
       description: Tones for generated content.
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    VideoScene:
+    HTTPValidationError:
       properties:
-        scene_id:
-          type: string
-          title: Scene Id
-        duration:
-          type: integer
-          title: Duration
-        scene_type:
-          type: string
-          title: Scene Type
-        script_text:
-          type: string
-          title: Script Text
-        visual_notes:
-          type: string
-          title: Visual Notes
-        timestamp_start:
-          type: integer
-          title: Timestamp Start
-        timestamp_end:
-          type: integer
-          title: Timestamp End
-      type: object
-      required:
-      - scene_id
-      - duration
-      - scene_type
-      - script_text
-      - visual_notes
-      - timestamp_start
-      - timestamp_end
-      title: VideoScene
-      description: Individual video scene
-    ValidationError:
-      properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

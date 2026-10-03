@@ -61,14 +61,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Resource'
 components:
-  parameters:
-    userId:
-      name: user_id
-      in: query
-      required: true
-      schema:
-        type: string
-      description: Clerk organization ID (e.g., org_abc123)
   schemas:
     Resource:
       type: object
@@ -100,3 +92,11 @@ components:
           type: string
         description:
           type: string
+  parameters:
+    userId:
+      name: user_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Clerk organization ID (e.g., org_abc123)

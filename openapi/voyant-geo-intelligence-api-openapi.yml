@@ -423,70 +423,32 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    HotTopicResponse:
-      properties:
-        query:
+          title: Location
+        msg:
           type: string
-          title: Query
-        topic_cluster:
+          title: Message
+        type:
           type: string
-          title: Topic Cluster
-        impressions:
-          type: integer
-          title: Impressions
-        clicks:
-          type: integer
-          title: Clicks
-        ctr:
-          type: number
-          title: Ctr
-        position:
-          type: number
-          title: Position
-        trend:
-          type: string
-          title: Trend
-        visibility_score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Visibility Score
-        ai_mentions:
-          type: integer
-          title: Ai Mentions
-        competitor_mentions:
-          items:
-            type: string
-          type: array
-          title: Competitor Mentions
-        last_tested:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Tested
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - query
-      - topic_cluster
-      - impressions
-      - clicks
-      - ctr
-      - position
-      - trend
-      - visibility_score
-      - ai_mentions
-      - competitor_mentions
-      - last_tested
-      title: HotTopicResponse
+      - loc
+      - msg
+      - type
+      title: ValidationError
     RecommendationResponse:
       properties:
         type:
@@ -572,32 +534,70 @@ components:
       - recommendations
       - created_at
       title: InsightResponse
-    ValidationError:
+    HTTPValidationError:
       properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HotTopicResponse:
+      properties:
+        query:
           type: string
-          title: Message
-        type:
+          title: Query
+        topic_cluster:
           type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Topic Cluster
+        impressions:
+          type: integer
+          title: Impressions
+        clicks:
+          type: integer
+          title: Clicks
+        ctr:
+          type: number
+          title: Ctr
+        position:
+          type: number
+          title: Position
+        trend:
+          type: string
+          title: Trend
+        visibility_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Visibility Score
+        ai_mentions:
+          type: integer
+          title: Ai Mentions
+        competitor_mentions:
+          items:
+            type: string
+          type: array
+          title: Competitor Mentions
+        last_tested:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Tested
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - query
+      - topic_cluster
+      - impressions
+      - clicks
+      - ctr
+      - position
+      - trend
+      - visibility_score
+      - ai_mentions
+      - competitor_mentions
+      - last_tested
+      title: HotTopicResponse
   securitySchemes:
     HTTPBearer:
       type: http

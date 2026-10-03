@@ -160,15 +160,6 @@ paths:
               schema: {}
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     TrainingDataResponse:
       properties:
         id:
@@ -221,39 +212,6 @@ components:
       - added_at
       - metadata
       title: TrainingDataResponse
-    TrainingDataCreate:
-      properties:
-        source_type:
-          type: string
-          title: Source Type
-        content:
-          type: string
-          title: Content
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        tags:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Tags
-          default: []
-        metadata:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Metadata
-          default: {}
-      type: object
-      required:
-      - source_type
-      - content
-      title: TrainingDataCreate
     VoiceAnalytics:
       properties:
         total_items:
@@ -309,6 +267,48 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TrainingDataCreate:
+      properties:
+        source_type:
+          type: string
+          title: Source Type
+        content:
+          type: string
+          title: Content
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+          default: []
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+          default: {}
+      type: object
+      required:
+      - source_type
+      - content
+      title: TrainingDataCreate
   securitySchemes:
     HTTPBearer:
       type: http

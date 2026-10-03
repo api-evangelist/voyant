@@ -207,35 +207,6 @@ paths:
                 $ref: '#/components/schemas/MarketingContext'
 components:
   schemas:
-    PositioningContext:
-      type: object
-      properties:
-        company_name:
-          type: string
-        target_market:
-          type: string
-        category:
-          type: string
-        differentiation:
-          type: string
-        competitive_alternatives:
-          type: array
-          items:
-            type: string
-        unique_capabilities:
-          type: array
-          items:
-            type: string
-        proof_points:
-          type: array
-          items:
-            type: string
-        value_proposition:
-          type: string
-        key_benefit:
-          type: string
-        compelling_reason:
-          type: string
     Error:
       type: object
       properties:
@@ -288,67 +259,6 @@ components:
           type: array
           items:
             type: string
-    MarketingContext:
-      type: object
-      properties:
-        messaging:
-          $ref: '#/components/schemas/MessagingContext'
-        positioning:
-          $ref: '#/components/schemas/PositioningContext'
-        personas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Persona'
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
-        use_cases:
-          type: array
-          items:
-            $ref: '#/components/schemas/UseCase'
-        industries:
-          type: array
-          items:
-            $ref: '#/components/schemas/Industry'
-        testimonials:
-          type: array
-          items:
-            $ref: '#/components/schemas/Testimonial'
-    Testimonial:
-      type: object
-      properties:
-        id:
-          type: string
-        quote:
-          type: string
-        author_name:
-          type: string
-        author_title:
-          type: string
-        company:
-          type: string
-        use_case:
-          type: string
-        rating:
-          type: integer
-    MessagingContext:
-      type: object
-      properties:
-        elevator_pitch:
-          type: string
-        headline_message:
-          type: string
-        supporting_points:
-          type: string
-        tone_voice:
-          type: string
-        key_differentiators:
-          type: array
-          items:
-            type: string
-        value_proposition:
-          type: string
     Industry:
       type: object
       properties:
@@ -409,6 +319,50 @@ components:
           type: string
         status:
           type: string
+    MarketingContext:
+      type: object
+      properties:
+        messaging:
+          $ref: '#/components/schemas/MessagingContext'
+        positioning:
+          $ref: '#/components/schemas/PositioningContext'
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        use_cases:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseCase'
+        industries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Industry'
+        testimonials:
+          type: array
+          items:
+            $ref: '#/components/schemas/Testimonial'
+    MessagingContext:
+      type: object
+      properties:
+        elevator_pitch:
+          type: string
+        headline_message:
+          type: string
+        supporting_points:
+          type: string
+        tone_voice:
+          type: string
+        key_differentiators:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
     Persona:
       type: object
       properties:
@@ -466,6 +420,52 @@ components:
           type: string
         demographics:
           type: object
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: string
+        quote:
+          type: string
+        author_name:
+          type: string
+        author_title:
+          type: string
+        company:
+          type: string
+        use_case:
+          type: string
+        rating:
+          type: integer
+    PositioningContext:
+      type: object
+      properties:
+        company_name:
+          type: string
+        target_market:
+          type: string
+        category:
+          type: string
+        differentiation:
+          type: string
+        competitive_alternatives:
+          type: array
+          items:
+            type: string
+        unique_capabilities:
+          type: array
+          items:
+            type: string
+        proof_points:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+        key_benefit:
+          type: string
+        compelling_reason:
+          type: string
   responses:
     NotFound:
       description: Resource not found
@@ -473,14 +473,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    InternalError:
-      description: Internal server error
+    BadRequest:
+      description: Bad request
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Bad request
+    InternalError:
+      description: Internal server error
       content:
         application/json:
           schema:

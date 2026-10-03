@@ -414,69 +414,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ProvenanceCreate:
-      properties:
-        source_entity_type:
-          type: string
-          title: Source Entity Type
-        source_entity_id:
-          type: string
-          title: Source Entity Id
-        source_entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Entity Uri
-        source_version:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Version
-        derived_entity_type:
-          type: string
-          title: Derived Entity Type
-        derived_entity_id:
-          type: string
-          title: Derived Entity Id
-        derived_entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Derived Entity Uri
-        relationship_type:
-          type: string
-          title: Relationship Type
-          description: derived, informed, supersedes
-          default: derived
-        transformation:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Transformation
-          description: How the derivation was performed
-        transformation_agent:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Transformation Agent
-          description: Who/what performed the transformation
-      type: object
-      required:
-      - source_entity_type
-      - source_entity_id
-      - derived_entity_type
-      - derived_entity_id
-      title: ProvenanceCreate
-      description: Create a provenance relationship between entities
     AttestationCreate:
       properties:
         claim_type:
@@ -625,6 +562,95 @@ components:
       - evidence_type
       title: AttestationEvidenceCreate
       description: Evidence supporting an attestation
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ProvenanceCreate:
+      properties:
+        source_entity_type:
+          type: string
+          title: Source Entity Type
+        source_entity_id:
+          type: string
+          title: Source Entity Id
+        source_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Entity Uri
+        source_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Version
+        derived_entity_type:
+          type: string
+          title: Derived Entity Type
+        derived_entity_id:
+          type: string
+          title: Derived Entity Id
+        derived_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Derived Entity Uri
+        relationship_type:
+          type: string
+          title: Relationship Type
+          description: derived, informed, supersedes
+          default: derived
+        transformation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation
+          description: How the derivation was performed
+        transformation_agent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation Agent
+          description: Who/what performed the transformation
+      type: object
+      required:
+      - source_entity_type
+      - source_entity_id
+      - derived_entity_type
+      - derived_entity_id
+      title: ProvenanceCreate
+      description: Create a provenance relationship between entities
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     MutationCreate:
       properties:
         entity_type:
@@ -679,32 +705,6 @@ components:
       - entity_id
       title: MutationCreate
       description: Create a new context mutation with attestations
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

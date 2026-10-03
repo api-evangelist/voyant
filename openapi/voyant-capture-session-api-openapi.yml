@@ -39,6 +39,30 @@ paths:
       - Capture Session
 components:
   schemas:
+    SessionCaptureRequest:
+      properties:
+        cookies:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Cookies
+        url:
+          type: string
+          title: Url
+        userAgent:
+          type: string
+          title: Useragent
+        timestamp:
+          type: integer
+          title: Timestamp
+      type: object
+      required:
+      - cookies
+      - url
+      - userAgent
+      - timestamp
+      title: SessionCaptureRequest
     HTTPValidationError:
       properties:
         detail:
@@ -74,30 +98,6 @@ components:
       - msg
       - type
       title: ValidationError
-    SessionCaptureRequest:
-      properties:
-        cookies:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Cookies
-        url:
-          type: string
-          title: Url
-        userAgent:
-          type: string
-          title: Useragent
-        timestamp:
-          type: integer
-          title: Timestamp
-      type: object
-      required:
-      - cookies
-      - url
-      - userAgent
-      - timestamp
-      title: SessionCaptureRequest
   securitySchemes:
     HTTPBearer:
       type: http

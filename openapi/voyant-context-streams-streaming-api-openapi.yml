@@ -181,15 +181,72 @@ paths:
               schema: {}
 components:
   schemas:
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: HTTPValidationError
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PublishRequest:
+      properties:
+        stream_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Stream Ids
+        include_messaging:
+          type: boolean
+          title: Include Messaging
+          default: true
+        include_personas:
+          type: boolean
+          title: Include Personas
+          default: true
+        include_competitive:
+          type: boolean
+          title: Include Competitive
+          default: true
+      type: object
+      title: PublishRequest
+      description: Request to publish knowledge to streaming topics
+    SubscribeRequest:
+      properties:
+        topics:
+          items:
+            type: string
+          type: array
+          title: Topics
+        consumer_group:
+          type: string
+          title: Consumer Group
+          default: voyant-knowledge-ingestion
+      type: object
+      required:
+      - topics
+      title: SubscribeRequest
+      description: Request to subscribe to topics for signal ingestion
     StreamingConfigRequest:
       properties:
         broker_url:
@@ -283,72 +340,15 @@ components:
       description: 'Configuration for Kafka-compatible streaming connection (per org).
 
         Works with Redpanda, Confluent, MSK, or any Kafka-protocol broker.'
-    SubscribeRequest:
+    HTTPValidationError:
       properties:
-        topics:
+        detail:
           items:
-            type: string
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Topics
-        consumer_group:
-          type: string
-          title: Consumer Group
-          default: voyant-knowledge-ingestion
+          title: Detail
       type: object
-      required:
-      - topics
-      title: SubscribeRequest
-      description: Request to subscribe to topics for signal ingestion
-    PublishRequest:
-      properties:
-        stream_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Stream Ids
-        include_messaging:
-          type: boolean
-          title: Include Messaging
-          default: true
-        include_personas:
-          type: boolean
-          title: Include Personas
-          default: true
-        include_competitive:
-          type: boolean
-          title: Include Competitive
-          default: true
-      type: object
-      title: PublishRequest
-      description: Request to publish knowledge to streaming topics
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

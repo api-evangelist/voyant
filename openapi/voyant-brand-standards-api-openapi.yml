@@ -295,36 +295,6 @@ components:
       - system_prompt_section
       title: RulesExport
       description: Export format for system prompt injection
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ValidationResult:
-      properties:
-        is_valid:
-          type: boolean
-          title: Is Valid
-        violations:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Violations
-        corrected_text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Corrected Text
-      type: object
-      required:
-      - is_valid
-      - violations
-      title: ValidationResult
     ValidationError:
       properties:
         loc:
@@ -397,50 +367,27 @@ components:
       - incorrect_term
       - correct_term
       title: TerminologyRuleCreate
-    TerminologyRuleUpdate:
+    ValidationResult:
       properties:
-        incorrect_term:
+        is_valid:
+          type: boolean
+          title: Is Valid
+        violations:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Violations
+        corrected_text:
           anyOf:
           - type: string
           - type: 'null'
-          title: Incorrect Term
-        correct_term:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Correct Term
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-        case_sensitive:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Case Sensitive
-        enforcement:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Enforcement
-        use_regex:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Use Regex
-        notes:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Notes
-        is_active:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Active
+          title: Corrected Text
       type: object
-      title: TerminologyRuleUpdate
+      required:
+      - is_valid
+      - violations
+      title: ValidationResult
     TerminologyRule:
       properties:
         incorrect_term:
@@ -505,6 +452,59 @@ components:
       - created_at
       - updated_at
       title: TerminologyRule
+    TerminologyRuleUpdate:
+      properties:
+        incorrect_term:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Incorrect Term
+        correct_term:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correct Term
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        case_sensitive:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Case Sensitive
+        enforcement:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Enforcement
+        use_regex:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Use Regex
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        is_active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+      type: object
+      title: TerminologyRuleUpdate
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

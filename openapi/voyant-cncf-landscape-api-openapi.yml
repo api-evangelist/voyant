@@ -58,15 +58,6 @@ paths:
                 title: Response Health Api Cncf Landscape Health Get
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     LandscapeNormalizeRequest:
       properties:
         data:
@@ -78,6 +69,15 @@ components:
       required:
       - data
       title: LandscapeNormalizeRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:

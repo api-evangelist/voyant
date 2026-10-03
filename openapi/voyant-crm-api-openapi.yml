@@ -261,101 +261,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    SignalSyncRequest:
-      properties:
-        signal_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Signal Ids
-          description: Specific signal IDs to sync
-        start_date:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Start Date
-          description: Sync signals after this date
-        end_date:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: End Date
-          description: Sync signals before this date
-        platforms:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Platforms
-          description: Filter by signal platforms
-      type: object
-      title: SignalSyncRequest
-      description: Signal sync request
-    ContactSyncRequest:
-      properties:
-        contact_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Contact Ids
-          description: Specific contact IDs to sync (all if not provided)
-        sync_direction:
-          type: string
-          title: Sync Direction
-          description: 'Sync direction: to_crm, from_crm, bidirectional'
-          default: to_crm
-        update_existing:
-          type: boolean
-          title: Update Existing
-          description: Update existing contacts in CRM
-          default: true
-        sync_companies:
-          type: boolean
-          title: Sync Companies
-          description: Also sync associated companies
-          default: true
-      type: object
-      title: ContactSyncRequest
-      description: Contact sync request
-    CampaignAddRequest:
-      properties:
-        campaign_id:
-          type: string
-          title: Campaign Id
-          description: CRM campaign/list ID
-        contact_emails:
-          items:
-            type: string
-          type: array
-          title: Contact Emails
-          description: Email addresses to add
-        create_if_missing:
-          type: boolean
-          title: Create If Missing
-          description: Create contacts if they don't exist
-          default: false
-      type: object
-      required:
-      - campaign_id
-      - contact_emails
-      title: CampaignAddRequest
-      description: Add contacts to campaign request
     ValidationError:
       properties:
         loc:
@@ -404,6 +309,101 @@ components:
       - config
       title: CRMConfigRequest
       description: CRM configuration request
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ContactSyncRequest:
+      properties:
+        contact_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Contact Ids
+          description: Specific contact IDs to sync (all if not provided)
+        sync_direction:
+          type: string
+          title: Sync Direction
+          description: 'Sync direction: to_crm, from_crm, bidirectional'
+          default: to_crm
+        update_existing:
+          type: boolean
+          title: Update Existing
+          description: Update existing contacts in CRM
+          default: true
+        sync_companies:
+          type: boolean
+          title: Sync Companies
+          description: Also sync associated companies
+          default: true
+      type: object
+      title: ContactSyncRequest
+      description: Contact sync request
+    SignalSyncRequest:
+      properties:
+        signal_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Signal Ids
+          description: Specific signal IDs to sync
+        start_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Start Date
+          description: Sync signals after this date
+        end_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: End Date
+          description: Sync signals before this date
+        platforms:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Platforms
+          description: Filter by signal platforms
+      type: object
+      title: SignalSyncRequest
+      description: Signal sync request
+    CampaignAddRequest:
+      properties:
+        campaign_id:
+          type: string
+          title: Campaign Id
+          description: CRM campaign/list ID
+        contact_emails:
+          items:
+            type: string
+          type: array
+          title: Contact Emails
+          description: Email addresses to add
+        create_if_missing:
+          type: boolean
+          title: Create If Missing
+          description: Create contacts if they don't exist
+          default: false
+      type: object
+      required:
+      - campaign_id
+      - contact_emails
+      title: CampaignAddRequest
+      description: Add contacts to campaign request
   securitySchemes:
     HTTPBearer:
       type: http

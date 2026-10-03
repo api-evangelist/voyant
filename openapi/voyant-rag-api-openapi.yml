@@ -230,15 +230,35 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
+    ChunkSearchRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        query:
+          type: string
+          title: Query
+          description: Search query
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by domain
+        content_type:
+          anyOf:
+          - $ref: '#/components/schemas/ContentType'
+          - type: 'null'
+          description: Filter by content type
+        top_k:
+          type: integer
+          maximum: 50.0
+          minimum: 1.0
+          title: Top K
+          description: Number of chunks to retrieve
+          default: 5
       type: object
-      title: HTTPValidationError
+      required:
+      - query
+      title: ChunkSearchRequest
+      description: Request to search for content chunks.
     PersonalityType:
       type: string
       enum:
@@ -247,6 +267,75 @@ components:
       - default
       title: PersonalityType
       description: Available personality types for content generation.
+    ContentPlatform:
+      type: string
+      enum:
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
+    ContentType:
+      type: string
+      enum:
+      - blog_post
+      - product_description
+      - about_page
+      - landing_page
+      - article
+      - news
+      - press_release
+      - documentation
+      - faq
+      - solutions_page
+      - case_study
+      - pricing_page
+      - product_page
+      - integration_page
+      - other
+      title: ContentType
+      description: Types of content that can be extracted.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
     GenerateContentRequest:
       properties:
         query:
@@ -317,134 +406,6 @@ components:
       - tone
       title: GenerateContentRequest
       description: Request to generate content using RAG.
-    ContentPlatform:
-      type: string
-      enum:
-      - twitter
-      - instagram
-      - facebook
-      - linkedin
-      - email
-      - blog
-      - website
-      - customer_support
-      - video_script
-      - geo_prompt
-      title: ContentPlatform
-      description: Platforms for content generation.
-    ContentType:
-      type: string
-      enum:
-      - blog_post
-      - product_description
-      - about_page
-      - landing_page
-      - article
-      - news
-      - press_release
-      - documentation
-      - faq
-      - solutions_page
-      - case_study
-      - pricing_page
-      - product_page
-      - integration_page
-      - other
-      title: ContentType
-      description: Types of content that can be extracted.
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    SourceChunk:
-      properties:
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: ID of the source chunk
-        text:
-          type: string
-          title: Text
-          description: Snippet of the chunk text
-        similarity:
-          type: number
-          title: Similarity
-          description: Similarity score
-        content_id:
-          type: string
-          title: Content Id
-          description: ID of the parent content
-      type: object
-      required:
-      - chunk_id
-      - text
-      - similarity
-      - content_id
-      title: SourceChunk
-      description: Source chunk information for generated content.
-    ChunkResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Unique identifier for the chunk
-        content_id:
-          type: string
-          title: Content Id
-          description: ID of the parent content
-        chunk_index:
-          type: integer
-          title: Chunk Index
-          description: Index of this chunk in the content
-        text:
-          type: string
-          title: Text
-          description: Chunk text
-        start_char:
-          type: integer
-          title: Start Char
-          description: Start position in the original content
-        end_char:
-          type: integer
-          title: End Char
-          description: End position in the original content
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Chunk metadata
-        similarity:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Similarity
-          description: Similarity score (if this is a search result)
-      type: object
-      required:
-      - id
-      - content_id
-      - chunk_index
-      - text
-      - start_char
-      - end_char
-      title: ChunkResponse
-      description: Response model for content chunk retrieval.
     GeneratedContent:
       properties:
         text:
@@ -494,61 +455,118 @@ components:
       - source_chunks
       title: GeneratedContent
       description: Response model for generated content.
-    ChunkSearchRequest:
+    ChunkResponse:
       properties:
-        query:
+        id:
           type: string
-          title: Query
-          description: Search query
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter by domain
-        content_type:
-          anyOf:
-          - $ref: '#/components/schemas/ContentType'
-          - type: 'null'
-          description: Filter by content type
-        top_k:
+          title: Id
+          description: Unique identifier for the chunk
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+        chunk_index:
           type: integer
-          maximum: 50.0
-          minimum: 1.0
-          title: Top K
-          description: Number of chunks to retrieve
-          default: 5
+          title: Chunk Index
+          description: Index of this chunk in the content
+        text:
+          type: string
+          title: Text
+          description: Chunk text
+        start_char:
+          type: integer
+          title: Start Char
+          description: Start position in the original content
+        end_char:
+          type: integer
+          title: End Char
+          description: End position in the original content
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Chunk metadata
+        similarity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Similarity
+          description: Similarity score (if this is a search result)
       type: object
       required:
-      - query
-      title: ChunkSearchRequest
-      description: Request to search for content chunks.
-    ValidationError:
+      - id
+      - content_id
+      - chunk_index
+      - text
+      - start_char
+      - end_char
+      title: ChunkResponse
+      description: Response model for content chunk retrieval.
+    SourceChunk:
       properties:
-        loc:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: ID of the source chunk
+        text:
+          type: string
+          title: Text
+          description: Snippet of the chunk text
+        similarity:
+          type: number
+          title: Similarity
+          description: Similarity score
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+      type: object
+      required:
+      - chunk_id
+      - text
+      - similarity
+      - content_id
+      title: SourceChunk
+      description: Source chunk information for generated content.
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    HTTPValidationError:
+      properties:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RAGProcessResponse:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        status:
+          type: string
+          title: Status
+        message:
           type: string
           title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - task_id
+      - status
+      - message
+      title: RAGProcessResponse
+      description: Response model for RAG processing.
     RAGProcessRequest:
       properties:
         chunk_size:
@@ -580,24 +598,6 @@ components:
       type: object
       title: RAGProcessRequest
       description: Request model for RAG processing.
-    RAGProcessResponse:
-      properties:
-        task_id:
-          type: string
-          title: Task Id
-        status:
-          type: string
-          title: Status
-        message:
-          type: string
-          title: Message
-      type: object
-      required:
-      - task_id
-      - status
-      - message
-      title: RAGProcessResponse
-      description: Response model for RAG processing.
   securitySchemes:
     HTTPBearer:
       type: http

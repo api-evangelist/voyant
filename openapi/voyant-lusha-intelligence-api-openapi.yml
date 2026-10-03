@@ -317,31 +317,32 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ChampionTrackingRequest:
-      properties:
-        company_domain:
+          title: Location
+        msg:
           type: string
-          title: Company Domain
-          description: Company domain to track
-        alert_on_changes:
-          type: boolean
-          title: Alert On Changes
-          description: Send alerts on champion changes
-          default: true
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - company_domain
-      title: ChampionTrackingRequest
-      description: Request model for champion tracking
+      - loc
+      - msg
+      - type
+      title: ValidationError
     BulkEnrichmentRequest:
       properties:
         identifiers:
@@ -364,37 +365,6 @@ components:
       - identifiers
       title: BulkEnrichmentRequest
       description: Request model for bulk enrichment
-    CompanyEnrichmentRequest:
-      properties:
-        identifier:
-          type: string
-          title: Identifier
-          description: Domain or company name
-        identifier_type:
-          type: string
-          title: Identifier Type
-          description: 'Type of identifier: domain or name'
-          default: domain
-        enable_predictive_intelligence:
-          type: boolean
-          title: Enable Predictive Intelligence
-          description: Generate predictive intelligence
-          default: true
-        analyze_competition:
-          type: boolean
-          title: Analyze Competition
-          description: Analyze competitive landscape
-          default: true
-        identify_opportunities:
-          type: boolean
-          title: Identify Opportunities
-          description: Identify expansion opportunities
-          default: true
-      type: object
-      required:
-      - identifier
-      title: CompanyEnrichmentRequest
-      description: Request model for company enrichment
     PersonEnrichmentRequest:
       properties:
         identifier:
@@ -426,13 +396,6 @@ components:
       - identifier
       title: PersonEnrichmentRequest
       description: Request model for person enrichment
-    EnrichmentType:
-      type: string
-      enum:
-      - person
-      - company
-      - prospecting
-      title: EnrichmentType
     ProspectingRequest:
       properties:
         job_titles:
@@ -498,32 +461,69 @@ components:
       type: object
       title: ProspectingRequest
       description: Request model for AI prospecting
-    ValidationError:
+    CompanyEnrichmentRequest:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
+        identifier:
           type: string
-          title: Message
-        type:
+          title: Identifier
+          description: Domain or company name
+        identifier_type:
           type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Identifier Type
+          description: 'Type of identifier: domain or name'
+          default: domain
+        enable_predictive_intelligence:
+          type: boolean
+          title: Enable Predictive Intelligence
+          description: Generate predictive intelligence
+          default: true
+        analyze_competition:
+          type: boolean
+          title: Analyze Competition
+          description: Analyze competitive landscape
+          default: true
+        identify_opportunities:
+          type: boolean
+          title: Identify Opportunities
+          description: Identify expansion opportunities
+          default: true
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - identifier
+      title: CompanyEnrichmentRequest
+      description: Request model for company enrichment
+    EnrichmentType:
+      type: string
+      enum:
+      - person
+      - company
+      - prospecting
+      title: EnrichmentType
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ChampionTrackingRequest:
+      properties:
+        company_domain:
+          type: string
+          title: Company Domain
+          description: Company domain to track
+        alert_on_changes:
+          type: boolean
+          title: Alert On Changes
+          description: Send alerts on champion changes
+          default: true
+      type: object
+      required:
+      - company_domain
+      title: ChampionTrackingRequest
+      description: Request model for champion tracking
   securitySchemes:
     HTTPBearer:
       type: http

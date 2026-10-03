@@ -497,15 +497,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     OTLPTraceRequest:
       properties:
         resourceSpans:
@@ -517,69 +508,21 @@ components:
       type: object
       title: OTLPTraceRequest
       description: OTLP/JSON trace export request
-    OTLPScopeSpans:
+    OTLPResourceSpans:
       properties:
-        scope:
+        resource:
           anyOf:
-          - $ref: '#/components/schemas/OTLPScope'
+          - $ref: '#/components/schemas/OTLPResource'
           - type: 'null'
-        spans:
+        scopeSpans:
           items:
-            $ref: '#/components/schemas/OTLPSpan'
+            $ref: '#/components/schemas/OTLPScopeSpans'
           type: array
-          title: Spans
+          title: Scopespans
           default: []
       type: object
-      title: OTLPScopeSpans
-      description: OTLP scope with spans
-    OTLPAttribute:
-      properties:
-        key:
-          type: string
-          title: Key
-        value:
-          additionalProperties: true
-          type: object
-          title: Value
-      type: object
-      required:
-      - key
-      - value
-      title: OTLPAttribute
-      description: OTLP attribute value wrapper
-    DEOIngestResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        events_processed:
-          type: integer
-          title: Events Processed
-        agent_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Agent Id
-        session_id:
-          type: string
-          title: Session Id
-        journey_stage:
-          type: string
-          title: Journey Stage
-        milestones_reached:
-          items:
-            type: string
-          type: array
-          title: Milestones Reached
-          default: []
-      type: object
-      required:
-      - success
-      - events_processed
-      - session_id
-      - journey_stage
-      title: DEOIngestResponse
-      description: Response from ingest endpoint
+      title: OTLPResourceSpans
+      description: OTLP resource with scope spans
     MCPTelemetryEvent:
       properties:
         eventType:
@@ -644,21 +587,103 @@ components:
       - competitive_win_rate
       title: DEODashboardStats
       description: Dashboard statistics
-    OTLPResourceSpans:
+    OTLPScopeSpans:
       properties:
-        resource:
+        scope:
           anyOf:
-          - $ref: '#/components/schemas/OTLPResource'
+          - $ref: '#/components/schemas/OTLPScope'
           - type: 'null'
-        scopeSpans:
+        spans:
           items:
-            $ref: '#/components/schemas/OTLPScopeSpans'
+            $ref: '#/components/schemas/OTLPSpan'
           type: array
-          title: Scopespans
+          title: Spans
           default: []
       type: object
-      title: OTLPResourceSpans
-      description: OTLP resource with scope spans
+      title: OTLPScopeSpans
+      description: OTLP scope with spans
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    OTLPAttribute:
+      properties:
+        key:
+          type: string
+          title: Key
+        value:
+          additionalProperties: true
+          type: object
+          title: Value
+      type: object
+      required:
+      - key
+      - value
+      title: OTLPAttribute
+      description: OTLP attribute value wrapper
+    OTLPResource:
+      properties:
+        attributes:
+          items:
+            $ref: '#/components/schemas/OTLPAttribute'
+          type: array
+          title: Attributes
+          default: []
+      type: object
+      title: OTLPResource
+      description: OTLP resource
+    MCPEventData:
+      properties:
+        tool:
+          type: string
+          title: Tool
+        action:
+          type: string
+          title: Action
+        duration_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Ms
+          default: 0
+        result:
+          type: string
+          title: Result
+          default: success
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+      type: object
+      required:
+      - tool
+      - action
+      title: MCPEventData
+      description: Event data from standard MCP telemetry format
     OTLPScope:
       properties:
         name:
@@ -674,91 +699,56 @@ components:
       type: object
       title: OTLPScope
       description: OTLP instrumentation scope
-    DEOEventPayload:
+    OTLPSpan:
       properties:
-        event_type:
+        traceId:
           type: string
-          title: Event Type
-        touchpoint:
+          title: Traceid
+        spanId:
           type: string
-          title: Touchpoint
-        action:
+          title: Spanid
+        parentSpanId:
           anyOf:
           - type: string
           - type: 'null'
-          title: Action
-        tool_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tool Name
-        endpoint:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Endpoint
-        method:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Method
-        duration_ms:
+          title: Parentspanid
+        name:
+          type: string
+          title: Name
+        kind:
           anyOf:
           - type: integer
           - type: 'null'
-          title: Duration Ms
-        success:
-          type: boolean
-          title: Success
-          default: true
-        error_type:
+          title: Kind
+          default: 1
+        startTimeUnixNano:
+          type: string
+          title: Starttimeunixnano
+        endTimeUnixNano:
           anyOf:
           - type: string
           - type: 'null'
-          title: Error Type
-        error_message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error Message
-        journey_stage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Journey Stage
-        is_milestone:
-          type: boolean
-          title: Is Milestone
-          default: false
-        milestone_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Milestone Name
-        competitors_evaluated:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Competitors Evaluated
-        properties:
+          title: Endtimeunixnano
+        attributes:
+          items:
+            $ref: '#/components/schemas/OTLPAttribute'
+          type: array
+          title: Attributes
+          default: []
+        status:
           anyOf:
           - additionalProperties: true
             type: object
           - type: 'null'
-          title: Properties
-        timestamp:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Timestamp
+          title: Status
       type: object
       required:
-      - event_type
-      - touchpoint
-      title: DEOEventPayload
-      description: Single DEO event from an instrumented touchpoint
+      - traceId
+      - spanId
+      - name
+      - startTimeUnixNano
+      title: OTLPSpan
+      description: OTLP span
     DEOIngestRequest:
       properties:
         source_id:
@@ -873,6 +863,133 @@ components:
       - converted_to_human
       title: AgentSummary
       description: Summary of an AI agent
+    DEOIngestResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        events_processed:
+          type: integer
+          title: Events Processed
+        agent_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Id
+        session_id:
+          type: string
+          title: Session Id
+        journey_stage:
+          type: string
+          title: Journey Stage
+        milestones_reached:
+          items:
+            type: string
+          type: array
+          title: Milestones Reached
+          default: []
+      type: object
+      required:
+      - success
+      - events_processed
+      - session_id
+      - journey_stage
+      title: DEOIngestResponse
+      description: Response from ingest endpoint
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DEOEventPayload:
+      properties:
+        event_type:
+          type: string
+          title: Event Type
+        touchpoint:
+          type: string
+          title: Touchpoint
+        action:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action
+        tool_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tool Name
+        endpoint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Endpoint
+        method:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Method
+        duration_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Ms
+        success:
+          type: boolean
+          title: Success
+          default: true
+        error_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Type
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+        journey_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Journey Stage
+        is_milestone:
+          type: boolean
+          title: Is Milestone
+          default: false
+        milestone_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Name
+        competitors_evaluated:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitors Evaluated
+        properties:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Properties
+        timestamp:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timestamp
+      type: object
+      required:
+      - event_type
+      - touchpoint
+      title: DEOEventPayload
+      description: Single DEO event from an instrumented touchpoint
     MCPEventContext:
       properties:
         sessionId:
@@ -897,47 +1014,6 @@ components:
       - mcpServerId
       title: MCPEventContext
       description: Context from standard MCP telemetry format
-    OTLPResource:
-      properties:
-        attributes:
-          items:
-            $ref: '#/components/schemas/OTLPAttribute'
-          type: array
-          title: Attributes
-          default: []
-      type: object
-      title: OTLPResource
-      description: OTLP resource
-    MCPEventData:
-      properties:
-        tool:
-          type: string
-          title: Tool
-        action:
-          type: string
-          title: Action
-        duration_ms:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Duration Ms
-          default: 0
-        result:
-          type: string
-          title: Result
-          default: success
-        metadata:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Metadata
-      type: object
-      required:
-      - tool
-      - action
-      title: MCPEventData
-      description: Event data from standard MCP telemetry format
     MCPTelemetryRequest:
       properties:
         events:
@@ -970,82 +1046,6 @@ components:
         This is the format used by instrumented MCP servers.
 
         Any MCP server can use this format to report telemetry.'
-    OTLPSpan:
-      properties:
-        traceId:
-          type: string
-          title: Traceid
-        spanId:
-          type: string
-          title: Spanid
-        parentSpanId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Parentspanid
-        name:
-          type: string
-          title: Name
-        kind:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Kind
-          default: 1
-        startTimeUnixNano:
-          type: string
-          title: Starttimeunixnano
-        endTimeUnixNano:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Endtimeunixnano
-        attributes:
-          items:
-            $ref: '#/components/schemas/OTLPAttribute'
-          type: array
-          title: Attributes
-          default: []
-        status:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Status
-      type: object
-      required:
-      - traceId
-      - spanId
-      - name
-      - startTimeUnixNano
-      title: OTLPSpan
-      description: OTLP span
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

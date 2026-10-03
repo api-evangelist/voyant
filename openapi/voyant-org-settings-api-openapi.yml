@@ -81,15 +81,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     OrgSettingsResponse:
       properties:
         primary_domain:
@@ -104,6 +95,15 @@ components:
           title: Company Name
       type: object
       title: OrgSettingsResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     OrgSettingsRequest:
       properties:
         primary_domain:

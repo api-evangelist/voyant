@@ -135,32 +135,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    DriveConfigRequest:
-      properties:
-        root_folder_name:
-          type: string
-          title: Root Folder Name
-        default_sharing:
-          type: string
-          title: Default Sharing
-        auto_export_enabled:
-          type: boolean
-          title: Auto Export Enabled
-      type: object
-      required:
-      - root_folder_name
-      - default_sharing
-      - auto_export_enabled
-      title: DriveConfigRequest
     ExportToGoogleDriveRequest:
       properties:
         content_id:
@@ -195,6 +169,32 @@ components:
       required:
       - content_id
       title: ExportToGoogleDriveRequest
+    DriveConfigRequest:
+      properties:
+        root_folder_name:
+          type: string
+          title: Root Folder Name
+        default_sharing:
+          type: string
+          title: Default Sharing
+        auto_export_enabled:
+          type: boolean
+          title: Auto Export Enabled
+      type: object
+      required:
+      - root_folder_name
+      - default_sharing
+      - auto_export_enabled
+      title: DriveConfigRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:

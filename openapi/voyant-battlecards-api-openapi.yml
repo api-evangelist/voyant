@@ -319,64 +319,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ExportToDriveRequest:
-      properties:
-        folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Id
-          description: Google Drive folder ID
-      type: object
-      title: ExportToDriveRequest
-      description: Request to export battlecard to Google Drive.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    GenerateBattlecardRequest:
-      properties:
-        competitor_id:
-          type: string
-          title: Competitor Id
-          description: UUID of the competitor
-        regenerate:
-          type: boolean
-          title: Regenerate
-          description: Whether to regenerate even if one exists
-          default: false
-      type: object
-      required:
-      - competitor_id
-      title: GenerateBattlecardRequest
-      description: Request to generate a new battlecard.
-    RefreshStaleResponse:
-      properties:
-        refreshed_count:
-          type: integer
-          title: Refreshed Count
-        refreshed_battlecards:
-          items:
-            type: string
-          type: array
-          title: Refreshed Battlecards
-        errors:
-          items:
-            type: string
-          type: array
-          title: Errors
-          default: []
-      type: object
-      required:
-      - refreshed_count
-      - refreshed_battlecards
-      title: RefreshStaleResponse
-      description: Response from refreshing stale battlecards.
     UpdateBattlecardStatusRequest:
       properties:
         status:
@@ -388,31 +330,32 @@ components:
       - status
       title: UpdateBattlecardStatusRequest
       description: Request to update battlecard status.
-    api__battlecards__ExportResponse:
+    ValidationError:
       properties:
-        success:
-          type: boolean
-          title: Success
-        file_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Id
-        web_view_link:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Web View Link
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - success
-      title: ExportResponse
-      description: Response from Google Drive export.
+      - loc
+      - msg
+      - type
+      title: ValidationError
     BattlecardSummary:
       properties:
         id:
@@ -479,6 +422,22 @@ components:
       - updated_at
       title: BattlecardSummary
       description: Summary view of a battlecard for list views.
+    GenerateBattlecardRequest:
+      properties:
+        competitor_id:
+          type: string
+          title: Competitor Id
+          description: UUID of the competitor
+        regenerate:
+          type: boolean
+          title: Regenerate
+          description: Whether to regenerate even if one exists
+          default: false
+      type: object
+      required:
+      - competitor_id
+      title: GenerateBattlecardRequest
+      description: Request to generate a new battlecard.
     BattlecardDetail:
       properties:
         id:
@@ -636,32 +595,73 @@ components:
       - updated_at
       title: BattlecardDetail
       description: Full battlecard detail.
-    ValidationError:
+    ExportToDriveRequest:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+          description: Google Drive folder ID
+      type: object
+      title: ExportToDriveRequest
+      description: Request to export battlecard to Google Drive.
+    api__battlecards__ExportResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        file_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Id
+        web_view_link:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Web View Link
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - success
+      title: ExportResponse
+      description: Response from Google Drive export.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RefreshStaleResponse:
+      properties:
+        refreshed_count:
+          type: integer
+          title: Refreshed Count
+        refreshed_battlecards:
+          items:
+            type: string
+          type: array
+          title: Refreshed Battlecards
+        errors:
+          items:
+            type: string
+          type: array
+          title: Errors
+          default: []
+      type: object
+      required:
+      - refreshed_count
+      - refreshed_battlecards
+      title: RefreshStaleResponse
+      description: Response from refreshing stale battlecards.
   securitySchemes:
     HTTPBearer:
       type: http

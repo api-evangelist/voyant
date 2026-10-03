@@ -468,48 +468,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    BlueprintSummary:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        description:
-          type: string
-          title: Description
-        version:
-          type: string
-          title: Version
-        tags:
-          items:
-            type: string
-          type: array
-          title: Tags
-        input_schema:
-          additionalProperties: true
-          type: object
-          title: Input Schema
-      type: object
-      required:
-      - id
-      - name
-      - description
-      - version
-      - tags
-      - input_schema
-      title: BlueprintSummary
-      description: Summary of a blueprint
     ValidationError:
       properties:
         loc:
@@ -557,6 +515,48 @@ components:
       - blueprint_id
       title: ExecuteRequest
       description: Request to execute a blueprint
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    BlueprintSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        version:
+          type: string
+          title: Version
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+        input_schema:
+          additionalProperties: true
+          type: object
+          title: Input Schema
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - version
+      - tags
+      - input_schema
+      title: BlueprintSummary
+      description: Summary of a blueprint
   securitySchemes:
     HTTPBearer:
       type: http

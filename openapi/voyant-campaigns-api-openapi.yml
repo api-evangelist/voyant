@@ -129,36 +129,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignGenerationContext'
 components:
+  parameters:
+    userId:
+      name: user_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Clerk organization ID (e.g., org_abc123)
   schemas:
-    PositioningContext:
-      type: object
-      properties:
-        company_name:
-          type: string
-        target_market:
-          type: string
-        category:
-          type: string
-        differentiation:
-          type: string
-        competitive_alternatives:
-          type: array
-          items:
-            type: string
-        unique_capabilities:
-          type: array
-          items:
-            type: string
-        proof_points:
-          type: array
-          items:
-            type: string
-        value_proposition:
-          type: string
-        key_benefit:
-          type: string
-        compelling_reason:
-          type: string
     Campaign:
       type: object
       properties:
@@ -195,65 +174,6 @@ components:
         updated_at:
           type: string
           format: date-time
-    MessagingContext:
-      type: object
-      properties:
-        elevator_pitch:
-          type: string
-        headline_message:
-          type: string
-        supporting_points:
-          type: string
-        tone_voice:
-          type: string
-        key_differentiators:
-          type: array
-          items:
-            type: string
-        value_proposition:
-          type: string
-    CampaignCreate:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        status:
-          type: string
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        target_personas:
-          type: array
-          items:
-            type: string
-        channels:
-          type: array
-          items:
-            type: string
-    CampaignGenerationContext:
-      type: object
-      properties:
-        campaign:
-          $ref: '#/components/schemas/Campaign'
-        messaging:
-          $ref: '#/components/schemas/MessagingContext'
-        positioning:
-          $ref: '#/components/schemas/PositioningContext'
-        personas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Persona'
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
     Product:
       type: object
       properties:
@@ -346,11 +266,91 @@ components:
           type: string
         demographics:
           type: object
-  parameters:
-    userId:
-      name: user_id
-      in: query
-      required: true
-      schema:
-        type: string
-      description: Clerk organization ID (e.g., org_abc123)
+    MessagingContext:
+      type: object
+      properties:
+        elevator_pitch:
+          type: string
+        headline_message:
+          type: string
+        supporting_points:
+          type: string
+        tone_voice:
+          type: string
+        key_differentiators:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+    PositioningContext:
+      type: object
+      properties:
+        company_name:
+          type: string
+        target_market:
+          type: string
+        category:
+          type: string
+        differentiation:
+          type: string
+        competitive_alternatives:
+          type: array
+          items:
+            type: string
+        unique_capabilities:
+          type: array
+          items:
+            type: string
+        proof_points:
+          type: array
+          items:
+            type: string
+        value_proposition:
+          type: string
+        key_benefit:
+          type: string
+        compelling_reason:
+          type: string
+    CampaignGenerationContext:
+      type: object
+      properties:
+        campaign:
+          $ref: '#/components/schemas/Campaign'
+        messaging:
+          $ref: '#/components/schemas/MessagingContext'
+        positioning:
+          $ref: '#/components/schemas/PositioningContext'
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    CampaignCreate:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        target_personas:
+          type: array
+          items:
+            type: string
+        channels:
+          type: array
+          items:
+            type: string

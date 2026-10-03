@@ -161,6 +161,40 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    AiExportRequest:
+      properties:
+        include_paths:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Include Paths
+          description: URL path prefixes to include
+        exclude_paths:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Exclude Paths
+          description: URL path prefixes to exclude
+        max_pages:
+          type: integer
+          maximum: 1000.0
+          minimum: 1.0
+          title: Max Pages
+          default: 200
+        include_llms_txt:
+          type: boolean
+          title: Include Llms Txt
+          default: true
+        include_index:
+          type: boolean
+          title: Include Index
+          default: true
+      type: object
+      title: AiExportRequest
     WebflowPublishRequest:
       properties:
         collection_id:
@@ -220,40 +254,15 @@ components:
       required:
       - collection_id
       title: WebflowPublishRequest
-    AiExportRequest:
+    HTTPValidationError:
       properties:
-        include_paths:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Include Paths
-          description: URL path prefixes to include
-        exclude_paths:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Exclude Paths
-          description: URL path prefixes to exclude
-        max_pages:
-          type: integer
-          maximum: 1000.0
-          minimum: 1.0
-          title: Max Pages
-          default: 200
-        include_llms_txt:
-          type: boolean
-          title: Include Llms Txt
-          default: true
-        include_index:
-          type: boolean
-          title: Include Index
-          default: true
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: AiExportRequest
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -280,15 +289,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

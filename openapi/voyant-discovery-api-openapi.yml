@@ -208,15 +208,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     DiscoveryStateResponse:
       properties:
         id:
@@ -261,99 +252,6 @@ components:
       - metadata
       title: DiscoveryStateResponse
       description: Response model for discovery source state.
-    DiscoveryInsightResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        insight_type:
-          type: string
-          title: Insight Type
-        title:
-          type: string
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        confidence:
-          type: number
-          title: Confidence
-        is_actionable:
-          type: boolean
-          title: Is Actionable
-        action_taken:
-          type: boolean
-          title: Action Taken
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-      type: object
-      required:
-      - id
-      - insight_type
-      - title
-      - description
-      - confidence
-      - is_actionable
-      - action_taken
-      - created_at
-      - metadata
-      title: DiscoveryInsightResponse
-      description: Response model for discovery insights.
-    DiscoveryOverview:
-      properties:
-        latest_discoveries:
-          items:
-            $ref: '#/components/schemas/DiscoveryInsightResponse'
-          type: array
-          title: Latest Discoveries
-        active_patterns:
-          items:
-            $ref: '#/components/schemas/DiscoveryPatternResponse'
-          type: array
-          title: Active Patterns
-        predictions:
-          items:
-            $ref: '#/components/schemas/DiscoveryInsightResponse'
-          type: array
-          title: Predictions
-        next_deep_discovery:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Next Deep Discovery
-        total_sources:
-          type: integer
-          title: Total Sources
-        active_sources:
-          type: integer
-          title: Active Sources
-        api_calls_today:
-          type: integer
-          title: Api Calls Today
-        api_calls_remaining:
-          type: integer
-          title: Api Calls Remaining
-      type: object
-      required:
-      - latest_discoveries
-      - active_patterns
-      - predictions
-      - next_deep_discovery
-      - total_sources
-      - active_sources
-      - api_calls_today
-      - api_calls_remaining
-      title: DiscoveryOverview
-      description: Overview of discovery system status.
     DiscoveryPatternResponse:
       properties:
         id:
@@ -420,6 +318,108 @@ components:
       - msg
       - type
       title: ValidationError
+    DiscoveryOverview:
+      properties:
+        latest_discoveries:
+          items:
+            $ref: '#/components/schemas/DiscoveryInsightResponse'
+          type: array
+          title: Latest Discoveries
+        active_patterns:
+          items:
+            $ref: '#/components/schemas/DiscoveryPatternResponse'
+          type: array
+          title: Active Patterns
+        predictions:
+          items:
+            $ref: '#/components/schemas/DiscoveryInsightResponse'
+          type: array
+          title: Predictions
+        next_deep_discovery:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Next Deep Discovery
+        total_sources:
+          type: integer
+          title: Total Sources
+        active_sources:
+          type: integer
+          title: Active Sources
+        api_calls_today:
+          type: integer
+          title: Api Calls Today
+        api_calls_remaining:
+          type: integer
+          title: Api Calls Remaining
+      type: object
+      required:
+      - latest_discoveries
+      - active_patterns
+      - predictions
+      - next_deep_discovery
+      - total_sources
+      - active_sources
+      - api_calls_today
+      - api_calls_remaining
+      title: DiscoveryOverview
+      description: Overview of discovery system status.
+    DiscoveryInsightResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        insight_type:
+          type: string
+          title: Insight Type
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        confidence:
+          type: number
+          title: Confidence
+        is_actionable:
+          type: boolean
+          title: Is Actionable
+        action_taken:
+          type: boolean
+          title: Action Taken
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - insight_type
+      - title
+      - description
+      - confidence
+      - is_actionable
+      - action_taken
+      - created_at
+      - metadata
+      title: DiscoveryInsightResponse
+      description: Response model for discovery insights.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

@@ -273,37 +273,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    RunRequest:
-      properties:
-        mode:
-          type: string
-          title: Mode
-          default: recommended
-      type: object
-      title: RunRequest
-    ResumeRequest:
-      properties:
-        kind:
-          type: string
-          title: Kind
-          default: confirm_personas
-        selection:
-          items:
-            type: string
-          type: array
-          title: Selection
-          default: []
-      type: object
-      title: ResumeRequest
     OrgKeyRequest:
       properties:
         api_key:
@@ -313,24 +282,6 @@ components:
       required:
       - api_key
       title: OrgKeyRequest
-    CreateRequest:
-      properties:
-        client_name:
-          type: string
-          title: Client Name
-        brief:
-          type: string
-          title: Brief
-          default: ''
-        brand_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Brand Id
-      type: object
-      required:
-      - client_name
-      title: CreateRequest
     ValidationError:
       properties:
         loc:
@@ -357,6 +308,55 @@ components:
       - msg
       - type
       title: ValidationError
+    CreateRequest:
+      properties:
+        client_name:
+          type: string
+          title: Client Name
+        brief:
+          type: string
+          title: Brief
+          default: ''
+        brand_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Brand Id
+      type: object
+      required:
+      - client_name
+      title: CreateRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ResumeRequest:
+      properties:
+        kind:
+          type: string
+          title: Kind
+          default: confirm_personas
+        selection:
+          items:
+            type: string
+          type: array
+          title: Selection
+          default: []
+      type: object
+      title: ResumeRequest
+    RunRequest:
+      properties:
+        mode:
+          type: string
+          title: Mode
+          default: recommended
+      type: object
+      title: RunRequest
   securitySchemes:
     HTTPBearer:
       type: http

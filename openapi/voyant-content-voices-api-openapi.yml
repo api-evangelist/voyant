@@ -733,40 +733,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    TrainQualityRequest:
-      properties:
-        gold_content_ids:
-          items:
-            type: string
-          type: array
-          title: Gold Content Ids
-          description: IDs of best/gold content samples
-        baseline_content_ids:
-          items:
-            type: string
-          type: array
-          title: Baseline Content Ids
-          description: IDs of average/baseline content samples
-        content_type:
-          type: string
-          title: Content Type
-          description: 'Type of content: blog, whitepaper, docs'
-          default: blog
-      type: object
-      required:
-      - gold_content_ids
-      - baseline_content_ids
-      title: TrainQualityRequest
-      description: Request to train a quality model from gold vs baseline content.
     UpdateVoiceRequest:
       properties:
         name:
@@ -792,6 +758,32 @@ components:
       type: object
       title: UpdateVoiceRequest
       description: Request to update a content voice.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     VoiceResponse:
       properties:
         id:
@@ -906,6 +898,40 @@ components:
       - last_extracted_at
       title: VoiceResponse
       description: Content voice response.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TrainQualityRequest:
+      properties:
+        gold_content_ids:
+          items:
+            type: string
+          type: array
+          title: Gold Content Ids
+          description: IDs of best/gold content samples
+        baseline_content_ids:
+          items:
+            type: string
+          type: array
+          title: Baseline Content Ids
+          description: IDs of average/baseline content samples
+        content_type:
+          type: string
+          title: Content Type
+          description: 'Type of content: blog, whitepaper, docs'
+          default: blog
+      type: object
+      required:
+      - gold_content_ids
+      - baseline_content_ids
+      title: TrainQualityRequest
+      description: Request to train a quality model from gold vs baseline content.
     QualityProfileResponse:
       properties:
         id:
@@ -989,6 +1015,28 @@ components:
       - last_trained_at
       title: QualityProfileResponse
       description: Quality profile response.
+    ScoreContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: Content text to score
+        content_type:
+          type: string
+          title: Content Type
+          description: Type of content
+          default: blog
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Title for context
+      type: object
+      required:
+      - content
+      title: ScoreContentRequest
+      description: Request to score content against the quality model.
     CrawledContentItem:
       properties:
         id:
@@ -1071,54 +1119,6 @@ components:
       - source_content_ids
       title: CreateVoiceRequest
       description: Request to create a new content voice.
-    ScoreContentRequest:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: Content text to score
-        content_type:
-          type: string
-          title: Content Type
-          description: Type of content
-          default: blog
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-          description: Title for context
-      type: object
-      required:
-      - content
-      title: ScoreContentRequest
-      description: Request to score content against the quality model.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

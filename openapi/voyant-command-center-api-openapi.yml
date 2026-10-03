@@ -408,15 +408,238 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    HTTPValidationError:
+    RegisterAgentRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        agent_type:
+          type: string
+          title: Agent Type
+        agent_name:
+          type: string
+          title: Agent Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        config:
+          additionalProperties: true
+          type: object
+          title: Config
+        schedule_interval_minutes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Schedule Interval Minutes
+        schedule_cron:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Schedule Cron
       type: object
-      title: HTTPValidationError
+      required:
+      - agent_type
+      - agent_name
+      title: RegisterAgentRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ActivityResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        activity_type:
+          type: string
+          title: Activity Type
+        source:
+          type: string
+          title: Source
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        icon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Icon
+        importance:
+          type: string
+          title: Importance
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+        entity_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+        entity_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Id
+        action_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action Url
+        action_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action Label
+        is_read:
+          type: boolean
+          title: Is Read
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - id
+      - activity_type
+      - source
+      - title
+      - description
+      - icon
+      - importance
+      - metadata
+      - entity_type
+      - entity_id
+      - action_url
+      - action_label
+      - is_read
+      - created_at
+      title: ActivityResponse
+    VisibilitySnapshotResponse:
+      properties:
+        snapshot_at:
+          type: string
+          title: Snapshot At
+        overall_visibility:
+          type: number
+          title: Overall Visibility
+        brand_mentions:
+          type: integer
+          title: Brand Mentions
+        competitor_mentions:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Competitor Mentions
+        model_scores:
+          additionalProperties:
+            type: number
+          type: object
+          title: Model Scores
+        change_vs_yesterday:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Vs Yesterday
+        change_vs_last_week:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Vs Last Week
+        prompts_tested:
+          type: integer
+          title: Prompts Tested
+      type: object
+      required:
+      - snapshot_at
+      - overall_visibility
+      - brand_mentions
+      - competitor_mentions
+      - model_scores
+      - change_vs_yesterday
+      - change_vs_last_week
+      - prompts_tested
+      title: VisibilitySnapshotResponse
+    IntegrationResponse:
+      properties:
+        integration_type:
+          type: string
+          title: Integration Type
+        name:
+          type: string
+          title: Name
+        icon:
+          type: string
+          title: Icon
+        category:
+          type: string
+          title: Category
+        is_connected:
+          type: boolean
+          title: Is Connected
+        connection_status:
+          type: string
+          title: Connection Status
+        last_sync_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Sync At
+        last_sync_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Sync Status
+        last_error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Error
+        error_count_24h:
+          type: integer
+          title: Error Count 24H
+        items_synced_today:
+          type: integer
+          title: Items Synced Today
+      type: object
+      required:
+      - integration_type
+      - name
+      - icon
+      - category
+      - is_connected
+      - connection_status
+      - last_sync_at
+      - last_sync_status
+      - last_error
+      - error_count_24h
+      - items_synced_today
+      title: IntegrationResponse
     HealthSummaryResponse:
       properties:
         total:
@@ -452,6 +675,15 @@ components:
       - disconnected_integrations
       - error_integrations
       title: HealthSummaryResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     AgentResponse:
       properties:
         id:
@@ -529,238 +761,6 @@ components:
       - items_processed
       - schedule_interval_minutes
       title: AgentResponse
-    ActivityResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        activity_type:
-          type: string
-          title: Activity Type
-        source:
-          type: string
-          title: Source
-        title:
-          type: string
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        icon:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Icon
-        importance:
-          type: string
-          title: Importance
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-        entity_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Entity Type
-        entity_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Entity Id
-        action_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Action Url
-        action_label:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Action Label
-        is_read:
-          type: boolean
-          title: Is Read
-        created_at:
-          type: string
-          title: Created At
-      type: object
-      required:
-      - id
-      - activity_type
-      - source
-      - title
-      - description
-      - icon
-      - importance
-      - metadata
-      - entity_type
-      - entity_id
-      - action_url
-      - action_label
-      - is_read
-      - created_at
-      title: ActivityResponse
-    IntegrationResponse:
-      properties:
-        integration_type:
-          type: string
-          title: Integration Type
-        name:
-          type: string
-          title: Name
-        icon:
-          type: string
-          title: Icon
-        category:
-          type: string
-          title: Category
-        is_connected:
-          type: boolean
-          title: Is Connected
-        connection_status:
-          type: string
-          title: Connection Status
-        last_sync_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Sync At
-        last_sync_status:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Sync Status
-        last_error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Error
-        error_count_24h:
-          type: integer
-          title: Error Count 24H
-        items_synced_today:
-          type: integer
-          title: Items Synced Today
-      type: object
-      required:
-      - integration_type
-      - name
-      - icon
-      - category
-      - is_connected
-      - connection_status
-      - last_sync_at
-      - last_sync_status
-      - last_error
-      - error_count_24h
-      - items_synced_today
-      title: IntegrationResponse
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    RegisterAgentRequest:
-      properties:
-        agent_type:
-          type: string
-          title: Agent Type
-        agent_name:
-          type: string
-          title: Agent Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        config:
-          additionalProperties: true
-          type: object
-          title: Config
-        schedule_interval_minutes:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Schedule Interval Minutes
-        schedule_cron:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Schedule Cron
-      type: object
-      required:
-      - agent_type
-      - agent_name
-      title: RegisterAgentRequest
-    VisibilitySnapshotResponse:
-      properties:
-        snapshot_at:
-          type: string
-          title: Snapshot At
-        overall_visibility:
-          type: number
-          title: Overall Visibility
-        brand_mentions:
-          type: integer
-          title: Brand Mentions
-        competitor_mentions:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Competitor Mentions
-        model_scores:
-          additionalProperties:
-            type: number
-          type: object
-          title: Model Scores
-        change_vs_yesterday:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Change Vs Yesterday
-        change_vs_last_week:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Change Vs Last Week
-        prompts_tested:
-          type: integer
-          title: Prompts Tested
-      type: object
-      required:
-      - snapshot_at
-      - overall_visibility
-      - brand_mentions
-      - competitor_mentions
-      - model_scores
-      - change_vs_yesterday
-      - change_vs_last_week
-      - prompts_tested
-      title: VisibilitySnapshotResponse
   securitySchemes:
     HTTPBearer:
       type: http
