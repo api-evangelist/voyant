@@ -131,32 +131,48 @@ paths:
               schema: {}
 components:
   schemas:
-    ValidationError:
+    VideoGenerationRequest:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+        script_request:
+          $ref: '#/components/schemas/VideoScriptRequest'
+        avatar_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Avatar Id
+          description: HeyGen avatar ID
+          default: default_presenter
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+          description: Voice ID for narration
+          default: professional_male
+        background_style:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Style
+          description: Background style
+          default: office
+        video_quality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Video Quality
+          description: Video quality setting
+          default: 1080p
+        generate_subtitles:
+          type: boolean
+          title: Generate Subtitles
+          description: Generate video with subtitles
+          default: true
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - script_request
+      title: VideoGenerationRequest
+      description: Request for generating complete video
     VideoGenerationResponse:
       properties:
         video_id:
@@ -202,52 +218,41 @@ components:
       - bofu
       title: FunnelStage
       description: Sales funnel stages for content targeting.
-    VideoGenerationStatus:
+    ValidationError:
       properties:
-        video_id:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
           type: string
-          title: Video Id
-        status:
+          title: Message
+        type:
           type: string
-          title: Status
-        progress:
-          type: number
-          title: Progress
-        created_at:
-          type: string
-          title: Created At
-        updated_at:
-          type: string
-          title: Updated At
-        download_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Download Url
-        thumbnail_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Thumbnail Url
-        duration:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Duration
-        error_message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error Message
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - video_id
-      - status
-      - progress
-      - created_at
-      - updated_at
-      title: VideoGenerationStatus
-      description: Status of video generation
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     VideoScriptRequest:
       properties:
         company_domain:
@@ -304,57 +309,52 @@ components:
       - authoritative
       title: ContentTone
       description: Tones for generated content.
-    HTTPValidationError:
+    VideoGenerationStatus:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    VideoGenerationRequest:
-      properties:
-        script_request:
-          $ref: '#/components/schemas/VideoScriptRequest'
-        avatar_id:
+        video_id:
+          type: string
+          title: Video Id
+        status:
+          type: string
+          title: Status
+        progress:
+          type: number
+          title: Progress
+        created_at:
+          type: string
+          title: Created At
+        updated_at:
+          type: string
+          title: Updated At
+        download_url:
           anyOf:
           - type: string
           - type: 'null'
-          title: Avatar Id
-          description: HeyGen avatar ID
-          default: default_presenter
-        voice_id:
+          title: Download Url
+        thumbnail_url:
           anyOf:
           - type: string
           - type: 'null'
-          title: Voice Id
-          description: Voice ID for narration
-          default: professional_male
-        background_style:
+          title: Thumbnail Url
+        duration:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration
+        error_message:
           anyOf:
           - type: string
           - type: 'null'
-          title: Background Style
-          description: Background style
-          default: office
-        video_quality:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Video Quality
-          description: Video quality setting
-          default: 1080p
-        generate_subtitles:
-          type: boolean
-          title: Generate Subtitles
-          description: Generate video with subtitles
-          default: true
+          title: Error Message
       type: object
       required:
-      - script_request
-      title: VideoGenerationRequest
-      description: Request for generating complete video
+      - video_id
+      - status
+      - progress
+      - created_at
+      - updated_at
+      title: VideoGenerationStatus
+      description: Status of video generation
   securitySchemes:
     HTTPBearer:
       type: http

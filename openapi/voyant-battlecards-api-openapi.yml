@@ -319,6 +319,47 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    GenerateBattlecardRequest:
+      properties:
+        competitor_id:
+          type: string
+          title: Competitor Id
+          description: UUID of the competitor
+        regenerate:
+          type: boolean
+          title: Regenerate
+          description: Whether to regenerate even if one exists
+          default: false
+      type: object
+      required:
+      - competitor_id
+      title: GenerateBattlecardRequest
+      description: Request to generate a new battlecard.
+    api__battlecards__ExportResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        file_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Id
+        web_view_link:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Web View Link
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - success
+      title: ExportResponse
+      description: Response from Google Drive export.
     UpdateBattlecardStatusRequest:
       properties:
         status:
@@ -330,6 +371,17 @@ components:
       - status
       title: UpdateBattlecardStatusRequest
       description: Request to update battlecard status.
+    ExportToDriveRequest:
+      properties:
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+          description: Google Drive folder ID
+      type: object
+      title: ExportToDriveRequest
+      description: Request to export battlecard to Google Drive.
     ValidationError:
       properties:
         loc:
@@ -356,6 +408,37 @@ components:
       - msg
       - type
       title: ValidationError
+    RefreshStaleResponse:
+      properties:
+        refreshed_count:
+          type: integer
+          title: Refreshed Count
+        refreshed_battlecards:
+          items:
+            type: string
+          type: array
+          title: Refreshed Battlecards
+        errors:
+          items:
+            type: string
+          type: array
+          title: Errors
+          default: []
+      type: object
+      required:
+      - refreshed_count
+      - refreshed_battlecards
+      title: RefreshStaleResponse
+      description: Response from refreshing stale battlecards.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     BattlecardSummary:
       properties:
         id:
@@ -422,22 +505,6 @@ components:
       - updated_at
       title: BattlecardSummary
       description: Summary view of a battlecard for list views.
-    GenerateBattlecardRequest:
-      properties:
-        competitor_id:
-          type: string
-          title: Competitor Id
-          description: UUID of the competitor
-        regenerate:
-          type: boolean
-          title: Regenerate
-          description: Whether to regenerate even if one exists
-          default: false
-      type: object
-      required:
-      - competitor_id
-      title: GenerateBattlecardRequest
-      description: Request to generate a new battlecard.
     BattlecardDetail:
       properties:
         id:
@@ -595,73 +662,6 @@ components:
       - updated_at
       title: BattlecardDetail
       description: Full battlecard detail.
-    ExportToDriveRequest:
-      properties:
-        folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Id
-          description: Google Drive folder ID
-      type: object
-      title: ExportToDriveRequest
-      description: Request to export battlecard to Google Drive.
-    api__battlecards__ExportResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        file_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Id
-        web_view_link:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Web View Link
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - success
-      title: ExportResponse
-      description: Response from Google Drive export.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    RefreshStaleResponse:
-      properties:
-        refreshed_count:
-          type: integer
-          title: Refreshed Count
-        refreshed_battlecards:
-          items:
-            type: string
-          type: array
-          title: Refreshed Battlecards
-        errors:
-          items:
-            type: string
-          type: array
-          title: Errors
-          default: []
-      type: object
-      required:
-      - refreshed_count
-      - refreshed_battlecards
-      title: RefreshStaleResponse
-      description: Response from refreshing stale battlecards.
   securitySchemes:
     HTTPBearer:
       type: http

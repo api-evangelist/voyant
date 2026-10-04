@@ -122,6 +122,91 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ApiKeyResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        key_prefix:
+          type: string
+          title: Key Prefix
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+        created_at:
+          type: string
+          title: Created At
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expires At
+        last_used_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Used At
+        usage_count:
+          type: integer
+          title: Usage Count
+        is_active:
+          type: boolean
+          title: Is Active
+      type: object
+      required:
+      - id
+      - name
+      - key_prefix
+      - scopes
+      - created_at
+      - expires_at
+      - last_used_at
+      - usage_count
+      - is_active
+      title: ApiKeyResponse
+    CreateApiKeyResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        key:
+          type: string
+          title: Key
+        key_prefix:
+          type: string
+          title: Key Prefix
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+        created_at:
+          type: string
+          title: Created At
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expires At
+      type: object
+      required:
+      - id
+      - name
+      - key
+      - key_prefix
+      - scopes
+      - created_at
+      - expires_at
+      title: CreateApiKeyResponse
+      description: Response when creating a key - includes the full key (only shown once).
     ValidationError:
       properties:
         loc:
@@ -174,44 +259,6 @@ components:
       required:
       - name
       title: CreateApiKeyRequest
-    CreateApiKeyResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        key:
-          type: string
-          title: Key
-        key_prefix:
-          type: string
-          title: Key Prefix
-        scopes:
-          items:
-            type: string
-          type: array
-          title: Scopes
-        created_at:
-          type: string
-          title: Created At
-        expires_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Expires At
-      type: object
-      required:
-      - id
-      - name
-      - key
-      - key_prefix
-      - scopes
-      - created_at
-      - expires_at
-      title: CreateApiKeyResponse
-      description: Response when creating a key - includes the full key (only shown once).
     HTTPValidationError:
       properties:
         detail:
@@ -221,53 +268,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ApiKeyResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        key_prefix:
-          type: string
-          title: Key Prefix
-        scopes:
-          items:
-            type: string
-          type: array
-          title: Scopes
-        created_at:
-          type: string
-          title: Created At
-        expires_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Expires At
-        last_used_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Used At
-        usage_count:
-          type: integer
-          title: Usage Count
-        is_active:
-          type: boolean
-          title: Is Active
-      type: object
-      required:
-      - id
-      - name
-      - key_prefix
-      - scopes
-      - created_at
-      - expires_at
-      - last_used_at
-      - usage_count
-      - is_active
-      title: ApiKeyResponse
   securitySchemes:
     HTTPBearer:
       type: http

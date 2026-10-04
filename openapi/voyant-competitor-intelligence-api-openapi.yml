@@ -1600,75 +1600,15 @@ components:
       - reasoning_text
       title: SaveStrategyAnalysisRequest
       description: Request to save a competitor strategy analysis.
-    ValidationError:
+    DiscoverCompetitorsRequest:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post:
-      properties:
-        theme_types:
-          items:
-            type: string
-          type: array
-          title: Theme Types
-          default:
-          - positive
-          - negative
-        theme_names:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Theme Names
-      type: object
-      title: Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post
-    SaveLandscapeAnalysisRequest:
-      properties:
-        reasoning_text:
-          type: string
-          title: Reasoning Text
-          description: The full AI reasoning/analysis text
-        competitors_analyzed:
-          items:
-            type: string
-          type: array
-          title: Competitors Analyzed
-          description: Names of competitors in the analysis
-          default: []
         additional_context:
           anyOf:
           - type: string
           - type: 'null'
           title: Additional Context
-          description: User-provided context
       type: object
-      required:
-      - reasoning_text
-      title: SaveLandscapeAnalysisRequest
-      description: Request to save a competitive landscape analysis.
+      title: DiscoverCompetitorsRequest
     ResolveRequest:
       properties:
         text:
@@ -1748,15 +1688,114 @@ components:
       - employee_count
       - last_scan
       title: CompetitorSummary
-    DiscoverCompetitorsRequest:
+    Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post:
       properties:
+        force_refresh:
+          type: boolean
+          title: Force Refresh
+          default: false
+        max_reviews:
+          type: integer
+          maximum: 500.0
+          minimum: 10.0
+          title: Max Reviews
+          default: 100
+      type: object
+      title: Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post
+    AddMultipleCompetitorsRequest:
+      properties:
+        competitors:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Competitors
+        run_initial_scan:
+          type: boolean
+          title: Run Initial Scan
+          default: true
+      type: object
+      required:
+      - competitors
+      title: AddMultipleCompetitorsRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post:
+      properties:
+        theme_types:
+          items:
+            type: string
+          type: array
+          title: Theme Types
+          default:
+          - positive
+          - negative
+        theme_names:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Theme Names
+      type: object
+      title: Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SaveLandscapeAnalysisRequest:
+      properties:
+        reasoning_text:
+          type: string
+          title: Reasoning Text
+          description: The full AI reasoning/analysis text
+        competitors_analyzed:
+          items:
+            type: string
+          type: array
+          title: Competitors Analyzed
+          description: Names of competitors in the analysis
+          default: []
         additional_context:
           anyOf:
           - type: string
           - type: 'null'
           title: Additional Context
+          description: User-provided context
       type: object
-      title: DiscoverCompetitorsRequest
+      required:
+      - reasoning_text
+      title: SaveLandscapeAnalysisRequest
+      description: Request to save a competitive landscape analysis.
     UpdateCompetitorRequest:
       properties:
         name:
@@ -1873,45 +1912,6 @@ components:
       - name
       - domain
       title: AddCompetitorRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    AddMultipleCompetitorsRequest:
-      properties:
-        competitors:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Competitors
-        run_initial_scan:
-          type: boolean
-          title: Run Initial Scan
-          default: true
-      type: object
-      required:
-      - competitors
-      title: AddMultipleCompetitorsRequest
-    Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post:
-      properties:
-        force_refresh:
-          type: boolean
-          title: Force Refresh
-          default: false
-        max_reviews:
-          type: integer
-          maximum: 500.0
-          minimum: 10.0
-          title: Max Reviews
-          default: 100
-      type: object
-      title: Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post
     ResolveBatchRequest:
       properties:
         items:

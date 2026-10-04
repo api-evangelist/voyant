@@ -76,58 +76,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    GAConfigResponse:
-      properties:
-        property_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Property Id
-        credentials_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Credentials Path
-        has_service_account:
-          type: boolean
-          title: Has Service Account
-          default: false
-      type: object
-      required:
-      - property_id
-      - credentials_path
-      title: GAConfigResponse
-    GAConfigRequest:
-      properties:
-        property_id:
-          type: string
-          title: Property Id
-          description: GA4 Property ID (numeric value)
-        credentials_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Credentials Path
-          description: Local filesystem path to a Google service account JSON file (optional)
-        service_account_json:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Service Account Json
-          description: Service account JSON payload for authentication (optional)
-      type: object
-      required:
-      - property_id
-      title: GAConfigRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -154,6 +102,58 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    GAConfigRequest:
+      properties:
+        property_id:
+          type: string
+          title: Property Id
+          description: GA4 Property ID (numeric value)
+        credentials_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Credentials Path
+          description: Local filesystem path to a Google service account JSON file (optional)
+        service_account_json:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Service Account Json
+          description: Service account JSON payload for authentication (optional)
+      type: object
+      required:
+      - property_id
+      title: GAConfigRequest
+    GAConfigResponse:
+      properties:
+        property_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Property Id
+        credentials_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Credentials Path
+        has_service_account:
+          type: boolean
+          title: Has Service Account
+          default: false
+      type: object
+      required:
+      - property_id
+      - credentials_path
+      title: GAConfigResponse
   securitySchemes:
     HTTPBearer:
       type: http

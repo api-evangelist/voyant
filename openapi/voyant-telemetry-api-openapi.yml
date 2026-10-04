@@ -501,134 +501,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    TrackRequest:
-      properties:
-        org_id:
-          type: string
-          title: Org Id
-          description: Organization ID
-        fingerprint:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Fingerprint
-        session_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Session Id
-        events:
-          items:
-            $ref: '#/components/schemas/EventPayload'
-          type: array
-          maxItems: 50
-          minItems: 1
-          title: Events
-        landing_page:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Landing Page
-        referrer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Referrer
-        utm_source:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Utm Source
-        utm_medium:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Utm Medium
-        utm_campaign:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Utm Campaign
-        utm_content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Utm Content
-        utm_term:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Utm Term
-      type: object
-      required:
-      - org_id
-      - events
-      title: TrackRequest
-      description: Request body for tracking events.
-    TelemetryStatsResponse:
-      properties:
-        visitors:
-          type: integer
-          title: Visitors
-        sessions:
-          type: integer
-          title: Sessions
-        events:
-          type: integer
-          title: Events
-        page_views:
-          type: integer
-          title: Page Views
-        avg_session_duration_seconds:
-          type: number
-          title: Avg Session Duration Seconds
-        enriched_visitors:
-          type: integer
-          title: Enriched Visitors
-        enrichment_rate:
-          type: number
-          title: Enrichment Rate
-        since:
-          type: string
-          title: Since
-      type: object
-      required:
-      - visitors
-      - sessions
-      - events
-      - page_views
-      - avg_session_duration_seconds
-      - enriched_visitors
-      - enrichment_rate
-      - since
-      title: TelemetryStatsResponse
-      description: Summary statistics response.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     EventPayload:
       properties:
         event_type:
@@ -706,6 +578,96 @@ components:
       - event_name
       title: EventPayload
       description: Single event payload from frontend.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    TrackRequest:
+      properties:
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization ID
+        fingerprint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Fingerprint
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+        events:
+          items:
+            $ref: '#/components/schemas/EventPayload'
+          type: array
+          maxItems: 50
+          minItems: 1
+          title: Events
+        landing_page:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Landing Page
+        referrer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Referrer
+        utm_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Source
+        utm_medium:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Medium
+        utm_campaign:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Campaign
+        utm_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Content
+        utm_term:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Utm Term
+      type: object
+      required:
+      - org_id
+      - events
+      title: TrackRequest
+      description: Request body for tracking events.
     HTTPValidationError:
       properties:
         detail:
@@ -715,6 +677,44 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    TelemetryStatsResponse:
+      properties:
+        visitors:
+          type: integer
+          title: Visitors
+        sessions:
+          type: integer
+          title: Sessions
+        events:
+          type: integer
+          title: Events
+        page_views:
+          type: integer
+          title: Page Views
+        avg_session_duration_seconds:
+          type: number
+          title: Avg Session Duration Seconds
+        enriched_visitors:
+          type: integer
+          title: Enriched Visitors
+        enrichment_rate:
+          type: number
+          title: Enrichment Rate
+        since:
+          type: string
+          title: Since
+      type: object
+      required:
+      - visitors
+      - sessions
+      - events
+      - page_views
+      - avg_session_duration_seconds
+      - enriched_visitors
+      - enrichment_rate
+      - since
+      title: TelemetryStatsResponse
+      description: Summary statistics response.
     TrackResponse:
       properties:
         success:

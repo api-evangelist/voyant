@@ -662,58 +662,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ChunkOptimizationRequest:
-      properties:
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: Chunk ID to optimize
-        target_tokens:
-          type: integer
-          title: Target Tokens
-          description: Target token count
-        preserve_meaning:
-          type: boolean
-          title: Preserve Meaning
-          description: Whether to preserve semantic meaning
-          default: true
-        version_name:
-          type: string
-          title: Version Name
-          description: Name for this version
-      type: object
-      required:
-      - chunk_id
-      - target_tokens
-      - version_name
-      title: ChunkOptimizationRequest
-      description: Request for chunk optimization
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     RankingOverrideRequest:
       properties:
         chunk_id:
@@ -753,6 +701,32 @@ components:
       - reason
       title: RankingOverrideRequest
       description: Request for ranking override
+    ChunkOptimizationRequest:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: Chunk ID to optimize
+        target_tokens:
+          type: integer
+          title: Target Tokens
+          description: Target token count
+        preserve_meaning:
+          type: boolean
+          title: Preserve Meaning
+          description: Whether to preserve semantic meaning
+          default: true
+        version_name:
+          type: string
+          title: Version Name
+          description: Name for this version
+      type: object
+      required:
+      - chunk_id
+      - target_tokens
+      - version_name
+      title: ChunkOptimizationRequest
+      description: Request for chunk optimization
     RerankRequest:
       properties:
         chunk_ids:
@@ -778,46 +752,6 @@ components:
       - ranking_criteria
       title: RerankRequest
       description: Request for reranking chunks
-    CreateStreamRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Stream name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Stream description
-        filters:
-          additionalProperties: true
-          type: object
-          title: Filters
-          description: Metadata filters
-        ranking_criteria:
-          additionalProperties: true
-          type: object
-          title: Ranking Criteria
-          description: Ranking configuration
-        token_limits:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Token Limits
-          description: Token limits by use case
-          default:
-            default: 2000
-        is_public:
-          type: boolean
-          title: Is Public
-          description: Whether stream is public
-          default: false
-      type: object
-      required:
-      - name
-      title: CreateStreamRequest
-      description: Request for creating a context stream
     ProcessContentRequest:
       properties:
         content_id:
@@ -860,6 +794,72 @@ components:
       type: object
       title: ProcessContentRequest
       description: Request for processing content with intelligence
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CreateStreamRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Stream name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Stream description
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Metadata filters
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking configuration
+        token_limits:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Token Limits
+          description: Token limits by use case
+          default:
+            default: 2000
+        is_public:
+          type: boolean
+          title: Is Public
+          description: Whether stream is public
+          default: false
+      type: object
+      required:
+      - name
+      title: CreateStreamRequest
+      description: Request for creating a context stream
     HTTPValidationError:
       properties:
         detail:

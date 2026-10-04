@@ -250,6 +250,62 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    SearchContentRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        limit:
+          type: integer
+          title: Limit
+          default: 20
+      type: object
+      required:
+      - query
+      title: SearchContentRequest
+    DiscoverSignalsRequest:
+      properties:
+        keywords:
+          items:
+            type: string
+          type: array
+          title: Keywords
+          default: []
+        hashtags:
+          items:
+            type: string
+          type: array
+          title: Hashtags
+          default: []
+        max_signals:
+          type: integer
+          title: Max Signals
+          default: 50
+      type: object
+      title: DiscoverSignalsRequest
+    MapOrganizationRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        github_usernames:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Github Usernames
+        target_titles:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Titles
+      type: object
+      required:
+      - company_name
+      title: MapOrganizationRequest
     ValidationError:
       properties:
         loc:
@@ -276,42 +332,15 @@ components:
       - msg
       - type
       title: ValidationError
-    SearchContentRequest:
+    HTTPValidationError:
       properties:
-        query:
-          type: string
-          title: Query
-        limit:
-          type: integer
-          title: Limit
-          default: 20
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - query
-      title: SearchContentRequest
-    MapOrganizationRequest:
-      properties:
-        company_name:
-          type: string
-          title: Company Name
-        github_usernames:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Github Usernames
-        target_titles:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Target Titles
-      type: object
-      required:
-      - company_name
-      title: MapOrganizationRequest
+      title: HTTPValidationError
     SearchPeopleRequest:
       properties:
         query:
@@ -330,35 +359,6 @@ components:
       required:
       - query
       title: SearchPeopleRequest
-    DiscoverSignalsRequest:
-      properties:
-        keywords:
-          items:
-            type: string
-          type: array
-          title: Keywords
-          default: []
-        hashtags:
-          items:
-            type: string
-          type: array
-          title: Hashtags
-          default: []
-        max_signals:
-          type: integer
-          title: Max Signals
-          default: 50
-      type: object
-      title: DiscoverSignalsRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

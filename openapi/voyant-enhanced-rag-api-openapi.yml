@@ -310,143 +310,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    GenerateWithHybridRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-          description: Query or topic for content generation
-        platform:
-          type: string
-          title: Platform
-          description: Target platform (twitter, linkedin, etc.)
-        tone:
-          type: string
-          title: Tone
-          description: Desired tone (professional, casual, etc.)
-        strategy:
-          type: string
-          enum:
-          - hybrid
-          - semantic
-          - keyword
-          - domain
-          title: Strategy
-          description: Search strategy for context retrieval
-          default: hybrid
-        top_k:
-          type: integer
-          maximum: 20.0
-          minimum: 1.0
-          title: Top K
-          description: Number of context chunks to retrieve
-          default: 5
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter context by domain
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-          description: Filter context by content type
-      type: object
-      required:
-      - query
-      - platform
-      - tone
-      title: GenerateWithHybridRequest
-      description: Request model for content generation with hybrid RAG.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    GenerateWithGypsumRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-          description: Query or topic for content generation
-        platform:
-          type: string
-          title: Platform
-          description: Target platform (twitter, linkedin, etc.)
-        tone:
-          type: string
-          title: Tone
-          description: Desired tone (professional, casual, etc.)
-        persona_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Persona Id
-          description: Specific persona to target
-        use_gypsum_context:
-          type: boolean
-          title: Use Gypsum Context
-          description: Include Gypsum marketing data
-          default: true
-        strategy:
-          type: string
-          enum:
-          - hybrid
-          - semantic
-          - keyword
-          - domain
-          title: Strategy
-          description: Search strategy for RAG context retrieval
-          default: hybrid
-        top_k:
-          type: integer
-          maximum: 20.0
-          minimum: 1.0
-          title: Top K
-          description: Number of context chunks to retrieve
-          default: 5
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter context by domain
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-          description: Filter context by content type
-      type: object
-      required:
-      - query
-      - platform
-      - tone
-      title: GenerateWithGypsumRequest
-      description: Request model for content generation with Gypsum + RAG integration.
     GenerateWithHybridResponse:
       properties:
         query:
@@ -524,6 +387,32 @@ components:
       - query
       title: HybridSearchRequest
       description: Request model for hybrid search.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     GenerateWithGypsumResponse:
       properties:
         query:
@@ -603,6 +492,117 @@ components:
       - strategy_used
       title: HybridSearchResponse
       description: Response model for hybrid search.
+    GenerateWithHybridRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Query or topic for content generation
+        platform:
+          type: string
+          title: Platform
+          description: Target platform (twitter, linkedin, etc.)
+        tone:
+          type: string
+          title: Tone
+          description: Desired tone (professional, casual, etc.)
+        strategy:
+          type: string
+          enum:
+          - hybrid
+          - semantic
+          - keyword
+          - domain
+          title: Strategy
+          description: Search strategy for context retrieval
+          default: hybrid
+        top_k:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Top K
+          description: Number of context chunks to retrieve
+          default: 5
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter context by domain
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+          description: Filter context by content type
+      type: object
+      required:
+      - query
+      - platform
+      - tone
+      title: GenerateWithHybridRequest
+      description: Request model for content generation with hybrid RAG.
+    GenerateWithGypsumRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Query or topic for content generation
+        platform:
+          type: string
+          title: Platform
+          description: Target platform (twitter, linkedin, etc.)
+        tone:
+          type: string
+          title: Tone
+          description: Desired tone (professional, casual, etc.)
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Specific persona to target
+        use_gypsum_context:
+          type: boolean
+          title: Use Gypsum Context
+          description: Include Gypsum marketing data
+          default: true
+        strategy:
+          type: string
+          enum:
+          - hybrid
+          - semantic
+          - keyword
+          - domain
+          title: Strategy
+          description: Search strategy for RAG context retrieval
+          default: hybrid
+        top_k:
+          type: integer
+          maximum: 20.0
+          minimum: 1.0
+          title: Top K
+          description: Number of context chunks to retrieve
+          default: 5
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter context by domain
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+          description: Filter context by content type
+      type: object
+      required:
+      - query
+      - platform
+      - tone
+      title: GenerateWithGypsumRequest
+      description: Request model for content generation with Gypsum + RAG integration.
   securitySchemes:
     HTTPBearer:
       type: http

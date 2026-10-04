@@ -230,58 +230,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ChunkSearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-          description: Search query
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter by domain
-        content_type:
-          anyOf:
-          - $ref: '#/components/schemas/ContentType'
-          - type: 'null'
-          description: Filter by content type
-        top_k:
-          type: integer
-          maximum: 50.0
-          minimum: 1.0
-          title: Top K
-          description: Number of chunks to retrieve
-          default: 5
-      type: object
-      required:
-      - query
-      title: ChunkSearchRequest
-      description: Request to search for content chunks.
-    PersonalityType:
-      type: string
-      enum:
-      - the_architect
-      - human_first_closer
-      - default
-      title: PersonalityType
-      description: Available personality types for content generation.
-    ContentPlatform:
-      type: string
-      enum:
-      - twitter
-      - instagram
-      - facebook
-      - linkedin
-      - email
-      - blog
-      - website
-      - customer_support
-      - video_script
-      - geo_prompt
-      title: ContentPlatform
-      description: Platforms for content generation.
     ContentType:
       type: string
       enum:
@@ -302,40 +250,55 @@ components:
       - other
       title: ContentType
       description: Types of content that can be extracted.
-    ValidationError:
+    GeneratedContent:
       properties:
-        loc:
+        text:
+          type: string
+          title: Text
+          description: Generated content text
+        source_chunks:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/SourceChunk'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
+          title: Source Chunks
+          description: Source chunks used for generation
+        personality_used:
+          $ref: '#/components/schemas/PersonalityType'
+          description: Personality profile that was applied
+          default: default
+        template_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Template Id
+          description: ID of the template used
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Gypsum persona ID that was used
+        template_enhanced:
+          type: boolean
+          title: Template Enhanced
+          description: Whether custom template was used
+          default: false
+        persona_enhanced:
+          type: boolean
+          title: Persona Enhanced
+          description: Whether persona context was applied
+          default: false
+        metadata:
+          additionalProperties: true
           type: object
-          title: Context
+          title: Metadata
+          description: Generation metadata including enhancement details
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
+      - text
+      - source_chunks
+      title: GeneratedContent
+      description: Response model for generated content.
     GenerateContentRequest:
       properties:
         query:
@@ -406,55 +369,78 @@ components:
       - tone
       title: GenerateContentRequest
       description: Request to generate content using RAG.
-    GeneratedContent:
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    ChunkSearchRequest:
       properties:
-        text:
+        query:
           type: string
-          title: Text
-          description: Generated content text
-        source_chunks:
-          items:
-            $ref: '#/components/schemas/SourceChunk'
-          type: array
-          title: Source Chunks
-          description: Source chunks used for generation
-        personality_used:
-          $ref: '#/components/schemas/PersonalityType'
-          description: Personality profile that was applied
-          default: default
-        template_id:
+          title: Query
+          description: Search query
+        domain:
           anyOf:
           - type: string
           - type: 'null'
-          title: Template Id
-          description: ID of the template used
-        persona_id:
+          title: Domain
+          description: Filter by domain
+        content_type:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/ContentType'
           - type: 'null'
-          title: Persona Id
-          description: Gypsum persona ID that was used
-        template_enhanced:
-          type: boolean
-          title: Template Enhanced
-          description: Whether custom template was used
-          default: false
-        persona_enhanced:
-          type: boolean
-          title: Persona Enhanced
-          description: Whether persona context was applied
-          default: false
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Generation metadata including enhancement details
+          description: Filter by content type
+        top_k:
+          type: integer
+          maximum: 50.0
+          minimum: 1.0
+          title: Top K
+          description: Number of chunks to retrieve
+          default: 5
       type: object
       required:
-      - text
-      - source_chunks
-      title: GeneratedContent
-      description: Response model for generated content.
+      - query
+      title: ChunkSearchRequest
+      description: Request to search for content chunks.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ChunkResponse:
       properties:
         id:
@@ -502,6 +488,26 @@ components:
       - end_char
       title: ChunkResponse
       description: Response model for content chunk retrieval.
+    PersonalityType:
+      type: string
+      enum:
+      - the_architect
+      - human_first_closer
+      - default
+      title: PersonalityType
+      description: Available personality types for content generation.
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
     SourceChunk:
       properties:
         chunk_id:
@@ -528,27 +534,21 @@ components:
       - content_id
       title: SourceChunk
       description: Source chunk information for generated content.
-    ContentTone:
+    ContentPlatform:
       type: string
       enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
     RAGProcessResponse:
       properties:
         task_id:

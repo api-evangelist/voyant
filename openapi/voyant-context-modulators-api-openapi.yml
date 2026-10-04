@@ -311,6 +311,115 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ModulatorCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Friendly name for the modulator
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: What this modulator is for
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+        product_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Product Id
+        use_case_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Use Case Id
+        funnel_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Funnel Stage
+        intent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intent
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+          description: Content voice ID for tone/style modulation
+        source_types:
+          items:
+            type: string
+          type: array
+          title: Source Types
+        context_stream_ids:
+          items:
+            type: string
+          type: array
+          title: Context Stream Ids
+        token_budget:
+          type: integer
+          title: Token Budget
+          default: 8192
+        version_preference:
+          type: string
+          title: Version Preference
+          default: standard
+        is_public:
+          type: boolean
+          title: Is Public
+          default: false
+        allowed_users:
+          items:
+            type: string
+          type: array
+          title: Allowed Users
+      type: object
+      required:
+      - name
+      title: ModulatorCreate
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ModulatorUpdate:
       properties:
         name:
@@ -391,115 +500,6 @@ components:
           title: Allowed Users
       type: object
       title: ModulatorUpdate
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ModulatorCreate:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Friendly name for the modulator
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: What this modulator is for
-        persona_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Persona Id
-        product_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Product Id
-        use_case_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Use Case Id
-        funnel_stage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Funnel Stage
-        intent:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Intent
-        voice_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Voice Id
-          description: Content voice ID for tone/style modulation
-        source_types:
-          items:
-            type: string
-          type: array
-          title: Source Types
-        context_stream_ids:
-          items:
-            type: string
-          type: array
-          title: Context Stream Ids
-        token_budget:
-          type: integer
-          title: Token Budget
-          default: 8192
-        version_preference:
-          type: string
-          title: Version Preference
-          default: standard
-        is_public:
-          type: boolean
-          title: Is Public
-          default: false
-        allowed_users:
-          items:
-            type: string
-          type: array
-          title: Allowed Users
-      type: object
-      required:
-      - name
-      title: ModulatorCreate
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

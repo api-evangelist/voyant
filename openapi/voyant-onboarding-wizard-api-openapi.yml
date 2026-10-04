@@ -531,149 +531,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ConfirmDiscoveryRequest:
-      properties:
-        company_name:
-          type: string
-          title: Company Name
-        domain:
-          type: string
-          title: Domain
-        tagline:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tagline
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        what_you_do:
-          items:
-            type: string
-          type: array
-          title: What You Do
-          default: []
-        products:
-          items:
-            type: string
-          type: array
-          title: Products
-          default: []
-        competitors:
-          items:
-            type: string
-          type: array
-          title: Competitors
-          default: []
-        social_links:
-          additionalProperties:
-            type: string
-          type: object
-          title: Social Links
-          default: {}
-      type: object
-      required:
-      - company_name
-      - domain
-      title: ConfirmDiscoveryRequest
-      description: User-confirmed/edited discovery data
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ProposePersonasRequest:
-      properties:
-        company_name:
-          type: string
-          title: Company Name
-        products:
-          items:
-            type: string
-          type: array
-          title: Products
-        what_you_do:
-          items:
-            type: string
-          type: array
-          title: What You Do
-          default: []
-        tagline:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tagline
-      type: object
-      required:
-      - company_name
-      - products
-      title: ProposePersonasRequest
-      description: Request to propose personas based on company/product context
-    ProposePersonasResponse:
-      properties:
-        personas:
-          items:
-            $ref: '#/components/schemas/ProposedPersona'
-          type: array
-          title: Personas
-        reasoning:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reasoning
-      type: object
-      required:
-      - personas
-      title: ProposePersonasResponse
-      description: Response with proposed personas
-    DiscoverDomainRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-      type: object
-      required:
-      - domain
-      title: DiscoverDomainRequest
-      description: Request to discover company info from domain
-    UpdatePersonaRequest:
-      properties:
-        content:
-          additionalProperties: true
-          type: object
-          title: Content
-        status:
-          type: string
-          title: Status
-          default: edited
-      type: object
-      required:
-      - content
-      title: UpdatePersonaRequest
-      description: Update a specific persona
     CrawlDomainRequest:
       properties:
         domain:
@@ -696,52 +553,6 @@ components:
       - domain
       title: CrawlDomainRequest
       description: Request to crawl a domain
-    ApproveStepRequest:
-      properties:
-        content:
-          additionalProperties: true
-          type: object
-          title: Content
-      type: object
-      required:
-      - content
-      title: ApproveStepRequest
-      description: Approve generated content for a step
-    ProposedPersona:
-      properties:
-        name:
-          type: string
-          title: Name
-        role:
-          type: string
-          title: Role
-        company_context:
-          type: string
-          title: Company Context
-        pain_points:
-          items:
-            type: string
-          type: array
-          title: Pain Points
-        product_benefits:
-          items:
-            type: string
-          type: array
-          title: Product Benefits
-        quote:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Quote
-      type: object
-      required:
-      - name
-      - role
-      - company_context
-      - pain_points
-      - product_benefits
-      title: ProposedPersona
-      description: A proposed persona with their perspective
     DiscoveryResult:
       properties:
         company_name:
@@ -790,24 +601,44 @@ components:
       - domain
       title: DiscoveryResult
       description: Quick discovery results from a domain
-    HTTPValidationError:
+    ProposePersonasRequest:
       properties:
-        detail:
+        company_name:
+          type: string
+          title: Company Name
+        products:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
+          title: Products
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
       type: object
-      title: HTTPValidationError
-    GenerateStepRequest:
+      required:
+      - company_name
+      - products
+      title: ProposePersonasRequest
+      description: Request to propose personas based on company/product context
+    ApproveStepRequest:
       properties:
-        regenerate:
-          type: boolean
-          title: Regenerate
-          default: false
+        content:
+          additionalProperties: true
+          type: object
+          title: Content
       type: object
-      title: GenerateStepRequest
-      description: Request to generate content for a framework step
+      required:
+      - content
+      title: ApproveStepRequest
+      description: Approve generated content for a step
     Body_upload_document_api_onboarding_documents_upload_post:
       properties:
         file:
@@ -818,6 +649,175 @@ components:
       required:
       - file
       title: Body_upload_document_api_onboarding_documents_upload_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    DiscoverDomainRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+      type: object
+      required:
+      - domain
+      title: DiscoverDomainRequest
+      description: Request to discover company info from domain
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ProposePersonasResponse:
+      properties:
+        personas:
+          items:
+            $ref: '#/components/schemas/ProposedPersona'
+          type: array
+          title: Personas
+        reasoning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reasoning
+      type: object
+      required:
+      - personas
+      title: ProposePersonasResponse
+      description: Response with proposed personas
+    ProposedPersona:
+      properties:
+        name:
+          type: string
+          title: Name
+        role:
+          type: string
+          title: Role
+        company_context:
+          type: string
+          title: Company Context
+        pain_points:
+          items:
+            type: string
+          type: array
+          title: Pain Points
+        product_benefits:
+          items:
+            type: string
+          type: array
+          title: Product Benefits
+        quote:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quote
+      type: object
+      required:
+      - name
+      - role
+      - company_context
+      - pain_points
+      - product_benefits
+      title: ProposedPersona
+      description: A proposed persona with their perspective
+    ConfirmDiscoveryRequest:
+      properties:
+        company_name:
+          type: string
+          title: Company Name
+        domain:
+          type: string
+          title: Domain
+        tagline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tagline
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        what_you_do:
+          items:
+            type: string
+          type: array
+          title: What You Do
+          default: []
+        products:
+          items:
+            type: string
+          type: array
+          title: Products
+          default: []
+        competitors:
+          items:
+            type: string
+          type: array
+          title: Competitors
+          default: []
+        social_links:
+          additionalProperties:
+            type: string
+          type: object
+          title: Social Links
+          default: {}
+      type: object
+      required:
+      - company_name
+      - domain
+      title: ConfirmDiscoveryRequest
+      description: User-confirmed/edited discovery data
+    GenerateStepRequest:
+      properties:
+        regenerate:
+          type: boolean
+          title: Regenerate
+          default: false
+      type: object
+      title: GenerateStepRequest
+      description: Request to generate content for a framework step
+    UpdatePersonaRequest:
+      properties:
+        content:
+          additionalProperties: true
+          type: object
+          title: Content
+        status:
+          type: string
+          title: Status
+          default: edited
+      type: object
+      required:
+      - content
+      title: UpdatePersonaRequest
+      description: Update a specific persona
   securitySchemes:
     HTTPBearer:
       type: http

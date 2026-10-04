@@ -128,55 +128,53 @@ paths:
               schema: {}
 components:
   schemas:
-    ContentPlatform:
-      type: string
-      enum:
-      - twitter
-      - instagram
-      - facebook
-      - linkedin
-      - email
-      - blog
-      - website
-      - customer_support
-      - video_script
-      - geo_prompt
-      title: ContentPlatform
-      description: Platforms for content generation.
-    ValidationError:
+    PromptGenerationRequest:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+          description: Filter by specific domain
+        platform:
+          anyOf:
+          - $ref: '#/components/schemas/ContentPlatform'
+          - type: 'null'
+          description: Target platform
+        funnel_stage:
+          anyOf:
+          - $ref: '#/components/schemas/FunnelStage'
+          - type: 'null'
+          description: Target funnel stage for content
+        max_prompts:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Max Prompts
+          description: Maximum prompts to generate
+          default: 1
+        focus_areas:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Focus Areas
+          description: Specific areas to focus on
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+          description: Target Gypsum persona ID
+        include_messaging_framework:
+          type: boolean
+          title: Include Messaging Framework
+          description: Include messaging framework data
+          default: true
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
+      title: PromptGenerationRequest
+      description: Request for generating prompts with Gypsum integration
     PromptGenerationResponse:
       properties:
         prompts:
@@ -214,6 +212,49 @@ components:
       - metadata
       title: PromptGenerationResponse
       description: Response containing generated prompts with Gypsum insights
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     GeneratedPrompt:
       properties:
         title:
@@ -288,62 +329,21 @@ components:
       - authoritative
       title: ContentTone
       description: Tones for generated content.
-    PromptGenerationRequest:
-      properties:
-        domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Domain
-          description: Filter by specific domain
-        platform:
-          anyOf:
-          - $ref: '#/components/schemas/ContentPlatform'
-          - type: 'null'
-          description: Target platform
-        funnel_stage:
-          anyOf:
-          - $ref: '#/components/schemas/FunnelStage'
-          - type: 'null'
-          description: Target funnel stage for content
-        max_prompts:
-          type: integer
-          maximum: 10.0
-          minimum: 1.0
-          title: Max Prompts
-          description: Maximum prompts to generate
-          default: 1
-        focus_areas:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Focus Areas
-          description: Specific areas to focus on
-        persona_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Persona Id
-          description: Target Gypsum persona ID
-        include_messaging_framework:
-          type: boolean
-          title: Include Messaging Framework
-          description: Include messaging framework data
-          default: true
-      type: object
-      title: PromptGenerationRequest
-      description: Request for generating prompts with Gypsum integration
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+    ContentPlatform:
+      type: string
+      enum:
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
   securitySchemes:
     HTTPBearer:
       type: http

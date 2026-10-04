@@ -125,80 +125,6 @@ components:
       - competitors
       title: SimpleOnboardingResponse
       description: Complete response from simple onboarding discovery
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    EnrichmentData:
-      properties:
-        industry:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Industry
-        employee_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Employee Count
-        revenue:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Revenue
-        headquarters:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Headquarters
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        founded_year:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Founded Year
-        linkedin_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Linkedin Url
-        technologies:
-          items:
-            type: string
-          type: array
-          title: Technologies
-          default: []
-      type: object
-      title: EnrichmentData
-      description: Lusha enrichment data
     MessagingData:
       properties:
         headline:
@@ -255,6 +181,125 @@ components:
       - messaging
       title: ConfirmOnboardingRequest
       description: User-confirmed onboarding data
+    CompetitorSuggestion:
+      properties:
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        description:
+          type: string
+          title: Description
+        why_competitor:
+          type: string
+          title: Why Competitor
+        confirmed:
+          type: boolean
+          title: Confirmed
+          default: true
+      type: object
+      required:
+      - name
+      - domain
+      - description
+      - why_competitor
+      title: CompetitorSuggestion
+      description: A suggested competitor
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    EnrichmentData:
+      properties:
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+        employee_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Employee Count
+        revenue:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Revenue
+        headquarters:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Headquarters
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        founded_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Founded Year
+        linkedin_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linkedin Url
+        technologies:
+          items:
+            type: string
+          type: array
+          title: Technologies
+          default: []
+      type: object
+      title: EnrichmentData
+      description: Lusha enrichment data
+    SimpleOnboardingRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+      type: object
+      required:
+      - domain
+      title: SimpleOnboardingRequest
+      description: Start simplified onboarding with just a domain
     DiscoveryData:
       properties:
         company_name:
@@ -292,51 +337,6 @@ components:
       - domain
       title: DiscoveryData
       description: Homepage discovery data
-    SimpleOnboardingRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-      type: object
-      required:
-      - domain
-      title: SimpleOnboardingRequest
-      description: Start simplified onboarding with just a domain
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    CompetitorSuggestion:
-      properties:
-        name:
-          type: string
-          title: Name
-        domain:
-          type: string
-          title: Domain
-        description:
-          type: string
-          title: Description
-        why_competitor:
-          type: string
-          title: Why Competitor
-        confirmed:
-          type: boolean
-          title: Confirmed
-          default: true
-      type: object
-      required:
-      - name
-      - domain
-      - description
-      - why_competitor
-      title: CompetitorSuggestion
-      description: A suggested competitor
   securitySchemes:
     HTTPBearer:
       type: http

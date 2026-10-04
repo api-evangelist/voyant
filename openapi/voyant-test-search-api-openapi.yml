@@ -41,28 +41,6 @@ paths:
       - Test Search
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    TestSearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-        maxResults:
-          type: integer
-          title: Maxresults
-          default: 3
-      type: object
-      required:
-      - query
-      title: TestSearchRequest
     ValidationError:
       properties:
         loc:
@@ -89,6 +67,28 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TestSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        maxResults:
+          type: integer
+          title: Maxresults
+          default: 3
+      type: object
+      required:
+      - query
+      title: TestSearchRequest
   securitySchemes:
     HTTPBearer:
       type: http

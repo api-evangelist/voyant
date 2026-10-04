@@ -135,6 +135,58 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    DriveConfigRequest:
+      properties:
+        root_folder_name:
+          type: string
+          title: Root Folder Name
+        default_sharing:
+          type: string
+          title: Default Sharing
+        auto_export_enabled:
+          type: boolean
+          title: Auto Export Enabled
+      type: object
+      required:
+      - root_folder_name
+      - default_sharing
+      - auto_export_enabled
+      title: DriveConfigRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ExportToGoogleDriveRequest:
       properties:
         content_id:
@@ -169,58 +221,6 @@ components:
       required:
       - content_id
       title: ExportToGoogleDriveRequest
-    DriveConfigRequest:
-      properties:
-        root_folder_name:
-          type: string
-          title: Root Folder Name
-        default_sharing:
-          type: string
-          title: Default Sharing
-        auto_export_enabled:
-          type: boolean
-          title: Auto Export Enabled
-      type: object
-      required:
-      - root_folder_name
-      - default_sharing
-      - auto_export_enabled
-      title: DriveConfigRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http

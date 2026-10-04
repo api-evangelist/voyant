@@ -132,14 +132,20 @@ paths:
                     type: string
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-    Industry:
+    ICPContext:
+      allOf:
+      - $ref: '#/components/schemas/ICP'
+      - type: object
+        properties:
+          referenced_personas:
+            type: array
+            items:
+              $ref: '#/components/schemas/Persona'
+          referenced_industries:
+            type: array
+            items:
+              $ref: '#/components/schemas/Industry'
+    ICP:
       type: object
       properties:
         id:
@@ -148,41 +154,45 @@ components:
           type: string
         description:
           type: string
-        key_challenges:
-          type: array
-          items:
-            type: string
-        technology_trends:
-          type: array
-          items:
-            type: string
-        regulatory_considerations:
-          type: array
-          items:
-            type: string
-        market_size:
-          type: string
-        growth_rate:
-          type: string
-    ICPCreate:
-      type: object
-      required:
-      - name
-      - discovery_query
-      properties:
-        name:
-          type: string
-        description:
-          type: string
         discovery_query:
           type: object
         discovery_service:
           type: string
-          default: clearbit
         persona_references:
           type: object
+          properties:
+            primary_personas:
+              type: array
+              items:
+                type: string
+            secondary_personas:
+              type: array
+              items:
+                type: string
         industry_references:
           type: object
+          properties:
+            target_industries:
+              type: array
+              items:
+                type: string
+            excluded_industries:
+              type: array
+              items:
+                type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     Persona:
       type: object
       properties:
@@ -240,19 +250,25 @@ components:
           type: string
         demographics:
           type: object
-    ICPContext:
-      allOf:
-      - $ref: '#/components/schemas/ICP'
-      - type: object
-        properties:
-          referenced_personas:
-            type: array
-            items:
-              $ref: '#/components/schemas/Persona'
-          referenced_industries:
-            type: array
-            items:
-              $ref: '#/components/schemas/Industry'
+    ICPCreate:
+      type: object
+      required:
+      - name
+      - discovery_query
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        discovery_query:
+          type: object
+        discovery_service:
+          type: string
+          default: clearbit
+        persona_references:
+          type: object
+        industry_references:
+          type: object
     ICPUpdate:
       type: object
       properties:
@@ -268,7 +284,7 @@ components:
           type: object
         industry_references:
           type: object
-    ICP:
+    Industry:
       type: object
       properties:
         id:
@@ -277,38 +293,22 @@ components:
           type: string
         description:
           type: string
-        discovery_query:
-          type: object
-        discovery_service:
+        key_challenges:
+          type: array
+          items:
+            type: string
+        technology_trends:
+          type: array
+          items:
+            type: string
+        regulatory_considerations:
+          type: array
+          items:
+            type: string
+        market_size:
           type: string
-        persona_references:
-          type: object
-          properties:
-            primary_personas:
-              type: array
-              items:
-                type: string
-            secondary_personas:
-              type: array
-              items:
-                type: string
-        industry_references:
-          type: object
-          properties:
-            target_industries:
-              type: array
-              items:
-                type: string
-            excluded_industries:
-              type: array
-              items:
-                type: string
-        created_at:
+        growth_rate:
           type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
   responses:
     NotFound:
       description: Resource not found

@@ -62,35 +62,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    ValidationRequest:
-      properties:
-        draft_content:
-          type: string
-          title: Draft Content
-          description: The content the agent proposes to send
-        context_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Id
-          description: ID of the signal/context being responded to
-        agent_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Agent Id
-          description: ID of the agent generating the content
-        policy_overrides:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Policy Overrides
-          description: Optional temporary policy overrides
-      type: object
-      required:
-      - draft_content
-      title: ValidationRequest
     ValidationError:
       properties:
         loc:
@@ -126,6 +97,35 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ValidationRequest:
+      properties:
+        draft_content:
+          type: string
+          title: Draft Content
+          description: The content the agent proposes to send
+        context_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Id
+          description: ID of the signal/context being responded to
+        agent_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Id
+          description: ID of the agent generating the content
+        policy_overrides:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Policy Overrides
+          description: Optional temporary policy overrides
+      type: object
+      required:
+      - draft_content
+      title: ValidationRequest
     ValidationResponse:
       properties:
         is_safe:

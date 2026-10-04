@@ -414,6 +414,153 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    GovernancePolicyCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        version:
+          type: string
+          title: Version
+          default: '1.0'
+        applies_to_entity_types:
+          items:
+            type: string
+          type: array
+          title: Applies To Entity Types
+        applies_to_field_paths:
+          items:
+            type: string
+          type: array
+          title: Applies To Field Paths
+        required_claim_types:
+          items:
+            type: string
+          type: array
+          title: Required Claim Types
+        required_actor_roles:
+          items:
+            type: string
+          type: array
+          title: Required Actor Roles
+        min_attestations:
+          type: integer
+          minimum: 1.0
+          title: Min Attestations
+          default: 1
+        validation_schema:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Validation Schema
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+      type: object
+      required:
+      - name
+      title: GovernancePolicyCreate
+      description: Create a governance policy
+    ProvenanceCreate:
+      properties:
+        source_entity_type:
+          type: string
+          title: Source Entity Type
+        source_entity_id:
+          type: string
+          title: Source Entity Id
+        source_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Entity Uri
+        source_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Version
+        derived_entity_type:
+          type: string
+          title: Derived Entity Type
+        derived_entity_id:
+          type: string
+          title: Derived Entity Id
+        derived_entity_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Derived Entity Uri
+        relationship_type:
+          type: string
+          title: Relationship Type
+          description: derived, informed, supersedes
+          default: derived
+        transformation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation
+          description: How the derivation was performed
+        transformation_agent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transformation Agent
+          description: Who/what performed the transformation
+      type: object
+      required:
+      - source_entity_type
+      - source_entity_id
+      - derived_entity_type
+      - derived_entity_id
+      title: ProvenanceCreate
+      description: Create a provenance relationship between entities
+    AttestationEvidenceCreate:
+      properties:
+        evidence_type:
+          type: string
+          title: Evidence Type
+          description: 'Type: document, url, analysis, conversation'
+        evidence_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Uri
+          description: URI to the evidence
+        evidence_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Hash
+          description: Content hash for verification
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        content_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Excerpt
+          description: Relevant excerpt from the evidence
+      type: object
+      required:
+      - evidence_type
+      title: AttestationEvidenceCreate
+      description: Evidence supporting an attestation
     AttestationCreate:
       properties:
         claim_type:
@@ -469,99 +616,6 @@ components:
       - actor_id
       title: AttestationCreate
       description: A signed claim about context
-    GovernancePolicyCreate:
-      properties:
-        name:
-          type: string
-          title: Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        version:
-          type: string
-          title: Version
-          default: '1.0'
-        applies_to_entity_types:
-          items:
-            type: string
-          type: array
-          title: Applies To Entity Types
-        applies_to_field_paths:
-          items:
-            type: string
-          type: array
-          title: Applies To Field Paths
-        required_claim_types:
-          items:
-            type: string
-          type: array
-          title: Required Claim Types
-        required_actor_roles:
-          items:
-            type: string
-          type: array
-          title: Required Actor Roles
-        min_attestations:
-          type: integer
-          minimum: 1.0
-          title: Min Attestations
-          default: 1
-        validation_schema:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Validation Schema
-        is_active:
-          type: boolean
-          title: Is Active
-          default: true
-      type: object
-      required:
-      - name
-      title: GovernancePolicyCreate
-      description: Create a governance policy
-    AttestationEvidenceCreate:
-      properties:
-        evidence_type:
-          type: string
-          title: Evidence Type
-          description: 'Type: document, url, analysis, conversation'
-        evidence_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Uri
-          description: URI to the evidence
-        evidence_hash:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Evidence Hash
-          description: Content hash for verification
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        content_excerpt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Excerpt
-          description: Relevant excerpt from the evidence
-      type: object
-      required:
-      - evidence_type
-      title: AttestationEvidenceCreate
-      description: Evidence supporting an attestation
     ValidationError:
       properties:
         loc:
@@ -588,60 +642,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ProvenanceCreate:
-      properties:
-        source_entity_type:
-          type: string
-          title: Source Entity Type
-        source_entity_id:
-          type: string
-          title: Source Entity Id
-        source_entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Entity Uri
-        source_version:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Version
-        derived_entity_type:
-          type: string
-          title: Derived Entity Type
-        derived_entity_id:
-          type: string
-          title: Derived Entity Id
-        derived_entity_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Derived Entity Uri
-        relationship_type:
-          type: string
-          title: Relationship Type
-          description: derived, informed, supersedes
-          default: derived
-        transformation:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Transformation
-          description: How the derivation was performed
-        transformation_agent:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Transformation Agent
-          description: Who/what performed the transformation
-      type: object
-      required:
-      - source_entity_type
-      - source_entity_id
-      - derived_entity_type
-      - derived_entity_id
-      title: ProvenanceCreate
-      description: Create a provenance relationship between entities
     HTTPValidationError:
       properties:
         detail:

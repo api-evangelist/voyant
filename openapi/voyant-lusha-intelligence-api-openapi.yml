@@ -317,85 +317,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    BulkEnrichmentRequest:
-      properties:
-        identifiers:
-          items:
-            type: string
-          type: array
-          title: Identifiers
-          description: List of identifiers to enrich
-        identifier_type:
-          type: string
-          title: Identifier Type
-          description: Type of identifiers
-          default: email
-        enrichment_type:
-          $ref: '#/components/schemas/EnrichmentType'
-          description: Type of enrichment
-          default: person
-      type: object
-      required:
-      - identifiers
-      title: BulkEnrichmentRequest
-      description: Request model for bulk enrichment
-    PersonEnrichmentRequest:
-      properties:
-        identifier:
-          type: string
-          title: Identifier
-          description: Email or LinkedIn URL
-        identifier_type:
-          type: string
-          title: Identifier Type
-          description: 'Type of identifier: email or linkedin'
-          default: email
-        enable_ai_insights:
-          type: boolean
-          title: Enable Ai Insights
-          description: Generate AI-powered insights
-          default: true
-        detect_buying_signals:
-          type: boolean
-          title: Detect Buying Signals
-          description: Detect buying signals
-          default: true
-        generate_outreach:
-          type: boolean
-          title: Generate Outreach
-          description: Generate personalized outreach strategy
-          default: true
-      type: object
-      required:
-      - identifier
-      title: PersonEnrichmentRequest
-      description: Request model for person enrichment
     ProspectingRequest:
       properties:
         job_titles:
@@ -461,6 +382,95 @@ components:
       type: object
       title: ProspectingRequest
       description: Request model for AI prospecting
+    EnrichmentType:
+      type: string
+      enum:
+      - person
+      - company
+      - prospecting
+      title: EnrichmentType
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ChampionTrackingRequest:
+      properties:
+        company_domain:
+          type: string
+          title: Company Domain
+          description: Company domain to track
+        alert_on_changes:
+          type: boolean
+          title: Alert On Changes
+          description: Send alerts on champion changes
+          default: true
+      type: object
+      required:
+      - company_domain
+      title: ChampionTrackingRequest
+      description: Request model for champion tracking
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PersonEnrichmentRequest:
+      properties:
+        identifier:
+          type: string
+          title: Identifier
+          description: Email or LinkedIn URL
+        identifier_type:
+          type: string
+          title: Identifier Type
+          description: 'Type of identifier: email or linkedin'
+          default: email
+        enable_ai_insights:
+          type: boolean
+          title: Enable Ai Insights
+          description: Generate AI-powered insights
+          default: true
+        detect_buying_signals:
+          type: boolean
+          title: Detect Buying Signals
+          description: Detect buying signals
+          default: true
+        generate_outreach:
+          type: boolean
+          title: Generate Outreach
+          description: Generate personalized outreach strategy
+          default: true
+      type: object
+      required:
+      - identifier
+      title: PersonEnrichmentRequest
+      description: Request model for person enrichment
     CompanyEnrichmentRequest:
       properties:
         identifier:
@@ -492,38 +502,28 @@ components:
       - identifier
       title: CompanyEnrichmentRequest
       description: Request model for company enrichment
-    EnrichmentType:
-      type: string
-      enum:
-      - person
-      - company
-      - prospecting
-      title: EnrichmentType
-    HTTPValidationError:
+    BulkEnrichmentRequest:
       properties:
-        detail:
+        identifiers:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ChampionTrackingRequest:
-      properties:
-        company_domain:
+          title: Identifiers
+          description: List of identifiers to enrich
+        identifier_type:
           type: string
-          title: Company Domain
-          description: Company domain to track
-        alert_on_changes:
-          type: boolean
-          title: Alert On Changes
-          description: Send alerts on champion changes
-          default: true
+          title: Identifier Type
+          description: Type of identifiers
+          default: email
+        enrichment_type:
+          $ref: '#/components/schemas/EnrichmentType'
+          description: Type of enrichment
+          default: person
       type: object
       required:
-      - company_domain
-      title: ChampionTrackingRequest
-      description: Request model for champion tracking
+      - identifiers
+      title: BulkEnrichmentRequest
+      description: Request model for bulk enrichment
   securitySchemes:
     HTTPBearer:
       type: http

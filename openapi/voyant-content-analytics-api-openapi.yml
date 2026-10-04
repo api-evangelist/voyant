@@ -431,27 +431,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    AnalyticsSyncRequest:
-      properties:
-        days:
-          type: integer
-          title: Days
-          default: 30
-        limit:
-          type: integer
-          title: Limit
-          default: 150
-      type: object
-      title: AnalyticsSyncRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -478,6 +457,27 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    AnalyticsSyncRequest:
+      properties:
+        days:
+          type: integer
+          title: Days
+          default: 30
+        limit:
+          type: integer
+          title: Limit
+          default: 150
+      type: object
+      title: AnalyticsSyncRequest
   securitySchemes:
     HTTPBearer:
       type: http

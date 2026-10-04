@@ -63,28 +63,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    api__hubspot_auth__CallbackRequest:
-      properties:
-        code:
-          type: string
-          title: Code
-        state:
-          type: string
-          title: State
-      type: object
-      required:
-      - code
-      - state
-      title: CallbackRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -111,6 +89,28 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    api__hubspot_auth__CallbackRequest:
+      properties:
+        code:
+          type: string
+          title: Code
+        state:
+          type: string
+          title: State
+      type: object
+      required:
+      - code
+      - state
+      title: CallbackRequest
   securitySchemes:
     HTTPBearer:
       type: http

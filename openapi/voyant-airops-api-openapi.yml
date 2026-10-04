@@ -182,24 +182,28 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    SearchRequest:
+    SyncResponse:
       properties:
-        query:
+        success:
+          type: boolean
+          title: Success
+        message:
           type: string
-          title: Query
-        top_k:
+          title: Message
+        documents_synced:
           type: integer
-          title: Top K
-          default: 5
-        context_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Type
+          title: Documents Synced
+          default: 0
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+          default: {}
       type: object
       required:
-      - query
-      title: SearchRequest
+      - success
+      - message
+      title: SyncResponse
     ValidationError:
       properties:
         loc:
@@ -226,6 +230,15 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     PushChunksRequest:
       properties:
         stream_name:
@@ -240,37 +253,24 @@ components:
           default: 50
       type: object
       title: PushChunksRequest
-    SyncResponse:
+    SearchRequest:
       properties:
-        success:
-          type: boolean
-          title: Success
-        message:
+        query:
           type: string
-          title: Message
-        documents_synced:
+          title: Query
+        top_k:
           type: integer
-          title: Documents Synced
-          default: 0
-        details:
-          additionalProperties: true
-          type: object
-          title: Details
-          default: {}
+          title: Top K
+          default: 5
+        context_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Type
       type: object
       required:
-      - success
-      - message
-      title: SyncResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - query
+      title: SearchRequest
   securitySchemes:
     HTTPBearer:
       type: http

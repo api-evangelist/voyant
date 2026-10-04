@@ -160,34 +160,6 @@ components:
       - msg
       - type
       title: ValidationError
-    TrainingRequest:
-      properties:
-        content:
-          type: string
-          title: Content
-        feedback:
-          type: string
-          title: Feedback
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-          default: general
-        conversation_history:
-          anyOf:
-          - items:
-              additionalProperties:
-                type: string
-              type: object
-            type: array
-          - type: 'null'
-          title: Conversation History
-      type: object
-      required:
-      - content
-      - feedback
-      title: TrainingRequest
     HTTPValidationError:
       properties:
         detail:
@@ -217,6 +189,34 @@ components:
       required:
       - message
       title: AssistantRequest
+    TrainingRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+        feedback:
+          type: string
+          title: Feedback
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+          default: general
+        conversation_history:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Conversation History
+      type: object
+      required:
+      - content
+      - feedback
+      title: TrainingRequest
   securitySchemes:
     HTTPBearer:
       type: http

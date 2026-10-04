@@ -423,77 +423,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    RecommendationResponse:
-      properties:
-        type:
-          type: string
-          title: Type
-        priority:
-          type: string
-          title: Priority
-        title:
-          type: string
-          title: Title
-        reason:
-          type: string
-          title: Reason
-        suggested_format:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suggested Format
-        target_keywords:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Target Keywords
-        suggested_prompt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suggested Prompt
-        suggested_actions:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Suggested Actions
-      type: object
-      required:
-      - type
-      - priority
-      - title
-      - reason
-      title: RecommendationResponse
     InsightResponse:
       properties:
         insight_type:
@@ -534,15 +463,32 @@ components:
       - recommendations
       - created_at
       title: InsightResponse
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: HTTPValidationError
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     HotTopicResponse:
       properties:
         query:
@@ -598,6 +544,60 @@ components:
       - competitor_mentions
       - last_tested
       title: HotTopicResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RecommendationResponse:
+      properties:
+        type:
+          type: string
+          title: Type
+        priority:
+          type: string
+          title: Priority
+        title:
+          type: string
+          title: Title
+        reason:
+          type: string
+          title: Reason
+        suggested_format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Format
+        target_keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Keywords
+        suggested_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Prompt
+        suggested_actions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Suggested Actions
+      type: object
+      required:
+      - type
+      - priority
+      - title
+      - reason
+      title: RecommendationResponse
   securitySchemes:
     HTTPBearer:
       type: http

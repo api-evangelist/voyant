@@ -409,58 +409,65 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ValidationError:
+    CrawlSummary:
       properties:
-        loc:
+        crawl_id:
+          type: string
+          title: Crawl Id
+        org_id:
+          type: string
+          title: Org Id
+        domains:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            type: string
           type: array
-          title: Location
-        msg:
+          title: Domains
+        total_urls_found:
+          type: integer
+          title: Total Urls Found
+        total_urls_crawled:
+          type: integer
+          title: Total Urls Crawled
+        total_pages_saved:
+          type: integer
+          title: Total Pages Saved
+        success_rate:
+          type: number
+          title: Success Rate
+        elapsed_time:
+          type: number
+          title: Elapsed Time
+        pages_per_second:
+          type: number
+          title: Pages Per Second
+        status:
           type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Status
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ImportAuthoritativeContentRequest:
+      - crawl_id
+      - org_id
+      - domains
+      - total_urls_found
+      - total_urls_crawled
+      - total_pages_saved
+      - success_rate
+      - elapsed_time
+      - pages_per_second
+      - status
+      title: CrawlSummary
+      description: Summary model for completed crawl.
+    CrawlEstimateRequest:
       properties:
-        content:
-          type: string
-          title: Content
-          description: The full content of the file
-        source_url:
-          type: string
-          title: Source Url
-          description: URL where the file was found
-        file_type:
-          type: string
-          title: File Type
-          description: 'Type of file: ''llms.txt'' or ''context.txt'''
         domain:
           type: string
           title: Domain
-          description: Domain the file belongs to
+          description: Domain or URL to estimate
       type: object
       required:
-      - content
-      - source_url
-      - file_type
       - domain
-      title: ImportAuthoritativeContentRequest
-      description: Request model for importing llms.txt or context.txt as authoritative content.
+      title: CrawlEstimateRequest
+      description: Request model for scan estimate.
     CrawlRequest:
       properties:
         domains:
@@ -528,54 +535,58 @@ components:
       - domains
       title: CrawlRequest
       description: Request model for crawl job.
-    CrawlSummary:
+    ValidationError:
       properties:
-        crawl_id:
-          type: string
-          title: Crawl Id
-        org_id:
-          type: string
-          title: Org Id
-        domains:
+        loc:
           items:
-            type: string
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Domains
-        total_urls_found:
-          type: integer
-          title: Total Urls Found
-        total_urls_crawled:
-          type: integer
-          title: Total Urls Crawled
-        total_pages_saved:
-          type: integer
-          title: Total Pages Saved
-        success_rate:
-          type: number
-          title: Success Rate
-        elapsed_time:
-          type: number
-          title: Elapsed Time
-        pages_per_second:
-          type: number
-          title: Pages Per Second
-        status:
+          title: Location
+        msg:
           type: string
-          title: Status
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - crawl_id
-      - org_id
-      - domains
-      - total_urls_found
-      - total_urls_crawled
-      - total_pages_saved
-      - success_rate
-      - elapsed_time
-      - pages_per_second
-      - status
-      title: CrawlSummary
-      description: Summary model for completed crawl.
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ImportAuthoritativeContentRequest:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: The full content of the file
+        source_url:
+          type: string
+          title: Source Url
+          description: URL where the file was found
+        file_type:
+          type: string
+          title: File Type
+          description: 'Type of file: ''llms.txt'' or ''context.txt'''
+        domain:
+          type: string
+          title: Domain
+          description: Domain the file belongs to
+      type: object
+      required:
+      - content
+      - source_url
+      - file_type
+      - domain
+      title: ImportAuthoritativeContentRequest
+      description: Request model for importing llms.txt or context.txt as authoritative content.
     HTTPValidationError:
       properties:
         detail:
@@ -585,17 +596,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    CrawlEstimateRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: Domain or URL to estimate
-      type: object
-      required:
-      - domain
-      title: CrawlEstimateRequest
-      description: Request model for scan estimate.
     CrawlResponse:
       properties:
         crawl_id:

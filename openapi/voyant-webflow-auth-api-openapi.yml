@@ -60,24 +60,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    ConnectRequest:
-      properties:
-        api_token:
-          type: string
-          title: Api Token
-      type: object
-      required:
-      - api_token
-      title: ConnectRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -104,6 +86,24 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ConnectRequest:
+      properties:
+        api_token:
+          type: string
+          title: Api Token
+      type: object
+      required:
+      - api_token
+      title: ConnectRequest
   securitySchemes:
     HTTPBearer:
       type: http

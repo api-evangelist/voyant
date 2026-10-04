@@ -160,58 +160,6 @@ paths:
               schema: {}
 components:
   schemas:
-    TrainingDataResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        source_type:
-          type: string
-          title: Source Type
-        title:
-          type: string
-          title: Title
-        source:
-          type: string
-          title: Source
-        status:
-          type: string
-          title: Status
-        content_preview:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Preview
-        tags:
-          items:
-            type: string
-          type: array
-          title: Tags
-        added_at:
-          type: string
-          format: date-time
-          title: Added At
-        processed_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Processed At
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-      type: object
-      required:
-      - id
-      - source_type
-      - title
-      - source
-      - status
-      - tags
-      - added_at
-      - metadata
-      title: TrainingDataResponse
     VoiceAnalytics:
       properties:
         total_items:
@@ -309,6 +257,58 @@ components:
       - source_type
       - content
       title: TrainingDataCreate
+    TrainingDataResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        source_type:
+          type: string
+          title: Source Type
+        title:
+          type: string
+          title: Title
+        source:
+          type: string
+          title: Source
+        status:
+          type: string
+          title: Status
+        content_preview:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Preview
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+        added_at:
+          type: string
+          format: date-time
+          title: Added At
+        processed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Processed At
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - source_type
+      - title
+      - source
+      - status
+      - tags
+      - added_at
+      - metadata
+      title: TrainingDataResponse
   securitySchemes:
     HTTPBearer:
       type: http
