@@ -1452,6 +1452,8 @@ apis:
   humanURL: https://voice-forge-production.up.railway.app/docs
   baseURL: https://voice-forge-production.up.railway.app
   tags:
+  - HubSpotAuth
+  tags_raw:
   - hubspot-auth
   properties:
   - type: OpenAPI
