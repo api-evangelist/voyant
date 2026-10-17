@@ -273,20 +273,24 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ResumeRequest:
+    OrgKeyRequest:
       properties:
-        kind:
+        api_key:
           type: string
-          title: Kind
-          default: confirm_personas
-        selection:
-          items:
-            type: string
-          type: array
-          title: Selection
-          default: []
+          title: Api Key
       type: object
-      title: ResumeRequest
+      required:
+      - api_key
+      title: OrgKeyRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -313,15 +317,20 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    ResumeRequest:
       properties:
-        detail:
+        kind:
+          type: string
+          title: Kind
+          default: confirm_personas
+        selection:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
+          title: Selection
+          default: []
       type: object
-      title: HTTPValidationError
+      title: ResumeRequest
     CreateRequest:
       properties:
         client_name:
@@ -340,15 +349,6 @@ components:
       required:
       - client_name
       title: CreateRequest
-    OrgKeyRequest:
-      properties:
-        api_key:
-          type: string
-          title: Api Key
-      type: object
-      required:
-      - api_key
-      title: OrgKeyRequest
     RunRequest:
       properties:
         mode:

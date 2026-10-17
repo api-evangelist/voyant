@@ -662,6 +662,170 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    CreateStreamRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Stream name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Stream description
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Metadata filters
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking configuration
+        token_limits:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Token Limits
+          description: Token limits by use case
+          default:
+            default: 2000
+        is_public:
+          type: boolean
+          title: Is Public
+          description: Whether stream is public
+          default: false
+      type: object
+      required:
+      - name
+      title: CreateStreamRequest
+      description: Request for creating a context stream
+    GypsumSyncRequest:
+      properties:
+        version_metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Version Metadata
+        change_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Source
+          default: sync
+        change_rationale:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Change Rationale
+      type: object
+      title: GypsumSyncRequest
+      description: Optional metadata to include when syncing from Gypsum
+    RerankRequest:
+      properties:
+        chunk_ids:
+          items:
+            type: string
+          type: array
+          title: Chunk Ids
+          description: Chunks to rerank
+        ranking_criteria:
+          additionalProperties: true
+          type: object
+          title: Ranking Criteria
+          description: Ranking criteria
+        context_stream_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Stream Id
+          description: Optional stream context
+      type: object
+      required:
+      - chunk_ids
+      - ranking_criteria
+      title: RerankRequest
+      description: Request for reranking chunks
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ProcessContentRequest:
+      properties:
+        content_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Id
+          description: ID of existing content to process
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+          description: Raw text to process
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+          description: Source URL
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+          description: Initial metadata
+        chunking_configs:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Chunking Configs
+          description: Custom chunking configurations
+        create_streams:
+          type: boolean
+          title: Create Streams
+          description: Auto-create suggested context streams
+          default: true
+      type: object
+      title: ProcessContentRequest
+      description: Request for processing content with intelligence
     RankingOverrideRequest:
       properties:
         chunk_id:
@@ -727,170 +891,6 @@ components:
       - version_name
       title: ChunkOptimizationRequest
       description: Request for chunk optimization
-    RerankRequest:
-      properties:
-        chunk_ids:
-          items:
-            type: string
-          type: array
-          title: Chunk Ids
-          description: Chunks to rerank
-        ranking_criteria:
-          additionalProperties: true
-          type: object
-          title: Ranking Criteria
-          description: Ranking criteria
-        context_stream_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Stream Id
-          description: Optional stream context
-      type: object
-      required:
-      - chunk_ids
-      - ranking_criteria
-      title: RerankRequest
-      description: Request for reranking chunks
-    ProcessContentRequest:
-      properties:
-        content_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Id
-          description: ID of existing content to process
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-          description: Raw text to process
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-          description: Source URL
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-          description: Initial metadata
-        chunking_configs:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Chunking Configs
-          description: Custom chunking configurations
-        create_streams:
-          type: boolean
-          title: Create Streams
-          description: Auto-create suggested context streams
-          default: true
-      type: object
-      title: ProcessContentRequest
-      description: Request for processing content with intelligence
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CreateStreamRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Stream name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Stream description
-        filters:
-          additionalProperties: true
-          type: object
-          title: Filters
-          description: Metadata filters
-        ranking_criteria:
-          additionalProperties: true
-          type: object
-          title: Ranking Criteria
-          description: Ranking configuration
-        token_limits:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Token Limits
-          description: Token limits by use case
-          default:
-            default: 2000
-        is_public:
-          type: boolean
-          title: Is Public
-          description: Whether stream is public
-          default: false
-      type: object
-      required:
-      - name
-      title: CreateStreamRequest
-      description: Request for creating a context stream
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    GypsumSyncRequest:
-      properties:
-        version_metadata:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Version Metadata
-        change_source:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Source
-          default: sync
-        change_rationale:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Change Rationale
-      type: object
-      title: GypsumSyncRequest
-      description: Optional metadata to include when syncing from Gypsum
   securitySchemes:
     HTTPBearer:
       type: http

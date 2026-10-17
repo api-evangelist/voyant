@@ -463,6 +463,60 @@ components:
       - recommendations
       - created_at
       title: InsightResponse
+    RecommendationResponse:
+      properties:
+        type:
+          type: string
+          title: Type
+        priority:
+          type: string
+          title: Priority
+        title:
+          type: string
+          title: Title
+        reason:
+          type: string
+          title: Reason
+        suggested_format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Format
+        target_keywords:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Target Keywords
+        suggested_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Prompt
+        suggested_actions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Suggested Actions
+      type: object
+      required:
+      - type
+      - priority
+      - title
+      - reason
+      title: RecommendationResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -544,60 +598,6 @@ components:
       - competitor_mentions
       - last_tested
       title: HotTopicResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    RecommendationResponse:
-      properties:
-        type:
-          type: string
-          title: Type
-        priority:
-          type: string
-          title: Priority
-        title:
-          type: string
-          title: Title
-        reason:
-          type: string
-          title: Reason
-        suggested_format:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suggested Format
-        target_keywords:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Target Keywords
-        suggested_prompt:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suggested Prompt
-        suggested_actions:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Suggested Actions
-      type: object
-      required:
-      - type
-      - priority
-      - title
-      - reason
-      title: RecommendationResponse
   securitySchemes:
     HTTPBearer:
       type: http

@@ -254,84 +254,6 @@ paths:
       - Templates
 components:
   schemas:
-    TemplateSearchRequest:
-      properties:
-        platform:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Platform
-        tone:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tone
-        purpose:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Purpose
-        limit:
-          type: integer
-          maximum: 100.0
-          minimum: 1.0
-          title: Limit
-          default: 10
-        offset:
-          type: integer
-          minimum: 0.0
-          title: Offset
-          default: 0
-      type: object
-      title: TemplateSearchRequest
-      description: Request model for searching templates
-    TemplateCreateRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Template name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Template description
-        template_text:
-          type: string
-          title: Template Text
-          description: Template content
-        platform:
-          type: string
-          title: Platform
-          description: Platform (email, twitter, linkedin, etc.)
-        tone:
-          type: string
-          title: Tone
-          description: Tone (professional, casual, friendly, etc.)
-        purpose:
-          type: string
-          title: Purpose
-          description: Purpose (outreach, follow_up, etc.)
-        parameters:
-          anyOf:
-          - items:
-              additionalProperties: true
-              type: object
-            type: array
-          - type: 'null'
-          title: Parameters
-          description: Template parameters
-          default: []
-      type: object
-      required:
-      - name
-      - template_text
-      - platform
-      - tone
-      - purpose
-      title: TemplateCreateRequest
-      description: Request model for creating templates
     TemplateResponse:
       properties:
         id:
@@ -386,6 +308,37 @@ components:
       - created_by
       title: TemplateResponse
       description: Response model for templates
+    TemplateSearchRequest:
+      properties:
+        platform:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Platform
+        tone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tone
+        purpose:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Purpose
+        limit:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Limit
+          default: 10
+        offset:
+          type: integer
+          minimum: 0.0
+          title: Offset
+          default: 0
+      type: object
+      title: TemplateSearchRequest
+      description: Request model for searching templates
     ValidationError:
       properties:
         loc:
@@ -421,6 +374,53 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    TemplateCreateRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Template name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Template description
+        template_text:
+          type: string
+          title: Template Text
+          description: Template content
+        platform:
+          type: string
+          title: Platform
+          description: Platform (email, twitter, linkedin, etc.)
+        tone:
+          type: string
+          title: Tone
+          description: Tone (professional, casual, friendly, etc.)
+        purpose:
+          type: string
+          title: Purpose
+          description: Purpose (outreach, follow_up, etc.)
+        parameters:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Parameters
+          description: Template parameters
+          default: []
+      type: object
+      required:
+      - name
+      - template_text
+      - platform
+      - tone
+      - purpose
+      title: TemplateCreateRequest
+      description: Request model for creating templates
   securitySchemes:
     HTTPBearer:
       type: http

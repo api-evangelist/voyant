@@ -122,6 +122,105 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    CreateApiKeyResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        key:
+          type: string
+          title: Key
+        key_prefix:
+          type: string
+          title: Key Prefix
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+        created_at:
+          type: string
+          title: Created At
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expires At
+      type: object
+      required:
+      - id
+      - name
+      - key
+      - key_prefix
+      - scopes
+      - created_at
+      - expires_at
+      title: CreateApiKeyResponse
+      description: Response when creating a key - includes the full key (only shown once).
+    CreateApiKeyRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: Human-readable name for this key
+        scopes:
+          items:
+            type: string
+          type: array
+          title: Scopes
+          description: 'Permissions: read, write, crawl, admin'
+          default:
+          - read
+        expires_in_days:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Expires In Days
+          description: Days until expiration (None = never)
+      type: object
+      required:
+      - name
+      title: CreateApiKeyRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ApiKeyResponse:
       properties:
         id:
@@ -169,105 +268,6 @@ components:
       - usage_count
       - is_active
       title: ApiKeyResponse
-    CreateApiKeyResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        key:
-          type: string
-          title: Key
-        key_prefix:
-          type: string
-          title: Key Prefix
-        scopes:
-          items:
-            type: string
-          type: array
-          title: Scopes
-        created_at:
-          type: string
-          title: Created At
-        expires_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Expires At
-      type: object
-      required:
-      - id
-      - name
-      - key
-      - key_prefix
-      - scopes
-      - created_at
-      - expires_at
-      title: CreateApiKeyResponse
-      description: Response when creating a key - includes the full key (only shown once).
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CreateApiKeyRequest:
-      properties:
-        name:
-          type: string
-          maxLength: 100
-          minLength: 1
-          title: Name
-          description: Human-readable name for this key
-        scopes:
-          items:
-            type: string
-          type: array
-          title: Scopes
-          description: 'Permissions: read, write, crawl, admin'
-          default:
-          - read
-        expires_in_days:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Expires In Days
-          description: Days until expiration (None = never)
-      type: object
-      required:
-      - name
-      title: CreateApiKeyRequest
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
   securitySchemes:
     HTTPBearer:
       type: http

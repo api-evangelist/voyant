@@ -131,48 +131,6 @@ paths:
               schema: {}
 components:
   schemas:
-    VideoGenerationRequest:
-      properties:
-        script_request:
-          $ref: '#/components/schemas/VideoScriptRequest'
-        avatar_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Avatar Id
-          description: HeyGen avatar ID
-          default: default_presenter
-        voice_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Voice Id
-          description: Voice ID for narration
-          default: professional_male
-        background_style:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Background Style
-          description: Background style
-          default: office
-        video_quality:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Video Quality
-          description: Video quality setting
-          default: 1080p
-        generate_subtitles:
-          type: boolean
-          title: Generate Subtitles
-          description: Generate video with subtitles
-          default: true
-      type: object
-      required:
-      - script_request
-      title: VideoGenerationRequest
-      description: Request for generating complete video
     VideoGenerationResponse:
       properties:
         video_id:
@@ -210,105 +168,6 @@ components:
       - metadata
       title: VideoGenerationResponse
       description: Response from video generation request
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    VideoScriptRequest:
-      properties:
-        company_domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Domain
-          description: Specific company domain to focus on
-        script_length:
-          type: integer
-          maximum: 300.0
-          minimum: 30.0
-          title: Script Length
-          description: Target script length in seconds
-          default: 120
-        funnel_stage:
-          $ref: '#/components/schemas/FunnelStage'
-          description: Target funnel stage
-          default: tofu
-        tone:
-          $ref: '#/components/schemas/ContentTone'
-          description: Video tone
-          default: professional
-        include_intro:
-          type: boolean
-          title: Include Intro
-          description: Include NextTechStack intro
-          default: true
-        include_outro:
-          type: boolean
-          title: Include Outro
-          description: Include standard outro
-          default: true
-        focus_areas:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Focus Areas
-          description: Specific topics to emphasize
-      type: object
-      title: VideoScriptRequest
-      description: Request for generating video script
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
     VideoGenerationStatus:
       properties:
         video_id:
@@ -355,6 +214,147 @@ components:
       - updated_at
       title: VideoGenerationStatus
       description: Status of video generation
+    VideoScriptRequest:
+      properties:
+        company_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Domain
+          description: Specific company domain to focus on
+        script_length:
+          type: integer
+          maximum: 300.0
+          minimum: 30.0
+          title: Script Length
+          description: Target script length in seconds
+          default: 120
+        funnel_stage:
+          $ref: '#/components/schemas/FunnelStage'
+          description: Target funnel stage
+          default: tofu
+        tone:
+          $ref: '#/components/schemas/ContentTone'
+          description: Video tone
+          default: professional
+        include_intro:
+          type: boolean
+          title: Include Intro
+          description: Include NextTechStack intro
+          default: true
+        include_outro:
+          type: boolean
+          title: Include Outro
+          description: Include standard outro
+          default: true
+        focus_areas:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Focus Areas
+          description: Specific topics to emphasize
+      type: object
+      title: VideoScriptRequest
+      description: Request for generating video script
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
+    VideoGenerationRequest:
+      properties:
+        script_request:
+          $ref: '#/components/schemas/VideoScriptRequest'
+        avatar_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Avatar Id
+          description: HeyGen avatar ID
+          default: default_presenter
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+          description: Voice ID for narration
+          default: professional_male
+        background_style:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Style
+          description: Background style
+          default: office
+        video_quality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Video Quality
+          description: Video quality setting
+          default: 1080p
+        generate_subtitles:
+          type: boolean
+          title: Generate Subtitles
+          description: Generate video with subtitles
+          default: true
+      type: object
+      required:
+      - script_request
+      title: VideoGenerationRequest
+      description: Request for generating complete video
   securitySchemes:
     HTTPBearer:
       type: http

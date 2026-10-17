@@ -255,41 +255,68 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ValidationError:
+    GSCQueriesResponse:
       properties:
-        loc:
+        site_url:
+          type: string
+          title: Site Url
+        queries:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/GSCQueryResponse'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
+          title: Queries
+        total_queries:
+          type: integer
+          title: Total Queries
+        total_clicks:
+          type: integer
+          title: Total Clicks
+        total_impressions:
+          type: integer
+          title: Total Impressions
+        avg_ctr:
+          type: number
+          title: Avg Ctr
+        period:
+          additionalProperties: true
           type: object
-          title: Context
+          title: Period
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
+      - site_url
+      - queries
+      - total_queries
+      - total_clicks
+      - total_impressions
+      - avg_ctr
+      - period
+      title: GSCQueriesResponse
+      description: Response for search queries endpoint
+    ImportResult:
       properties:
-        detail:
+        imported:
+          type: integer
+          title: Imported
+        skipped:
+          type: integer
+          title: Skipped
+        topic:
+          type: string
+          title: Topic
+        prompts:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            additionalProperties: true
+            type: object
           type: array
-          title: Detail
+          title: Prompts
       type: object
-      title: HTTPValidationError
+      required:
+      - imported
+      - skipped
+      - topic
+      - prompts
+      title: ImportResult
+      description: Result of import operation
     GSCSiteResponse:
       properties:
         site_url:
@@ -330,6 +357,41 @@ components:
       - position
       title: GSCQueryResponse
       description: Response for a search query
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ImportQueriesRequest:
       properties:
         site_url:
@@ -377,68 +439,6 @@ components:
       - site_url
       title: ImportQueriesRequest
       description: Request to import queries as target prompts
-    ImportResult:
-      properties:
-        imported:
-          type: integer
-          title: Imported
-        skipped:
-          type: integer
-          title: Skipped
-        topic:
-          type: string
-          title: Topic
-        prompts:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Prompts
-      type: object
-      required:
-      - imported
-      - skipped
-      - topic
-      - prompts
-      title: ImportResult
-      description: Result of import operation
-    GSCQueriesResponse:
-      properties:
-        site_url:
-          type: string
-          title: Site Url
-        queries:
-          items:
-            $ref: '#/components/schemas/GSCQueryResponse'
-          type: array
-          title: Queries
-        total_queries:
-          type: integer
-          title: Total Queries
-        total_clicks:
-          type: integer
-          title: Total Clicks
-        total_impressions:
-          type: integer
-          title: Total Impressions
-        avg_ctr:
-          type: number
-          title: Avg Ctr
-        period:
-          additionalProperties: true
-          type: object
-          title: Period
-      type: object
-      required:
-      - site_url
-      - queries
-      - total_queries
-      - total_clicks
-      - total_impressions
-      - avg_ctr
-      - period
-      title: GSCQueriesResponse
-      description: Response for search queries endpoint
   securitySchemes:
     HTTPBearer:
       type: http

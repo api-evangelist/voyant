@@ -208,31 +208,35 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    DiscoveryPatternResponse:
+    DiscoveryInsightResponse:
       properties:
         id:
           type: string
           title: Id
-        pattern_type:
+        insight_type:
           type: string
-          title: Pattern Type
+          title: Insight Type
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
         confidence:
           type: number
           title: Confidence
-        first_seen:
+        is_actionable:
+          type: boolean
+          title: Is Actionable
+        action_taken:
+          type: boolean
+          title: Action Taken
+        created_at:
           type: string
           format: date-time
-          title: First Seen
-        last_seen:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Last Seen
-        entities:
-          additionalProperties: true
-          type: object
-          title: Entities
+          title: Created At
         metadata:
           additionalProperties: true
           type: object
@@ -240,58 +244,16 @@ components:
       type: object
       required:
       - id
-      - pattern_type
+      - insight_type
+      - title
+      - description
       - confidence
-      - first_seen
-      - last_seen
-      - entities
+      - is_actionable
+      - action_taken
+      - created_at
       - metadata
-      title: DiscoveryPatternResponse
-      description: Response model for discovery patterns.
-    DiscoveryStateResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        source:
-          type: string
-          title: Source
-        source_type:
-          type: string
-          title: Source Type
-        signal_count:
-          type: integer
-          title: Signal Count
-        quality_score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Quality Score
-        is_active:
-          type: boolean
-          title: Is Active
-        last_checked:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Last Checked
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-      type: object
-      required:
-      - id
-      - source
-      - source_type
-      - signal_count
-      - quality_score
-      - is_active
-      - last_checked
-      - metadata
-      title: DiscoveryStateResponse
-      description: Response model for discovery source state.
+      title: DiscoveryInsightResponse
+      description: Response model for discovery insights.
     DiscoveryOverview:
       properties:
         latest_discoveries:
@@ -339,6 +301,59 @@ components:
       - api_calls_remaining
       title: DiscoveryOverview
       description: Overview of discovery system status.
+    DiscoveryStateResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        source:
+          type: string
+          title: Source
+        source_type:
+          type: string
+          title: Source Type
+        signal_count:
+          type: integer
+          title: Signal Count
+        quality_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Quality Score
+        is_active:
+          type: boolean
+          title: Is Active
+        last_checked:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Checked
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - id
+      - source
+      - source_type
+      - signal_count
+      - quality_score
+      - is_active
+      - last_checked
+      - metadata
+      title: DiscoveryStateResponse
+      description: Response model for discovery source state.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -365,44 +380,31 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    DiscoveryInsightResponse:
+    DiscoveryPatternResponse:
       properties:
         id:
           type: string
           title: Id
-        insight_type:
+        pattern_type:
           type: string
-          title: Insight Type
-        title:
-          type: string
-          title: Title
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
+          title: Pattern Type
         confidence:
           type: number
           title: Confidence
-        is_actionable:
-          type: boolean
-          title: Is Actionable
-        action_taken:
-          type: boolean
-          title: Action Taken
-        created_at:
+        first_seen:
           type: string
           format: date-time
-          title: Created At
+          title: First Seen
+        last_seen:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Seen
+        entities:
+          additionalProperties: true
+          type: object
+          title: Entities
         metadata:
           additionalProperties: true
           type: object
@@ -410,16 +412,14 @@ components:
       type: object
       required:
       - id
-      - insight_type
-      - title
-      - description
+      - pattern_type
       - confidence
-      - is_actionable
-      - action_taken
-      - created_at
+      - first_seen
+      - last_seen
+      - entities
       - metadata
-      title: DiscoveryInsightResponse
-      description: Response model for discovery insights.
+      title: DiscoveryPatternResponse
+      description: Response model for discovery patterns.
   securitySchemes:
     HTTPBearer:
       type: http

@@ -311,6 +311,86 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ModulatorUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        persona_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persona Id
+        product_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Product Id
+        use_case_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Use Case Id
+        funnel_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Funnel Stage
+        intent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intent
+        voice_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice Id
+        source_types:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Source Types
+        context_stream_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Context Stream Ids
+        token_budget:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Token Budget
+        version_preference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Preference
+        is_public:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Public
+        allowed_users:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Allowed Users
+      type: object
+      title: ModulatorUpdate
     ValidationError:
       properties:
         loc:
@@ -420,86 +500,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ModulatorUpdate:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        persona_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Persona Id
-        product_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Product Id
-        use_case_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Use Case Id
-        funnel_stage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Funnel Stage
-        intent:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Intent
-        voice_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Voice Id
-        source_types:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Source Types
-        context_stream_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Context Stream Ids
-        token_budget:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Token Budget
-        version_preference:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Version Preference
-        is_public:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Public
-        allowed_users:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Allowed Users
-      type: object
-      title: ModulatorUpdate
   securitySchemes:
     HTTPBearer:
       type: http

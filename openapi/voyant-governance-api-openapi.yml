@@ -62,32 +62,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     HTTPValidationError:
       properties:
         detail:
@@ -97,35 +71,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ValidationRequest:
-      properties:
-        draft_content:
-          type: string
-          title: Draft Content
-          description: The content the agent proposes to send
-        context_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context Id
-          description: ID of the signal/context being responded to
-        agent_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Agent Id
-          description: ID of the agent generating the content
-        policy_overrides:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Policy Overrides
-          description: Optional temporary policy overrides
-      type: object
-      required:
-      - draft_content
-      title: ValidationRequest
     ValidationResponse:
       properties:
         is_safe:
@@ -162,6 +107,61 @@ components:
       - is_safe
       - risk_score
       title: ValidationResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ValidationRequest:
+      properties:
+        draft_content:
+          type: string
+          title: Draft Content
+          description: The content the agent proposes to send
+        context_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context Id
+          description: ID of the signal/context being responded to
+        agent_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Id
+          description: ID of the agent generating the content
+        policy_overrides:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Policy Overrides
+          description: Optional temporary policy overrides
+      type: object
+      required:
+      - draft_content
+      title: ValidationRequest
   securitySchemes:
     HTTPBearer:
       type: http

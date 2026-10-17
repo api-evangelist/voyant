@@ -52,6 +52,13 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     ChatResponse:
       type: object
       properties:
@@ -66,13 +73,6 @@ components:
               type: integer
             output_tokens:
               type: integer
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
     ChatRequest:
       type: object
       required:

@@ -250,39 +250,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    SearchContentRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-        limit:
-          type: integer
-          title: Limit
-          default: 20
-      type: object
-      required:
-      - query
-      title: SearchContentRequest
-    DiscoverSignalsRequest:
-      properties:
-        keywords:
-          items:
-            type: string
-          type: array
-          title: Keywords
-          default: []
-        hashtags:
-          items:
-            type: string
-          type: array
-          title: Hashtags
-          default: []
-        max_signals:
-          type: integer
-          title: Max Signals
-          default: 50
-      type: object
-      title: DiscoverSignalsRequest
     MapOrganizationRequest:
       properties:
         company_name:
@@ -306,6 +273,15 @@ components:
       required:
       - company_name
       title: MapOrganizationRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -332,15 +308,26 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    DiscoverSignalsRequest:
       properties:
-        detail:
+        keywords:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
+          title: Keywords
+          default: []
+        hashtags:
+          items:
+            type: string
+          type: array
+          title: Hashtags
+          default: []
+        max_signals:
+          type: integer
+          title: Max Signals
+          default: 50
       type: object
-      title: HTTPValidationError
+      title: DiscoverSignalsRequest
     SearchPeopleRequest:
       properties:
         query:
@@ -359,6 +346,19 @@ components:
       required:
       - query
       title: SearchPeopleRequest
+    SearchContentRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        limit:
+          type: integer
+          title: Limit
+          default: 20
+      type: object
+      required:
+      - query
+      title: SearchContentRequest
   securitySchemes:
     HTTPBearer:
       type: http

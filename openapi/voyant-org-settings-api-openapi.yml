@@ -81,6 +81,15 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -107,29 +116,6 @@ components:
       - msg
       - type
       title: ValidationError
-    OrgSettingsResponse:
-      properties:
-        primary_domain:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Primary Domain
-        company_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Company Name
-      type: object
-      title: OrgSettingsResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     OrgSettingsRequest:
       properties:
         primary_domain:
@@ -146,6 +132,20 @@ components:
           description: Display name for the company
       type: object
       title: OrgSettingsRequest
+    OrgSettingsResponse:
+      properties:
+        primary_domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Primary Domain
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+      type: object
+      title: OrgSettingsResponse
   securitySchemes:
     HTTPBearer:
       type: http

@@ -1589,46 +1589,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    SaveStrategyAnalysisRequest:
-      properties:
-        reasoning_text:
-          type: string
-          title: Reasoning Text
-          description: The full AI strategy analysis text
-      type: object
-      required:
-      - reasoning_text
-      title: SaveStrategyAnalysisRequest
-      description: Request to save a competitor strategy analysis.
-    DiscoverCompetitorsRequest:
-      properties:
-        additional_context:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Additional Context
-      type: object
-      title: DiscoverCompetitorsRequest
-    ResolveRequest:
-      properties:
-        text:
-          type: string
-          minLength: 1
-          title: Text
-          description: Text containing company mention
-        source:
-          type: string
-          title: Source
-          description: Source channel (youtube, news, etc.)
-          default: unknown
-        require_tech_context:
-          type: boolean
-          title: Require Tech Context
-          default: true
-      type: object
-      required:
-      - text
-      title: ResolveRequest
     Body_link_g2_product_api_competitors__competitor_id__g2_link_post:
       properties:
         g2_product_id:
@@ -1643,159 +1603,6 @@ components:
       required:
       - g2_product_id
       title: Body_link_g2_product_api_competitors__competitor_id__g2_link_post
-    CompetitorSummary:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        domain:
-          type: string
-          title: Domain
-        tier:
-          type: string
-          title: Tier
-        cadence_grade:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Cadence Grade
-        agent_readiness_score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Agent Readiness Score
-        employee_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Employee Count
-        last_scan:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Scan
-      type: object
-      required:
-      - id
-      - name
-      - domain
-      - tier
-      - cadence_grade
-      - agent_readiness_score
-      - employee_count
-      - last_scan
-      title: CompetitorSummary
-    Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post:
-      properties:
-        force_refresh:
-          type: boolean
-          title: Force Refresh
-          default: false
-        max_reviews:
-          type: integer
-          maximum: 500.0
-          minimum: 10.0
-          title: Max Reviews
-          default: 100
-      type: object
-      title: Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post
-    AddMultipleCompetitorsRequest:
-      properties:
-        competitors:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Competitors
-        run_initial_scan:
-          type: boolean
-          title: Run Initial Scan
-          default: true
-      type: object
-      required:
-      - competitors
-      title: AddMultipleCompetitorsRequest
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post:
-      properties:
-        theme_types:
-          items:
-            type: string
-          type: array
-          title: Theme Types
-          default:
-          - positive
-          - negative
-        theme_names:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Theme Names
-      type: object
-      title: Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    SaveLandscapeAnalysisRequest:
-      properties:
-        reasoning_text:
-          type: string
-          title: Reasoning Text
-          description: The full AI reasoning/analysis text
-        competitors_analyzed:
-          items:
-            type: string
-          type: array
-          title: Competitors Analyzed
-          description: Names of competitors in the analysis
-          default: []
-        additional_context:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Additional Context
-          description: User-provided context
-      type: object
-      required:
-      - reasoning_text
-      title: SaveLandscapeAnalysisRequest
-      description: Request to save a competitive landscape analysis.
     UpdateCompetitorRequest:
       properties:
         name:
@@ -1881,6 +1688,25 @@ components:
           title: Sitemap Url
       type: object
       title: UpdateCompetitorRequest
+    Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post:
+      properties:
+        theme_types:
+          items:
+            type: string
+          type: array
+          title: Theme Types
+          default:
+          - positive
+          - negative
+        theme_names:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Theme Names
+      type: object
+      title: Body_create_topics_from_g2_themes_api_competitors__competitor_id__g2_create_topics_post
     AddCompetitorRequest:
       properties:
         name:
@@ -1912,6 +1738,100 @@ components:
       - name
       - domain
       title: AddCompetitorRequest
+    CompetitorSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        tier:
+          type: string
+          title: Tier
+        cadence_grade:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cadence Grade
+        agent_readiness_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Agent Readiness Score
+        employee_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Employee Count
+        last_scan:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Scan
+      type: object
+      required:
+      - id
+      - name
+      - domain
+      - tier
+      - cadence_grade
+      - agent_readiness_score
+      - employee_count
+      - last_scan
+      title: CompetitorSummary
+    Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post:
+      properties:
+        force_refresh:
+          type: boolean
+          title: Force Refresh
+          default: false
+        max_reviews:
+          type: integer
+          maximum: 500.0
+          minimum: 10.0
+          title: Max Reviews
+          default: 100
+      type: object
+      title: Body_analyze_g2_themes_api_competitors__competitor_id__g2_analyze_themes_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ResolveBatchRequest:
       properties:
         items:
@@ -1934,6 +1854,86 @@ components:
       required:
       - items
       title: ResolveBatchRequest
+    AddMultipleCompetitorsRequest:
+      properties:
+        competitors:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Competitors
+        run_initial_scan:
+          type: boolean
+          title: Run Initial Scan
+          default: true
+      type: object
+      required:
+      - competitors
+      title: AddMultipleCompetitorsRequest
+    SaveStrategyAnalysisRequest:
+      properties:
+        reasoning_text:
+          type: string
+          title: Reasoning Text
+          description: The full AI strategy analysis text
+      type: object
+      required:
+      - reasoning_text
+      title: SaveStrategyAnalysisRequest
+      description: Request to save a competitor strategy analysis.
+    DiscoverCompetitorsRequest:
+      properties:
+        additional_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additional Context
+      type: object
+      title: DiscoverCompetitorsRequest
+    ResolveRequest:
+      properties:
+        text:
+          type: string
+          minLength: 1
+          title: Text
+          description: Text containing company mention
+        source:
+          type: string
+          title: Source
+          description: Source channel (youtube, news, etc.)
+          default: unknown
+        require_tech_context:
+          type: boolean
+          title: Require Tech Context
+          default: true
+      type: object
+      required:
+      - text
+      title: ResolveRequest
+    SaveLandscapeAnalysisRequest:
+      properties:
+        reasoning_text:
+          type: string
+          title: Reasoning Text
+          description: The full AI reasoning/analysis text
+        competitors_analyzed:
+          items:
+            type: string
+          type: array
+          title: Competitors Analyzed
+          description: Names of competitors in the analysis
+          default: []
+        additional_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additional Context
+          description: User-provided context
+      type: object
+      required:
+      - reasoning_text
+      title: SaveLandscapeAnalysisRequest
+      description: Request to save a competitive landscape analysis.
   securitySchemes:
     HTTPBearer:
       type: http

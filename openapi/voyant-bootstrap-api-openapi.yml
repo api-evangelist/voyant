@@ -119,6 +119,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -145,6 +154,30 @@ components:
       - msg
       - type
       title: ValidationError
+    BootstrapRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain to crawl and analyze
+        competitors:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Competitors
+          description: Known competitors (optional)
+        skip_crawl:
+          type: boolean
+          title: Skip Crawl
+          description: Skip crawl if content already exists
+          default: false
+      type: object
+      required:
+      - domain
+      title: BootstrapRequest
+      description: Request to bootstrap a new organization.
     GenerateElementRequest:
       properties:
         element_type:
@@ -181,39 +214,6 @@ components:
       - element_type
       title: GenerateElementRequest
       description: Request to generate a single element with AI.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    BootstrapRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: Domain to crawl and analyze
-        competitors:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Competitors
-          description: Known competitors (optional)
-        skip_crawl:
-          type: boolean
-          title: Skip Crawl
-          description: Skip crawl if content already exists
-          default: false
-      type: object
-      required:
-      - domain
-      title: BootstrapRequest
-      description: Request to bootstrap a new organization.
   securitySchemes:
     HTTPBearer:
       type: http

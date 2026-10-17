@@ -182,28 +182,29 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    SyncResponse:
+    HTTPValidationError:
       properties:
-        success:
-          type: boolean
-          title: Success
-        message:
-          type: string
-          title: Message
-        documents_synced:
-          type: integer
-          title: Documents Synced
-          default: 0
-        details:
-          additionalProperties: true
-          type: object
-          title: Details
-          default: {}
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - success
-      - message
-      title: SyncResponse
+      title: HTTPValidationError
+    PushChunksRequest:
+      properties:
+        stream_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stream Name
+          default: Messaging Framework
+        limit:
+          type: integer
+          title: Limit
+          default: 50
+      type: object
+      title: PushChunksRequest
     ValidationError:
       properties:
         loc:
@@ -230,29 +231,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PushChunksRequest:
-      properties:
-        stream_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Stream Name
-          default: Messaging Framework
-        limit:
-          type: integer
-          title: Limit
-          default: 50
-      type: object
-      title: PushChunksRequest
     SearchRequest:
       properties:
         query:
@@ -271,6 +249,28 @@ components:
       required:
       - query
       title: SearchRequest
+    SyncResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        message:
+          type: string
+          title: Message
+        documents_synced:
+          type: integer
+          title: Documents Synced
+          default: 0
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+          default: {}
+      type: object
+      required:
+      - success
+      - message
+      title: SyncResponse
   securitySchemes:
     HTTPBearer:
       type: http

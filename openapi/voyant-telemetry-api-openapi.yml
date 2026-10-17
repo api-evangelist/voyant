@@ -578,6 +578,75 @@ components:
       - event_name
       title: EventPayload
       description: Single event payload from frontend.
+    TelemetryStatsResponse:
+      properties:
+        visitors:
+          type: integer
+          title: Visitors
+        sessions:
+          type: integer
+          title: Sessions
+        events:
+          type: integer
+          title: Events
+        page_views:
+          type: integer
+          title: Page Views
+        avg_session_duration_seconds:
+          type: number
+          title: Avg Session Duration Seconds
+        enriched_visitors:
+          type: integer
+          title: Enriched Visitors
+        enrichment_rate:
+          type: number
+          title: Enrichment Rate
+        since:
+          type: string
+          title: Since
+      type: object
+      required:
+      - visitors
+      - sessions
+      - events
+      - page_views
+      - avg_session_duration_seconds
+      - enriched_visitors
+      - enrichment_rate
+      - since
+      title: TelemetryStatsResponse
+      description: Summary statistics response.
+    TrackResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        visitor_id:
+          type: string
+          title: Visitor Id
+        session_id:
+          type: string
+          title: Session Id
+        events_tracked:
+          type: integer
+          title: Events Tracked
+      type: object
+      required:
+      - success
+      - visitor_id
+      - session_id
+      - events_tracked
+      title: TrackResponse
+      description: Response from tracking endpoint.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -668,75 +737,6 @@ components:
       - events
       title: TrackRequest
       description: Request body for tracking events.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    TelemetryStatsResponse:
-      properties:
-        visitors:
-          type: integer
-          title: Visitors
-        sessions:
-          type: integer
-          title: Sessions
-        events:
-          type: integer
-          title: Events
-        page_views:
-          type: integer
-          title: Page Views
-        avg_session_duration_seconds:
-          type: number
-          title: Avg Session Duration Seconds
-        enriched_visitors:
-          type: integer
-          title: Enriched Visitors
-        enrichment_rate:
-          type: number
-          title: Enrichment Rate
-        since:
-          type: string
-          title: Since
-      type: object
-      required:
-      - visitors
-      - sessions
-      - events
-      - page_views
-      - avg_session_duration_seconds
-      - enriched_visitors
-      - enrichment_rate
-      - since
-      title: TelemetryStatsResponse
-      description: Summary statistics response.
-    TrackResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        visitor_id:
-          type: string
-          title: Visitor Id
-        session_id:
-          type: string
-          title: Session Id
-        events_tracked:
-          type: integer
-          title: Events Tracked
-      type: object
-      required:
-      - success
-      - visitor_id
-      - session_id
-      - events_tracked
-      title: TrackResponse
-      description: Response from tracking endpoint.
   securitySchemes:
     HTTPBearer:
       type: http

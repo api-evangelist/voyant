@@ -76,6 +76,15 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -102,15 +111,27 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    GAConfigResponse:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        property_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Property Id
+        credentials_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Credentials Path
+        has_service_account:
+          type: boolean
+          title: Has Service Account
+          default: false
       type: object
-      title: HTTPValidationError
+      required:
+      - property_id
+      - credentials_path
+      title: GAConfigResponse
     GAConfigRequest:
       properties:
         property_id:
@@ -133,27 +154,6 @@ components:
       required:
       - property_id
       title: GAConfigRequest
-    GAConfigResponse:
-      properties:
-        property_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Property Id
-        credentials_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Credentials Path
-        has_service_account:
-          type: boolean
-          title: Has Service Account
-          default: false
-      type: object
-      required:
-      - property_id
-      - credentials_path
-      title: GAConfigResponse
   securitySchemes:
     HTTPBearer:
       type: http

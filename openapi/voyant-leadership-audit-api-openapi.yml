@@ -178,6 +178,15 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -204,15 +213,34 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    LeaderCreate:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        name:
+          type: string
+          title: Name
+        title:
+          type: string
+          title: Title
+        linkedin_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linkedin Url
+        twitter_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Twitter Url
+        github_username:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Github Username
       type: object
-      title: HTTPValidationError
+      required:
+      - name
+      - title
+      title: LeaderCreate
     LeaderMetricsUpdate:
       properties:
         linkedin_followers:
@@ -259,34 +287,6 @@ components:
       type: object
       title: LeaderMetricsUpdate
       description: All fields are measurable/verifiable.
-    LeaderCreate:
-      properties:
-        name:
-          type: string
-          title: Name
-        title:
-          type: string
-          title: Title
-        linkedin_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Linkedin Url
-        twitter_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Twitter Url
-        github_username:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Github Username
-      type: object
-      required:
-      - name
-      - title
-      title: LeaderCreate
   securitySchemes:
     HTTPBearer:
       type: http

@@ -128,6 +128,21 @@ paths:
               schema: {}
 components:
   schemas:
+    ContentPlatform:
+      type: string
+      enum:
+      - twitter
+      - instagram
+      - facebook
+      - linkedin
+      - email
+      - blog
+      - website
+      - customer_support
+      - video_script
+      - geo_prompt
+      title: ContentPlatform
+      description: Platforms for content generation.
     PromptGenerationRequest:
       properties:
         domain:
@@ -175,6 +190,14 @@ components:
       type: object
       title: PromptGenerationRequest
       description: Request for generating prompts with Gypsum integration
+    FunnelStage:
+      type: string
+      enum:
+      - tofu
+      - mofu
+      - bofu
+      title: FunnelStage
+      description: Sales funnel stages for content targeting.
     PromptGenerationResponse:
       properties:
         prompts:
@@ -212,14 +235,15 @@ components:
       - metadata
       title: PromptGenerationResponse
       description: Response containing generated prompts with Gypsum insights
-    FunnelStage:
-      type: string
-      enum:
-      - tofu
-      - mofu
-      - bofu
-      title: FunnelStage
-      description: Sales funnel stages for content targeting.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -246,15 +270,18 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+    ContentTone:
+      type: string
+      enum:
+      - professional
+      - casual
+      - friendly
+      - enthusiastic
+      - informative
+      - persuasive
+      - authoritative
+      title: ContentTone
+      description: Tones for generated content.
     GeneratedPrompt:
       properties:
         title:
@@ -317,33 +344,6 @@ components:
       - messaging_framework
       title: GeneratedPrompt
       description: A generated prompt suggestion enhanced with Gypsum persona insights
-    ContentTone:
-      type: string
-      enum:
-      - professional
-      - casual
-      - friendly
-      - enthusiastic
-      - informative
-      - persuasive
-      - authoritative
-      title: ContentTone
-      description: Tones for generated content.
-    ContentPlatform:
-      type: string
-      enum:
-      - twitter
-      - instagram
-      - facebook
-      - linkedin
-      - email
-      - blog
-      - website
-      - customer_support
-      - video_script
-      - geo_prompt
-      title: ContentPlatform
-      description: Platforms for content generation.
   securitySchemes:
     HTTPBearer:
       type: http

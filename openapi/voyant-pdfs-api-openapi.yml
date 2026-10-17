@@ -478,6 +478,32 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
+    SourceChunk:
+      properties:
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: ID of the source chunk
+        text:
+          type: string
+          title: Text
+          description: Snippet of the chunk text
+        similarity:
+          type: number
+          title: Similarity
+          description: Similarity score
+        content_id:
+          type: string
+          title: Content Id
+          description: ID of the parent content
+      type: object
+      required:
+      - chunk_id
+      - text
+      - similarity
+      - content_id
+      title: SourceChunk
+      description: Source chunk information for generated content.
     Body_upload_pdf_api_pdfs_upload_post:
       properties:
         file:
@@ -492,15 +518,6 @@ components:
       required:
       - file
       title: Body_upload_pdf_api_pdfs_upload_post
-    Body_analyze_pdf_api_pdfs__pdf_id__analyze_post:
-      properties:
-        analysis_type:
-          type: string
-          title: Analysis Type
-      type: object
-      required:
-      - analysis_type
-      title: Body_analyze_pdf_api_pdfs__pdf_id__analyze_post
     GeneratedContent:
       properties:
         text:
@@ -588,6 +605,24 @@ components:
       - platform
       - tone
       title: Body_generate_content_with_pdfs_api_pdfs_generate_content_post
+    Body_analyze_pdf_api_pdfs__pdf_id__analyze_post:
+      properties:
+        analysis_type:
+          type: string
+          title: Analysis Type
+      type: object
+      required:
+      - analysis_type
+      title: Body_analyze_pdf_api_pdfs__pdf_id__analyze_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -614,15 +649,6 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     PersonalityType:
       type: string
       enum:
@@ -631,32 +657,6 @@ components:
       - default
       title: PersonalityType
       description: Available personality types for content generation.
-    SourceChunk:
-      properties:
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: ID of the source chunk
-        text:
-          type: string
-          title: Text
-          description: Snippet of the chunk text
-        similarity:
-          type: number
-          title: Similarity
-          description: Similarity score
-        content_id:
-          type: string
-          title: Content Id
-          description: ID of the parent content
-      type: object
-      required:
-      - chunk_id
-      - text
-      - similarity
-      - content_id
-      title: SourceChunk
-      description: Source chunk information for generated content.
   securitySchemes:
     HTTPBearer:
       type: http

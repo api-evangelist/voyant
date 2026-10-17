@@ -457,17 +457,6 @@ components:
       - status
       title: CrawlSummary
       description: Summary model for completed crawl.
-    CrawlEstimateRequest:
-      properties:
-        domain:
-          type: string
-          title: Domain
-          description: Domain or URL to estimate
-      type: object
-      required:
-      - domain
-      title: CrawlEstimateRequest
-      description: Request model for scan estimate.
     CrawlRequest:
       properties:
         domains:
@@ -535,6 +524,15 @@ components:
       - domains
       title: CrawlRequest
       description: Request model for crawl job.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -561,6 +559,39 @@ components:
       - msg
       - type
       title: ValidationError
+    CrawlEstimateRequest:
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Domain or URL to estimate
+      type: object
+      required:
+      - domain
+      title: CrawlEstimateRequest
+      description: Request model for scan estimate.
+    CrawlResponse:
+      properties:
+        crawl_id:
+          type: string
+          title: Crawl Id
+        task_id:
+          type: string
+          title: Task Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - crawl_id
+      - task_id
+      - status
+      - message
+      title: CrawlResponse
+      description: Response model for crawl job.
     ImportAuthoritativeContentRequest:
       properties:
         content:
@@ -587,37 +618,6 @@ components:
       - domain
       title: ImportAuthoritativeContentRequest
       description: Request model for importing llms.txt or context.txt as authoritative content.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    CrawlResponse:
-      properties:
-        crawl_id:
-          type: string
-          title: Crawl Id
-        task_id:
-          type: string
-          title: Task Id
-        status:
-          type: string
-          title: Status
-        message:
-          type: string
-          title: Message
-      type: object
-      required:
-      - crawl_id
-      - task_id
-      - status
-      - message
-      title: CrawlResponse
-      description: Response model for crawl job.
   securitySchemes:
     HTTPBearer:
       type: http

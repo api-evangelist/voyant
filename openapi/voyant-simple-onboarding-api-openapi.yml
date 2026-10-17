@@ -99,60 +99,6 @@ paths:
       - HTTPBearer: []
 components:
   schemas:
-    SimpleOnboardingResponse:
-      properties:
-        session_id:
-          type: string
-          title: Session Id
-        discovery:
-          $ref: '#/components/schemas/DiscoveryData'
-        enrichment:
-          anyOf:
-          - $ref: '#/components/schemas/EnrichmentData'
-          - type: 'null'
-        messaging:
-          $ref: '#/components/schemas/MessagingData'
-        competitors:
-          items:
-            $ref: '#/components/schemas/CompetitorSuggestion'
-          type: array
-          title: Competitors
-      type: object
-      required:
-      - session_id
-      - discovery
-      - messaging
-      - competitors
-      title: SimpleOnboardingResponse
-      description: Complete response from simple onboarding discovery
-    MessagingData:
-      properties:
-        headline:
-          type: string
-          title: Headline
-        tagline:
-          type: string
-          title: Tagline
-        value_proposition:
-          type: string
-          title: Value Proposition
-        key_differentiators:
-          items:
-            type: string
-          type: array
-          title: Key Differentiators
-          default: []
-        target_audience:
-          type: string
-          title: Target Audience
-      type: object
-      required:
-      - headline
-      - tagline
-      - value_proposition
-      - target_audience
-      title: MessagingData
-      description: Generated high-level messaging
     ConfirmOnboardingRequest:
       properties:
         session_id:
@@ -181,32 +127,15 @@ components:
       - messaging
       title: ConfirmOnboardingRequest
       description: User-confirmed onboarding data
-    CompetitorSuggestion:
+    HTTPValidationError:
       properties:
-        name:
-          type: string
-          title: Name
-        domain:
-          type: string
-          title: Domain
-        description:
-          type: string
-          title: Description
-        why_competitor:
-          type: string
-          title: Why Competitor
-        confirmed:
-          type: boolean
-          title: Confirmed
-          default: true
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - name
-      - domain
-      - description
-      - why_competitor
-      title: CompetitorSuggestion
-      description: A suggested competitor
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -233,15 +162,32 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    SimpleOnboardingResponse:
       properties:
-        detail:
+        session_id:
+          type: string
+          title: Session Id
+        discovery:
+          $ref: '#/components/schemas/DiscoveryData'
+        enrichment:
+          anyOf:
+          - $ref: '#/components/schemas/EnrichmentData'
+          - type: 'null'
+        messaging:
+          $ref: '#/components/schemas/MessagingData'
+        competitors:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: '#/components/schemas/CompetitorSuggestion'
           type: array
-          title: Detail
+          title: Competitors
       type: object
-      title: HTTPValidationError
+      required:
+      - session_id
+      - discovery
+      - messaging
+      - competitors
+      title: SimpleOnboardingResponse
+      description: Complete response from simple onboarding discovery
     EnrichmentData:
       properties:
         industry:
@@ -300,6 +246,34 @@ components:
       - domain
       title: SimpleOnboardingRequest
       description: Start simplified onboarding with just a domain
+    MessagingData:
+      properties:
+        headline:
+          type: string
+          title: Headline
+        tagline:
+          type: string
+          title: Tagline
+        value_proposition:
+          type: string
+          title: Value Proposition
+        key_differentiators:
+          items:
+            type: string
+          type: array
+          title: Key Differentiators
+          default: []
+        target_audience:
+          type: string
+          title: Target Audience
+      type: object
+      required:
+      - headline
+      - tagline
+      - value_proposition
+      - target_audience
+      title: MessagingData
+      description: Generated high-level messaging
     DiscoveryData:
       properties:
         company_name:
@@ -337,6 +311,32 @@ components:
       - domain
       title: DiscoveryData
       description: Homepage discovery data
+    CompetitorSuggestion:
+      properties:
+        name:
+          type: string
+          title: Name
+        domain:
+          type: string
+          title: Domain
+        description:
+          type: string
+          title: Description
+        why_competitor:
+          type: string
+          title: Why Competitor
+        confirmed:
+          type: boolean
+          title: Confirmed
+          default: true
+      type: object
+      required:
+      - name
+      - domain
+      - description
+      - why_competitor
+      title: CompetitorSuggestion
+      description: A suggested competitor
   securitySchemes:
     HTTPBearer:
       type: http

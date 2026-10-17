@@ -296,6 +296,86 @@ components:
       type: object
       title: SignalSyncRequest
       description: Signal sync request
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CampaignAddRequest:
+      properties:
+        campaign_id:
+          type: string
+          title: Campaign Id
+          description: CRM campaign/list ID
+        contact_emails:
+          items:
+            type: string
+          type: array
+          title: Contact Emails
+          description: Email addresses to add
+        create_if_missing:
+          type: boolean
+          title: Create If Missing
+          description: Create contacts if they don't exist
+          default: false
+      type: object
+      required:
+      - campaign_id
+      - contact_emails
+      title: CampaignAddRequest
+      description: Add contacts to campaign request
+    CRMConfigRequest:
+      properties:
+        crm_type:
+          type: string
+          title: Crm Type
+          description: 'Type of CRM: pardot, hubspot, salesforce, etc.'
+        config:
+          additionalProperties: true
+          type: object
+          title: Config
+          description: CRM-specific configuration
+        test_connection:
+          type: boolean
+          title: Test Connection
+          description: Test connection after saving
+          default: true
+      type: object
+      required:
+      - crm_type
+      - config
+      title: CRMConfigRequest
+      description: CRM configuration request
     ContactSyncRequest:
       properties:
         contact_ids:
@@ -324,86 +404,6 @@ components:
       type: object
       title: ContactSyncRequest
       description: Contact sync request
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CRMConfigRequest:
-      properties:
-        crm_type:
-          type: string
-          title: Crm Type
-          description: 'Type of CRM: pardot, hubspot, salesforce, etc.'
-        config:
-          additionalProperties: true
-          type: object
-          title: Config
-          description: CRM-specific configuration
-        test_connection:
-          type: boolean
-          title: Test Connection
-          description: Test connection after saving
-          default: true
-      type: object
-      required:
-      - crm_type
-      - config
-      title: CRMConfigRequest
-      description: CRM configuration request
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    CampaignAddRequest:
-      properties:
-        campaign_id:
-          type: string
-          title: Campaign Id
-          description: CRM campaign/list ID
-        contact_emails:
-          items:
-            type: string
-          type: array
-          title: Contact Emails
-          description: Email addresses to add
-        create_if_missing:
-          type: boolean
-          title: Create If Missing
-          description: Create contacts if they don't exist
-          default: false
-      type: object
-      required:
-      - campaign_id
-      - contact_emails
-      title: CampaignAddRequest
-      description: Add contacts to campaign request
   securitySchemes:
     HTTPBearer:
       type: http
